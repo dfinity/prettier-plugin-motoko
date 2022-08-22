@@ -1,9 +1,55 @@
 import { Token, TokenTree } from './../../parsers/motoko-tt-parse/parse';
 import { doc, AstPath, Doc, ParserOptions } from 'prettier';
+import spaceConfig, { doesTokenTreeMatchPattern } from './spaceConfig';
 
+export type Space =
+    | ('nil' | 'space' | 'line' | 'softline' | 'hardline' | 'wrap' | 'softwrap')
+    | Space[];
+
+// Documentation: https://github.com/prettier/prettier/blob/main/commands.md
 const {
-    builders: { group, ifBreak, indent, label, line, softline },
+    builders: {
+        group,
+        ifBreak,
+        breakParent,
+        indent,
+        indentIfBreak,
+        // label,
+        line,
+        softline,
+        hardline,
+        lineSuffix,
+        // hardlineWithoutBreakParent,
+    },
 } = doc;
+
+const space = ' ';
+// const wrapDoc = [softline /* , indent([]) */]; // TODO check
+const wrapIndent = space; ///
+
+export function parseSpace(input: Space): Doc {
+    if (typeof input === 'string') {
+        switch (input) {
+            case 'nil':
+                return [];
+            case 'space':
+                return space;
+            case 'line':
+                return line;
+            case 'softline':
+                return softline;
+            case 'wrap':
+                return ifBreak(wrapIndent, space);
+            case 'softwrap':
+                return ifBreak(wrapIndent);
+        }
+    } else if (Array.isArray(input)) {
+        return input.map((x) => parseSpace(x));
+    }
+    throw new Error(`Unknown space: ${JSON.stringify(input)}`);
+}
+
+const removeTokenTypes = ['Space'];
 
 export default function print(
     path: AstPath<any>,
@@ -11,9 +57,26 @@ export default function print(
     print: (path: AstPath<any>) => Doc,
     args?: unknown,
 ): Doc {
-    // console.log(arguments); /////
+    const tree = path.getValue();
+    if (tree === null) {
+        return '';
+    } else {
+        return printTokenTree(tree, path, options, print, args);
+    }
+}
 
-    return printTokenTree(path.getValue(), path, options, print, args);
+function printExact(tree: TokenTree): Doc {
+    if (tree.token_tree_type === 'Group') {
+        const [trees, groupType, pair] = tree.data;
+        const results = trees.map((tt: TokenTree) => printExact(tt));
+        return pair
+            ? [getTokenData(pair[0][0]), results, getTokenData(pair[1][0])]
+            : results;
+    }
+    if (tree.token_tree_type === 'Token') {
+        return getTokenData(tree.data[0]);
+    }
+    throw new Error(`Unexpected token tree: ${JSON.stringify(tree)}`);
 }
 
 function printTokenTree(
@@ -25,39 +88,53 @@ function printTokenTree(
 ): Doc {
     // console.log(tree);
 
-    if (tree === null) {
-        return '';
-    } else if (tree.token_tree_type === 'Group') {
-        const [tokens, type, pair] = tree.data;
+    if (tree.token_tree_type === 'Group') {
+        const [originalTrees, groupType, pair] = tree.data;
 
-        // console.log(tokens);
+        if (groupType === 'BlockComment') {
+            return printExact(tree);
+        }
 
-        console.log(pair);
+        console.log(originalTrees.map((t) => t.data)); /////
+
+        const trees = originalTrees.filter((tt, i) => {
+            if (tt.token_tree_type === 'Token') {
+                const token = tt.data[0];
+                return (
+                    !removeTokenTypes.includes(tt.data[0].token_type) ||
+                    (i === 0 && token.token_type !== 'Line') ||
+                    (i === originalTrees.length - 1 &&
+                        token.token_type !== 'Line')
+                );
+            }
+            return false;
+        });
 
         let results = [];
-        if (pair) {
-            // console.log(pair[0])///
-            results.push(printToken(pair[0][0]));
-        }
-        for (let i = 0; i < tokens.length; i++) {
-            const a = tokens[i]!;
+        for (let i = 0; i < trees.length; i++) {
+            const a = trees[i]!;
             results.push(printTokenTree(a, path, options, print, args));
-            if (i < tokens.length - 1) {
-                const b = tokens[i + 1]!;
+            if (i < trees.length - 1) {
+                const b = trees[i + 1]!;
                 results.push(printBetween(a, b));
             }
         }
-        if (pair) {
-            results.push(printToken(pair[1][0]));
-        }
-
-        return results;
+        const pairSpace = groupType === 'Curly' ? line : softline;
+        return group(
+            pair
+                ? [
+                      printToken(pair[0][0]),
+                      pairSpace,
+                      indent(results),
+                      pairSpace,
+                      printToken(pair[1][0]),
+                  ]
+                : results,
+        );
     } else if (tree.token_tree_type === 'Token') {
-        const [token, source] = tree.data;
+        const [token] = tree.data;
 
-        // console.log(token, source);
-
-        return getTokenData(token);
+        return printToken(token);
     }
 
     throw new Error(`Unexpected token tree: ${JSON.stringify(tree)}`);
@@ -66,17 +143,26 @@ function printTokenTree(
 function printToken(token: Token): Doc {
     switch (token.token_type) {
         case 'Space':
-            return [];
+            return space;
         case 'Line':
-            return [line];
+            return line;
         case 'MultiLine':
             return [line, line];
+        case 'LineComment':
+            // return [token.data, hardline];
+            return lineSuffix(token.data);
     }
     return getTokenData(token);
 }
 
 function printBetween(a: TokenTree, b: TokenTree): Doc {
-    return [];
+    const rule = spaceConfig.rules.find(([aPattern, bPattern]) => {
+        return (
+            doesTokenTreeMatchPattern(a, aPattern) &&
+            doesTokenTreeMatchPattern(b, bPattern)
+        );
+    });
+    return rule ? parseSpace(rule[2]) : [];
 }
 
 function getTokenData(token: Token): string {

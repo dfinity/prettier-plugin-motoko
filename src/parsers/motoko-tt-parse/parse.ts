@@ -2,26 +2,77 @@ import wasm from '../../wasm';
 
 type Loc<T> = [T, Source];
 
+export type GroupType =
+    | 'Unenclosed'
+    | 'Paren'
+    | 'Curly'
+    | 'Square'
+    | 'Angle'
+    | 'BlockComment';
+
 export type TokenTree =
     | {
           token_tree_type: 'Group';
-          data: [TokenTree[], string, [Loc<Token>, Loc<Token>] | null];
+          data: [TokenTree[], GroupType, [Loc<Token>, Loc<Token>] | null];
       }
     | {
           token_tree_type: 'Token';
           data: Loc<Token>;
       };
 
-export type Token = {
-    token_type: string;
-    data: any[];
-};
+export type Token =
+    | {
+          token_type: 'Open' | 'Close';
+          data: [string, GroupType];
+      }
+    | {
+          token_type: 'Delim';
+          data: [string, 'Comma' | 'Semi'];
+      }
+    | {
+          token_type: 'Literal';
+          data: [
+              string,
+              (
+                  | 'Null'
+                  | 'Unit'
+                  | 'Bool'
+                  | 'Nat8'
+                  | 'Nat16'
+                  | 'Nat32'
+                  | 'Nat64'
+                  | 'Int'
+                  | 'Int8'
+                  | 'Int16'
+                  | 'Int32'
+                  | 'Int64'
+                  | 'Float'
+                  | 'Text'
+                  | 'Char'
+                  | 'Principal'
+              ),
+          ];
+      }
+    | {
+          token_type:
+              | 'LineComment'
+              | 'Dot'
+              | 'Colon'
+              | 'Assign'
+              | 'Operator'
+              | 'Ident'
+              | 'Wild'
+              | 'Space'
+              | 'Line'
+              | 'MultiLine'
+              | 'Unknown';
+          data: string;
+      };
 
 export type Source = {
-    span: number;
-
     line: number;
     col: number;
+    span: number;
 };
 
 export default function parse(
@@ -31,7 +82,7 @@ export default function parse(
 ): TokenTree {
     let tt = wasm.parse_token_tree(text);
 
-    console.log(tt);
+    // console.log(tt);
 
     return tt;
 }
