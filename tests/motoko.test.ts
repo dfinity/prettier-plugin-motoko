@@ -9,6 +9,6 @@ describe('Motoko formatter', () => {
             printWidth: 80, ///////
         });
 
-        expect(result).toStrictEqual('let /*{{*/ x = 0; //\n(x)\n');
+        expect(result).toStrictEqual('let /*{{*/ x = 0; //\n(x)');
     });
 });

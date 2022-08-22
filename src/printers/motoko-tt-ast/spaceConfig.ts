@@ -112,7 +112,7 @@ const spaceConfig: SpaceConfig = {
 
         // block comments
         ['_', 'BlockComment', 'wrap'],
-        ['BlockComment', '_', 'line'],
+        ['BlockComment', '_', 'wrap'],
 
         // default
         ['_', '_', 'space'],

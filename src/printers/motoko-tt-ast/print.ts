@@ -101,13 +101,15 @@ function printTokenTree(
             if (tt.token_tree_type === 'Token') {
                 const token = tt.data[0];
                 return (
-                    !removeTokenTypes.includes(tt.data[0].token_type) ||
-                    (i === 0 && token.token_type !== 'Line') ||
-                    (i === originalTrees.length - 1 &&
-                        token.token_type !== 'Line')
+                    !removeTokenTypes.includes(tt.data[0].token_type) &&
+                    !(i === 0 && token.token_type === 'Line') &&
+                    !(
+                        i === originalTrees.length - 1 &&
+                        token.token_type === 'Line'
+                    )
                 );
             }
-            return false;
+            return true;
         });
 
         let results = [];
@@ -145,9 +147,9 @@ function printToken(token: Token): Doc {
         case 'Space':
             return space;
         case 'Line':
-            return line;
+            return hardline;
         case 'MultiLine':
-            return [line, line];
+            return [hardline, hardline];
         case 'LineComment':
             // return [token.data, hardline];
             return lineSuffix(token.data);
