@@ -144,13 +144,7 @@ function printTokenTree(
         }
 
         const pairSpace =
-            results.length === 0
-                ? []
-                : groupType === 'Curly'
-                ? line
-                : // : groupType === 'Paren'
-                  // ? []
-                  softline;
+            results.length === 0 ? [] : groupType === 'Curly' ? line : softline;
 
         const resultDoc = pair
             ? [
