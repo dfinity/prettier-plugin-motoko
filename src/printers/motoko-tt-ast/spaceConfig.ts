@@ -96,7 +96,7 @@ const spaceConfig: SpaceConfig = {
         // space between identifier and group
         [keyword, 'Group', 'space'],
         ['Ident', 'Paren', 'nil'],
-        ['Ident', 'Square', 'nil'],
+        ['Ident', 'Curly', 'nil'],
         ['Ident', 'Angle', 'nil'],
         ['Angle', '_', 'nil'],
 
