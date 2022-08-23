@@ -1,4 +1,4 @@
-import { Space } from './print';
+import { getTokenText as getTokenText, Space } from './print';
 import {
     Token,
     TokenTree,
@@ -60,16 +60,12 @@ const token =
         return tt.token_tree_type === 'Token' && fn(tt.data[0]);
     };
 
-const tokenEquals = (data: string) => token((token) => token.data === data);
+const tokenEquals = (data: string) =>
+    token((token) => getTokenText(token) === data);
 const tokenStartsWith = (start: string) =>
-    token(
-        (token) =>
-            typeof token.data === 'string' && token.data.startsWith(start),
-    );
+    token((token) => getTokenText(token).startsWith(start));
 const tokenEndsWith = (end: string) =>
-    token(
-        (token) => typeof token.data === 'string' && token.data.endsWith(end),
-    );
+    token((token) => getTokenText(token).endsWith(end));
 
 const spaceConfig: SpaceConfig = {
     // Whitespace rules, prioritized from top to bottom
@@ -86,8 +82,14 @@ const spaceConfig: SpaceConfig = {
         ['_', tokenStartsWith(' '), 'nil'],
         [tokenEndsWith(' '), '_', 'nil'],
 
+        // delimiters
+        ['_', 'Delim', 'nil'],
+        [tokenEquals(';'), '_', 'hardline'],
+        ['Delim', '_', 'space'],
+        // ['Delim', 'Line', 'nil'],
+
         // soft-wrapping operators
-        ['_', 'Dot', 'softwrap'],
+        ['_', 'Dot', 'softline'],
         ['Dot', '_', 'nil'],
         ['Assign', '_', 'wrap'],
 
@@ -104,12 +106,6 @@ const spaceConfig: SpaceConfig = {
         // open/close tokens
         ['Open', '_', 'nil'],
         ['_', 'Close', 'nil'],
-
-        // delimiters
-        ['_', 'Delim', 'nil'],
-        ['Delim', '_', 'space'],
-        [tokenEquals(';'), '_', 'line'],
-        // ['Delim', 'Line', 'nil'],
 
         // prefix/postfix operators
         [tokenEquals('?'), '_', 'nil'],

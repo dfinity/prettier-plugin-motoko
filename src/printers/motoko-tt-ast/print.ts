@@ -38,10 +38,14 @@ export function parseSpace(input: Space): Doc {
                 return line;
             case 'softline':
                 return softline;
+            case 'hardline':
+                return hardline;
             case 'wrap':
                 return ifBreak(wrapIndent, space);
             case 'softwrap':
                 return ifBreak(wrapIndent);
+            default:
+                throw new Error(`Invalid space type: ${input}`);
         }
     } else if (Array.isArray(input)) {
         return input.map((x) => parseSpace(x));
@@ -49,7 +53,7 @@ export function parseSpace(input: Space): Doc {
     throw new Error(`Unknown space: ${JSON.stringify(input)}`);
 }
 
-const removeTokenTypes = ['Space'];
+const removeTokenTypes = ['Space', 'Line'];
 
 export default function print(
     path: AstPath<any>,
@@ -73,11 +77,11 @@ function printExact(tree: TokenTree): Doc {
         const [trees, groupType, pair] = tree.data;
         const results = trees.map((tt: TokenTree) => printExact(tt));
         return pair
-            ? [getTokenData(pair[0][0]), results, getTokenData(pair[1][0])]
+            ? [getTokenText(pair[0][0]), results, getTokenText(pair[1][0])]
             : results;
     }
     if (tree.token_tree_type === 'Token') {
-        return getTokenData(tree.data[0]);
+        return getTokenText(tree.data[0]);
     }
     throw new Error(`Unexpected token tree: ${JSON.stringify(tree)}`);
 }
@@ -101,14 +105,12 @@ function printTokenTree(
         const trees = originalTrees.filter((tt, i) => {
             if (tt.token_tree_type === 'Token') {
                 const token = tt.data[0];
-                return (
-                    !removeTokenTypes.includes(tt.data[0].token_type) &&
+                return !removeTokenTypes.includes(tt.data[0].token_type) /* &&
                     !(i === 0 && token.token_type === 'Line') &&
                     !(
                         i === originalTrees.length - 1 &&
                         token.token_type === 'Line'
-                    )
-                );
+                    ) */;
             }
             return true;
         });
@@ -122,7 +124,7 @@ function printTokenTree(
                 results.push(printBetween(a, b));
             }
         }
-        
+
         const pairSpace =
             groupType === 'Curly'
                 ? line
@@ -159,11 +161,11 @@ function printToken(token: Token): Doc {
         case 'MultiLine':
             return [breakParent, hardline];
         case 'LineComment':
-            // return [token.data, hardline];
-            return token.data;
+            return [token.data, hardline];
+        // return token.data;
         // return lineSuffix(token.data);
     }
-    return getTokenData(token);
+    return getTokenText(token);
 }
 
 function printBetween(a: TokenTree, b: TokenTree): Doc {
@@ -176,7 +178,7 @@ function printBetween(a: TokenTree, b: TokenTree): Doc {
     return rule ? parseSpace(rule[2]) : [];
 }
 
-function getTokenData(token: Token): string {
+export function getTokenText(token: Token): string {
     if (Array.isArray(token.data)) {
         return token.data[0];
     } else {
