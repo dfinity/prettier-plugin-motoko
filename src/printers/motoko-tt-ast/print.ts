@@ -19,12 +19,12 @@ const {
         softline,
         hardline,
         lineSuffix,
-        // hardlineWithoutBreakParent,
+        literallineWithoutBreakParent,
     },
 } = doc;
 
 const space = ' ';
-// const wrapDoc = [softline /* , indent([]) */]; // TODO check
+// const wrapDoc = [hardline /* , indent([]) */]; // TODO check
 const wrapIndent = space; ///
 
 export function parseSpace(input: Space): Doc {
@@ -61,7 +61,10 @@ export default function print(
     if (tree === null) {
         return '';
     } else {
-        return printTokenTree(tree, path, options, print, args);
+        const doc = printTokenTree(tree, path, options, print, args);
+        return doc || (Array.isArray(doc) && doc.length)
+            ? [doc, literallineWithoutBreakParent]
+            : doc;
     }
 }
 
@@ -86,8 +89,6 @@ function printTokenTree(
     print: (path: AstPath<any>) => Doc,
     args?: unknown,
 ): Doc {
-    // console.log(tree);
-
     if (tree.token_tree_type === 'Group') {
         const [originalTrees, groupType, pair] = tree.data;
 
@@ -95,7 +96,7 @@ function printTokenTree(
             return printExact(tree);
         }
 
-        console.log(originalTrees.map((t) => t.data)); /////
+        // console.log(originalTrees.map((t) => t.data)); /////
 
         const trees = originalTrees.filter((tt, i) => {
             if (tt.token_tree_type === 'Token') {
@@ -121,14 +122,20 @@ function printTokenTree(
                 results.push(printBetween(a, b));
             }
         }
-        const pairSpace = groupType === 'Curly' ? line : softline;
+        
+        const pairSpace =
+            groupType === 'Curly'
+                ? line
+                : groupType === 'Paren'
+                ? []
+                : softline;
+
         return group(
             pair
                 ? [
                       printToken(pair[0][0]),
-                      pairSpace,
-                      indent(results),
-                      pairSpace,
+                      indent([pairSpace, results]),
+                      results.length ? pairSpace : [],
                       printToken(pair[1][0]),
                   ]
                 : results,
@@ -147,12 +154,14 @@ function printToken(token: Token): Doc {
         case 'Space':
             return space;
         case 'Line':
+            // return breakParent;
             return hardline;
         case 'MultiLine':
-            return [hardline, hardline];
+            return [breakParent, hardline];
         case 'LineComment':
             // return [token.data, hardline];
-            return lineSuffix(token.data);
+            return token.data;
+        // return lineSuffix(token.data);
     }
     return getTokenData(token);
 }

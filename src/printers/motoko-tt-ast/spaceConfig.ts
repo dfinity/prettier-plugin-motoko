@@ -86,11 +86,20 @@ const spaceConfig: SpaceConfig = {
         ['_', tokenStartsWith(' '), 'nil'],
         [tokenEndsWith(' '), '_', 'nil'],
 
+        // soft-wrapping operators
+        ['_', 'Dot', 'softwrap'],
+        ['Dot', '_', 'nil'],
+        ['Assign', '_', 'wrap'],
+
         // space between identifier and group
         [keyword, 'Group', 'space'],
         ['Ident', 'Paren', 'nil'],
         ['Ident', 'Square', 'nil'],
         ['Ident', 'Angle', 'nil'],
+
+        // groups
+        ['Group', 'Paren', 'nil'],
+        ['Group', 'Square', 'nil'],
 
         // open/close tokens
         ['Open', '_', 'nil'],
@@ -98,12 +107,9 @@ const spaceConfig: SpaceConfig = {
 
         // delimiters
         ['_', 'Delim', 'nil'],
-        ['Delim', '_', 'line'],
-
-        // soft-wrapping operators
-        ['_', 'Dot', 'wrap'],
-        ['Dot', '_', 'nil'],
-        ['Assign', '_', 'wrap'],
+        ['Delim', '_', 'space'],
+        [tokenEquals(';'), '_', 'line'],
+        // ['Delim', 'Line', 'nil'],
 
         // prefix/postfix operators
         [tokenEquals('?'), '_', 'nil'],
