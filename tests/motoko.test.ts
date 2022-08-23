@@ -33,7 +33,7 @@ describe('Motoko formatter', () => {
     });
 
     test('group spacing', () => {
-        expect(format('{};{a};();(a)')).toStrictEqual('{};\n{ a };\n();\n(a)\n');
+        expect(format('{};{a};();(a)')).toStrictEqual('{}; { a }; (); (a)\n');
     });
 
     test('unary operators', () => {
