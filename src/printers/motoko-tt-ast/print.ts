@@ -115,15 +115,27 @@ function printTokenTree(
             return true;
         });
 
-        let results = [];
+        const results: Doc[] = [];
+        let resultGroup: Doc[] = [];
         for (let i = 0; i < trees.length; i++) {
             const a = trees[i]!;
-            results.push(printTokenTree(a, path, options, print, args));
+
+            const isDelim =
+                a.token_tree_type === 'Token' &&
+                a.data[0].token_type === 'Delim';
+
+            if (isDelim) {
+                results.push(group(resultGroup));
+                resultGroup = [];
+            }
+            const resultArray = isDelim ? results : resultGroup;
+            resultArray.push(printTokenTree(a, path, options, print, args));
             if (i < trees.length - 1) {
                 const b = trees[i + 1]!;
-                results.push(printBetween(a, b));
+                resultArray.push(printBetween(a, b));
             }
         }
+        results.push(group(resultGroup));
 
         const pairSpace =
             groupType === 'Curly'
@@ -160,7 +172,8 @@ function printToken(token: Token): Doc {
             return hardline;
         case 'MultiLine':
             // return [breakParent, hardline];
-            return [hardline, hardline];
+            // return [hardline, hardline];
+            return [breakParent];
         case 'LineComment':
             return [token.data, hardline];
         // return token.data;

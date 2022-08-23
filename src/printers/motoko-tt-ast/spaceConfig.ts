@@ -68,15 +68,15 @@ const tokenEndsWith = (end: string) =>
     token((token) => getTokenText(token).endsWith(end));
 
 const spaceConfig: SpaceConfig = {
-    // Whitespace rules, prioritized from top to bottom
+    // whitespace rules, prioritized from top to bottom
     rules: [
         // whitespace / comment tokens
         ['Space', '_', 'nil'],
         ['_', 'Space', 'nil'],
         ['Line', '_', 'nil'],
         ['_', 'Line', 'nil'],
-        ['MultiLine', '_', 'nil'],
-        ['_', 'MultiLine', 'nil'],
+        ['MultiLine', '_', 'hardline'],
+        ['_', 'MultiLine', 'hardline'],
         ['_', 'LineComment', 'wrap'],
         ['LineComment', '_', 'nil'],
         ['_', tokenStartsWith(' '), 'nil'],
