@@ -124,7 +124,7 @@ function printTokenTree(
                 a.token_tree_type === 'Token' &&
                 a.data[0].token_type === 'Delim';
 
-            if (isDelim) {
+            if (isDelim && resultGroup.length) {
                 results.push(group(resultGroup));
                 resultGroup = [];
             }
@@ -135,7 +135,9 @@ function printTokenTree(
                 resultArray.push(printBetween(a, b));
             }
         }
-        results.push(group(resultGroup));
+        if (resultGroup.length) {
+            results.push(group(resultGroup));
+        }
 
         const pairSpace =
             groupType === 'Curly'

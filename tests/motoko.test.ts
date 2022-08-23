@@ -18,9 +18,9 @@ describe('Motoko formatter', () => {
         expect(format('')).toStrictEqual('');
     });
 
-    test('basic example', () => {
-        expect(format('let/*{{*/x = 0; //\n (x)')).toStrictEqual(
-            'let /*{{*/ x = 0; //\n(x)\n',
+    test('comments', () => {
+        expect(format('let/*{{*/x = 0; //x\n (x)')).toStrictEqual(
+            'let /*{{*/ x = 0; //x\n(x)\n',
         );
     });
 
@@ -30,6 +30,10 @@ describe('Motoko formatter', () => {
 
     test('extra newlines', () => {
         expect(format('a;\n\n\n\n\nb')).toStrictEqual('a;\n\nb\n');
+    });
+
+    test('group spacing', () => {
+        expect(format('{};{a};();(a)')).toStrictEqual('{ };\n{ a };\n();\n(a)\n');
     });
 
     test('generate diff files from compiler tests', () => {

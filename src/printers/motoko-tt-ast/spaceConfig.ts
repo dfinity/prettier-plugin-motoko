@@ -98,6 +98,7 @@ const spaceConfig: SpaceConfig = {
         ['Ident', 'Paren', 'nil'],
         ['Ident', 'Square', 'nil'],
         ['Ident', 'Angle', 'nil'],
+        ['Angle', '_', 'nil'],
 
         // groups
         ['Group', 'Paren', 'nil'],
