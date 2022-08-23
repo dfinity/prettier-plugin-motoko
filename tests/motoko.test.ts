@@ -36,8 +36,12 @@ describe('Motoko formatter', () => {
         expect(format('{};{a};();(a)')).toStrictEqual('{};\n{ a };\n();\n(a)\n');
     });
 
+    test('unary operators', () => {
+        expect(format('-+5')).toStrictEqual('-+5\n');
+    });
+
     test('unary / binary operators', () => {
-        expect(format('1- + 5')).toStrictEqual('1 - +5\n');
+        expect(format('1- +5')).toStrictEqual('1 - +5\n');
     });
 
     test('variants / concatenation', () => {
