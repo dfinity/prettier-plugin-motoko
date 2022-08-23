@@ -36,30 +36,40 @@ describe('Motoko formatter', () => {
         expect(format('{};{a};();(a)')).toStrictEqual('{ };\n{ a };\n();\n(a)\n');
     });
 
-    // test('generate diff files from compiler tests', () => {
-    //     let preOutput = '';
-    //     let postOutput = '';
+    test('unary / binary operators', () => {
+        expect(format('1- + 5')).toStrictEqual('1 - +5\n');
+    });
 
-    //     for (const file of glob.sync(
-    //         join(__dirname, '../../motoko/test/**/*.mo'),
-    //     )) {
-    //         // console.log(file);
+    test('variants / concatenation', () => {
+        expect(format('#5')).toStrictEqual('# 5');
+        expect(format('# a')).toStrictEqual('#a');
+        expect(format('"x"# # a')).toStrictEqual('"x" # #a');
+    });
 
-    //         const code = readFileSync(file, 'utf-8');
+    test('generate diff files from compiler tests', () => {
+        let preOutput = '';
+        let postOutput = '';
 
-    //         const formatted = prettier.format(code, {
-    //             filepath: file,
-    //             plugins: [motokoPlugin],
-    //             // printWidth: 80,
-    //         });
+        for (const file of glob.sync(
+            join(__dirname, '../../motoko/test/**/*.mo'),
+        )) {
+            // console.log(file);
 
-    //         preOutput += `// >>> ${basename(file)} <<<\n\n${code}\n\n`;
-    //         postOutput += `// >>> ${basename(file)} <<<\n\n${formatted}\n\n`;
+            const code = readFileSync(file, 'utf-8');
 
-    //         // expect(result).toStrictEqual('let /*{{*/ x = 0; //\n(x)\n');
-    //     }
+            const formatted = prettier.format(code, {
+                filepath: file,
+                plugins: [motokoPlugin],
+                // printWidth: 80,
+            });
 
-    //     writeFileSync(join(__dirname, 'motoko/_CompilerTests_Before.mo'), preOutput);
-    //     writeFileSync(join(__dirname, 'motoko/_CompilerTests_Formatted.mo'), postOutput);
-    // });
+            preOutput += `// >>> ${basename(file)} <<<\n\n${code}\n\n`;
+            postOutput += `// >>> ${basename(file)} <<<\n\n${formatted}\n\n`;
+
+            // expect(result).toStrictEqual('let /*{{*/ x = 0; //\n(x)\n');
+        }
+
+        writeFileSync(join(__dirname, 'motoko/_CompilerTests_Before.mo'), preOutput);
+        writeFileSync(join(__dirname, 'motoko/_CompilerTests_Formatted.mo'), postOutput);
+    });
 });
