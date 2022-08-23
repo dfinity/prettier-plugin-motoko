@@ -33,7 +33,7 @@ describe('Motoko formatter', () => {
     });
 
     test('group spacing', () => {
-        expect(format('{};{a};();(a)')).toStrictEqual('{ };\n{ a };\n();\n(a)\n');
+        expect(format('{};{a};();(a)')).toStrictEqual('{};\n{ a };\n();\n(a)\n');
     });
 
     test('unary / binary operators', () => {
@@ -60,7 +60,6 @@ describe('Motoko formatter', () => {
             const formatted = prettier.format(code, {
                 filepath: file,
                 plugins: [motokoPlugin],
-                // printWidth: 80,
             });
 
             preOutput += `// >>> ${basename(file)} <<<\n\n${code}\n\n`;

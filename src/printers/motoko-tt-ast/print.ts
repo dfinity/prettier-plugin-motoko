@@ -102,9 +102,13 @@ function printTokenTree(
 
         // console.log(originalTrees.map((t) => t.data)); /////
 
+        let shouldBreakGroup;
         const trees = originalTrees.filter((tt, i) => {
             if (tt.token_tree_type === 'Token') {
                 const token = tt.data[0];
+                if (token.token_type === 'Line') {
+                    shouldBreakGroup = true;
+                }
                 return !removeTokenTypes.includes(tt.data[0].token_type) /* &&
                     !(i === 0 && token.token_type === 'Line') &&
                     !(
@@ -140,22 +144,26 @@ function printTokenTree(
         }
 
         const pairSpace =
-            groupType === 'Curly'
-                ? line
-                : groupType === 'Paren'
+            results.length === 0
                 ? []
-                : softline;
+                : groupType === 'Curly'
+                ? line
+                : // : groupType === 'Paren'
+                  // ? []
+                  softline;
 
-        return group(
-            pair
-                ? [
-                      printToken(pair[0][0]),
-                      indent([pairSpace, results]),
-                      results.length ? pairSpace : [],
-                      printToken(pair[1][0]),
-                  ]
-                : results,
-        );
+        const resultDoc = pair
+            ? [
+                  printToken(pair[0][0]),
+                  indent([pairSpace, results]),
+                  pairSpace,
+                  printToken(pair[1][0]),
+              ]
+            : results;
+
+        return group(resultDoc, {
+            shouldBreak: shouldBreakGroup,
+        });
     } else if (tree.token_tree_type === 'Token') {
         const [token] = tree.data;
 

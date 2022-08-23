@@ -84,8 +84,8 @@ const spaceConfig: SpaceConfig = {
 
         // delimiters
         ['_', 'Delim', 'nil'],
-        [tokenEquals(';'), '_', 'hardline'],
-        ['Delim', '_', 'space'],
+        // [tokenEquals(';'), '_', 'hardline'],
+        ['Delim', '_', 'line'],
         // ['Delim', 'Line', 'nil'],
 
         // soft-wrapping operators
@@ -93,11 +93,18 @@ const spaceConfig: SpaceConfig = {
         ['Dot', '_', 'nil'],
         ['Assign', '_', 'wrap'],
 
+        // prefix/postfix operators
+        [tokenEquals('?'), '_', 'nil'],
+        [tokenEquals('#'), 'Ident', 'nil'], ///
+        ['_', tokenEquals('!'), 'nil'],
+
         // space between identifier and group
         [keyword, 'Group', 'space'],
+        // ['Ident', 'Curly', 'nil'],
         ['Ident', 'Paren', 'nil'],
-        ['Ident', 'Curly', 'nil'],
+        ['Ident', 'Square', 'nil'],
         ['Ident', 'Angle', 'nil'],
+        ['Angle', 'Ident', 'space'],
         ['Angle', '_', 'nil'],
 
         // groups
@@ -107,11 +114,6 @@ const spaceConfig: SpaceConfig = {
         // open/close tokens
         ['Open', '_', 'nil'],
         ['_', 'Close', 'nil'],
-
-        // prefix/postfix operators
-        [tokenEquals('?'), '_', 'nil'],
-        [tokenEquals('#'), 'Ident', 'nil'], ///
-        ['_', tokenEquals('!'), 'nil'],
 
         // block comments
         ['_', 'BlockComment', 'wrap'],
