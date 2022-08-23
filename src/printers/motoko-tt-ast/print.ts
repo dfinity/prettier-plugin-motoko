@@ -159,7 +159,8 @@ function printToken(token: Token): Doc {
             // return breakParent;
             return hardline;
         case 'MultiLine':
-            return [breakParent, hardline];
+            // return [breakParent, hardline];
+            return [hardline, hardline];
         case 'LineComment':
             return [token.data, hardline];
         // return token.data;

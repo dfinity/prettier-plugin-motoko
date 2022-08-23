@@ -9,43 +9,53 @@ const config = {
     plugins: [motokoPlugin],
 };
 
-describe('Motoko formatter', () => {
-    test('basic example', () => {
-        const result = prettier.format('let/*{{*/x = 0; //\n (x)', config);
+const format = (input: string): string => {
+    return prettier.format(input, config);
+};
 
-        expect(result).toStrictEqual('let /*{{*/ x = 0; //\n(x)\n');
+describe('Motoko formatter', () => {
+    test('empty', () => {
+        expect(format('')).toStrictEqual('');
+    });
+
+    test('basic example', () => {
+        expect(format('let/*{{*/x = 0; //\n (x)')).toStrictEqual(
+            'let /*{{*/ x = 0; //\n(x)\n',
+        );
     });
 
     test('block with existing newline', () => {
-        const result = prettier.format('{a;\nb}', config);
-
-        expect(result).toStrictEqual('{\n  a;\n  b\n}\n');
+        expect(format('{a;\nb}')).toStrictEqual('{\n  a;\n  b\n}\n');
     });
 
-    test('generate diff files from dfinity/motoko', () => {
-        let preOutput = '';
-        let postOutput = '';
-
-        for (const file of glob.sync(
-            join(__dirname, '../../motoko/test/**/*.mo'),
-        )) {
-            // console.log(file);
-
-            const code = readFileSync(file, 'utf-8');
-
-            const formatted = prettier.format(code, {
-                filepath: file,
-                plugins: [motokoPlugin],
-                // printWidth: 80,
-            });
-
-            preOutput += `// >>> ${basename(file)} <<<\n\n${code}\n\n`;
-            postOutput += `// >>> ${basename(file)} <<<\n\n${formatted}\n\n`;
-
-            // expect(result).toStrictEqual('let /*{{*/ x = 0; //\n(x)\n');
-        }
-
-        writeFileSync(join(__dirname, 'motoko/_CompilerTests_Before.mo'), preOutput);
-        writeFileSync(join(__dirname, 'motoko/_CompilerTests_Formatted.mo'), postOutput);
+    test('extra newlines', () => {
+        expect(format('a;\n\n\n\n\nb')).toStrictEqual('a;\n\nb\n');
     });
+
+    // test('generate diff files from dfinity/motoko', () => {
+    //     let preOutput = '';
+    //     let postOutput = '';
+
+    //     for (const file of glob.sync(
+    //         join(__dirname, '../../motoko/test/**/*.mo'),
+    //     )) {
+    //         // console.log(file);
+
+    //         const code = readFileSync(file, 'utf-8');
+
+    //         const formatted = prettier.format(code, {
+    //             filepath: file,
+    //             plugins: [motokoPlugin],
+    //             // printWidth: 80,
+    //         });
+
+    //         preOutput += `// >>> ${basename(file)} <<<\n\n${code}\n\n`;
+    //         postOutput += `// >>> ${basename(file)} <<<\n\n${formatted}\n\n`;
+
+    //         // expect(result).toStrictEqual('let /*{{*/ x = 0; //\n(x)\n');
+    //     }
+
+    //     writeFileSync(join(__dirname, 'motoko/_CompilerTests_Before.mo'), preOutput);
+    //     writeFileSync(join(__dirname, 'motoko/_CompilerTests_Formatted.mo'), postOutput);
+    // });
 });
