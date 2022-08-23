@@ -4,7 +4,7 @@
 
 ---
 
-A Prettier plugin for the Motoko programming language.
+A [Prettier](https://prettier.io/) plugin for the [Motoko](https://internetcomputer.org/docs/current/developer-docs/build/cdks/motoko-dfinity/motoko/) programming language.
 
 ## Setup
 
