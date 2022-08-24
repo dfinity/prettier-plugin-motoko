@@ -77,9 +77,8 @@ const spaceConfig: SpaceConfig = {
         ['_', 'Line', 'nil'],
         ['MultiLine', '_', 'hardline'],
         ['_', 'MultiLine', 'hardline'],
-        ['_', 'LineComment', 'space'],
-        // ['LineComment', '_', 'nil'],
         ['LineComment', '_', 'hardline'],
+        ['_', 'LineComment', 'space'],
         ['_', tokenStartsWith(' '), 'nil'],
         [tokenEndsWith(' '), '_', 'nil'],
 

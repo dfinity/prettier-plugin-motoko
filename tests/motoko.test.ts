@@ -22,9 +22,8 @@ describe('Motoko formatter', () => {
         expect(format('let/*{{*/x = 0; //x\n (x)')).toStrictEqual(
             'let /*{{*/ x = 0; //x\n(x)\n',
         );
-        expect(format('{//\n}//')).toStrictEqual(
-            '{\n  //\n} //\n',
-        );
+        expect(format('{//\n}//')).toStrictEqual('{\n  //\n} //\n');
+        expect(format('//a\n//b')).toStrictEqual('//a\n//b\n');
     });
 
     test('block with existing newline', () => {
