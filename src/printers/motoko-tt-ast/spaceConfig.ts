@@ -71,14 +71,16 @@ const spaceConfig: SpaceConfig = {
     // whitespace rules, prioritized from top to bottom
     rules: [
         // whitespace / comment tokens
+        ['MultiLine', '_', 'hardline'],
+        ['_', 'MultiLine', 'hardline'],
         ['Space', '_', 'nil'],
         ['_', 'Space', 'nil'],
         ['Line', '_', 'nil'],
         ['_', 'Line', 'nil'],
-        ['MultiLine', '_', 'hardline'],
-        ['_', 'MultiLine', 'hardline'],
         ['LineComment', '_', 'hardline'],
-        ['_', 'LineComment', 'space'],
+        ['_', 'LineComment', 'hardline'], // keep
+        ['_', 'BlockComment', 'hardline'], // keep
+        ['BlockComment', '_', 'hardline'], // keep
         ['_', tokenStartsWith(' '), 'nil'],
         [tokenEndsWith(' '), '_', 'nil'],
 
@@ -115,10 +117,6 @@ const spaceConfig: SpaceConfig = {
         // open/close tokens
         ['Open', '_', 'nil'],
         ['_', 'Close', 'nil'],
-
-        // block comments
-        ['_', 'BlockComment', 'line'],
-        ['BlockComment', '_', 'line'],
 
         // default
         ['_', '_', 'space'],
