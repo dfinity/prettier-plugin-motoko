@@ -179,7 +179,8 @@ function printToken(token: Token): Doc {
             // return [hardline, hardline];
             return [breakParent];
         case 'LineComment':
-            return [token.data, hardline];
+            // return [token.data, hardline];
+            return token.data;
         // return token.data;
         // return lineSuffix(token.data);
     }

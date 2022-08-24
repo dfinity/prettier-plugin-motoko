@@ -78,7 +78,8 @@ const spaceConfig: SpaceConfig = {
         ['MultiLine', '_', 'hardline'],
         ['_', 'MultiLine', 'hardline'],
         ['_', 'LineComment', 'wrap'],
-        ['LineComment', '_', 'nil'],
+        // ['LineComment', '_', 'nil'],
+        ['LineComment', '_', 'hardline'],
         ['_', tokenStartsWith(' '), 'nil'],
         [tokenEndsWith(' '), '_', 'nil'],
 
@@ -95,7 +96,7 @@ const spaceConfig: SpaceConfig = {
 
         // prefix/postfix operators
         [tokenEquals('?'), '_', 'nil'],
-        [tokenEquals('#'), 'Ident', 'nil'], ///
+        // [tokenEquals('#'), 'Ident', 'nil'], ///
         ['_', tokenEquals('!'), 'nil'],
 
         // space between identifier and group
@@ -104,20 +105,19 @@ const spaceConfig: SpaceConfig = {
         ['Ident', 'Paren', 'nil'],
         ['Ident', 'Square', 'nil'],
         ['Ident', 'Angle', 'nil'],
-        ['Angle', 'Ident', 'space'],
-        ['Angle', '_', 'nil'],
-
+        
         // groups
         ['Group', 'Paren', 'nil'],
         ['Group', 'Square', 'nil'],
+        ['Angle', 'Paren', 'nil'],
 
         // open/close tokens
         ['Open', '_', 'nil'],
         ['_', 'Close', 'nil'],
 
         // block comments
-        ['_', 'BlockComment', 'wrap'],
-        ['BlockComment', '_', 'wrap'],
+        ['_', 'BlockComment', 'line'],
+        ['BlockComment', '_', 'line'],
 
         // default
         ['_', '_', 'space'],
