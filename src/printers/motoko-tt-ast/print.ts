@@ -102,12 +102,12 @@ function printTokenTree(
 
         // console.log(originalTrees.map((t) => t.data)); /////
 
-        let shouldBreakGroup;
+        let shouldBreak = false;
         const trees = originalTrees.filter((tt, i) => {
             if (tt.token_tree_type === 'Token') {
                 const token = tt.data[0];
                 if (token.token_type === 'Line') {
-                    shouldBreakGroup = true;
+                    shouldBreak = true;
                 }
                 return !removeTokenTypes.includes(tt.data[0].token_type) /* &&
                     !(i === 0 && token.token_type === 'Line') &&
@@ -165,7 +165,7 @@ function printTokenTree(
             : results;
 
         return group(resultDoc, {
-            shouldBreak: shouldBreakGroup,
+            shouldBreak,
         });
     } else if (tree.token_tree_type === 'Token') {
         const [token] = tree.data;
