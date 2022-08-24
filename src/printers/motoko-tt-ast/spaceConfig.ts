@@ -92,7 +92,7 @@ const spaceConfig: SpaceConfig = {
         // soft-wrapping operators
         ['_', 'Dot', 'softline'],
         ['Dot', '_', 'nil'],
-        ['Assign', '_', 'wrap'],
+        ['Assign', '_', 'line'],
 
         // prefix/postfix operators
         [tokenEquals('?'), '_', 'nil'],

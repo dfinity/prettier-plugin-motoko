@@ -56,6 +56,7 @@ describe('Motoko formatter', () => {
 
     test('anonymous functions', () => {
         expect(format('func():() {}')).toStrictEqual('func () : () {}\n');
+        expect(format('func<T> () {}')).toStrictEqual('func <T>() {}\n');
     });
 
     test('multi-line statement indentation', () => {
