@@ -64,6 +64,11 @@ describe('Motoko formatter', () => {
     //     expect(format(`${ident}.${ident}.${ident}`)).toStrictEqual(`${ident}\n  .${ident}\n  .${ident}\n`);
     // });
 
+    test('dot after block', () => {
+        expect(format('().0')).toStrictEqual('().0\n');
+        expect(format('(\n\n).0')).toStrictEqual('(\n\n).0\n');
+    });
+
     test('generate diff files from compiler tests', () => {
         let preOutput = '';
         let postOutput = '';

@@ -90,7 +90,8 @@ const spaceConfig: SpaceConfig = {
         // ['Delim', 'Line', 'nil'],
 
         // soft-wrapping operators
-        ['_', 'Dot', 'softwrap'],
+        ['_', 'Dot', 'nil'],
+        // ['_', 'Dot', 'softwrap'],
         ['Dot', '_', 'nil'],
         ['Assign', '_', 'wrap'],
 
