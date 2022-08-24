@@ -10,6 +10,7 @@ export type Space =
 const {
     builders: {
         group,
+        fill,
         ifBreak,
         breakParent,
         indent,
@@ -25,7 +26,7 @@ const {
 } = doc;
 
 const space = ' ';
-const wrapIndent = space;
+const wrapIndent = indent(line);
 
 export function parseSpace(input: Space): Doc {
     if (typeof input === 'string') {
@@ -124,7 +125,8 @@ function printTokenTree(
         const endGroup = () => {
             if (resultGroup.length) {
                 results.push(
-                    group([resultGroup[0]!, indent(resultGroup.slice(1))]),
+                    // group([resultGroup[0]!, indent(resultGroup.slice(1))]),
+                    group(resultGroup),
                 );
                 resultGroup = [];
             }

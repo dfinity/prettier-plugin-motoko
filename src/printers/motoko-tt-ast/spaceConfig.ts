@@ -77,7 +77,7 @@ const spaceConfig: SpaceConfig = {
         ['_', 'Line', 'nil'],
         ['MultiLine', '_', 'hardline'],
         ['_', 'MultiLine', 'hardline'],
-        ['_', 'LineComment', 'wrap'],
+        ['_', 'LineComment', 'space'],
         // ['LineComment', '_', 'nil'],
         ['LineComment', '_', 'hardline'],
         ['_', tokenStartsWith(' '), 'nil'],
@@ -90,7 +90,7 @@ const spaceConfig: SpaceConfig = {
         // ['Delim', 'Line', 'nil'],
 
         // soft-wrapping operators
-        ['_', 'Dot', 'softline'],
+        ['_', 'Dot', 'softwrap'],
         ['Dot', '_', 'nil'],
         ['Assign', '_', 'wrap'],
 
