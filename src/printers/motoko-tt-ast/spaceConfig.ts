@@ -100,12 +100,13 @@ const spaceConfig: SpaceConfig = {
         ['_', tokenEquals('!'), 'nil'],
 
         // space between identifier and group
+        // [tokenEquals('func'), 'Paren', 'nil'],
         [keyword, 'Group', 'space'],
         // ['Ident', 'Curly', 'nil'],
         ['Ident', 'Paren', 'nil'],
         ['Ident', 'Square', 'nil'],
         ['Ident', 'Angle', 'nil'],
-        
+
         // groups
         ['Group', 'Paren', 'nil'],
         ['Group', 'Square', 'nil'],

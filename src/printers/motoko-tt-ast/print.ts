@@ -19,13 +19,13 @@ const {
         softline,
         hardline,
         lineSuffix,
+        hardlineWithoutBreakParent,
         literallineWithoutBreakParent,
     },
 } = doc;
 
 const space = ' ';
-// const wrapDoc = [hardline /* , indent([]) */]; // TODO check
-const wrapIndent = space; ///
+const wrapIndent = space;
 
 export function parseSpace(input: Space): Doc {
     if (typeof input === 'string') {
@@ -121,16 +121,25 @@ function printTokenTree(
 
         const results: Doc[] = [];
         let resultGroup: Doc[] = [];
+        const endGroup = () => {
+            if (resultGroup.length) {
+                results.push(
+                    group([resultGroup[0]!, indent(resultGroup.slice(1))]),
+                );
+                resultGroup = [];
+            }
+        };
         for (let i = 0; i < trees.length; i++) {
             const a = trees[i]!;
 
             const isDelim =
                 a.token_tree_type === 'Token' &&
-                a.data[0].token_type === 'Delim';
+                ['Delim', 'MultiLine', 'LineComment'].includes(
+                    a.data[0].token_type,
+                );
 
-            if (isDelim && resultGroup.length) {
-                results.push(group(resultGroup));
-                resultGroup = [];
+            if (isDelim) {
+                endGroup();
             }
             const resultArray = isDelim ? results : resultGroup;
             resultArray.push(printTokenTree(a, path, options, print, args));
@@ -139,9 +148,7 @@ function printTokenTree(
                 resultArray.push(printBetween(a, b));
             }
         }
-        if (resultGroup.length) {
-            results.push(group(resultGroup));
-        }
+        endGroup();
 
         const pairSpace =
             results.length === 0 ? [] : groupType === 'Curly' ? line : softline;
@@ -149,6 +156,8 @@ function printTokenTree(
         const resultDoc = pair
             ? [
                   printToken(pair[0][0]),
+                  //   pairSpace,
+                  //   results,
                   indent([pairSpace, results]),
                   pairSpace,
                   printToken(pair[1][0]),

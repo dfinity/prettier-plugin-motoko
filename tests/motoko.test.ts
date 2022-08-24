@@ -47,36 +47,45 @@ describe('Motoko formatter', () => {
         expect(format('1./+5')).toStrictEqual('1. / +5\n');
     });
 
-    test('variants / concatenation', () => {
+    test('variants / text concatenation', () => {
         expect(format('#5')).toStrictEqual('# 5\n');
         // expect(format('# a')).toStrictEqual('#a\n');
         expect(format('"a"# b')).toStrictEqual('"a" # b\n');
         expect(format('"a"##b')).toStrictEqual('"a" # #b\n');
     });
 
-    test('generate diff files from compiler tests', () => {
-        let preOutput = '';
-        let postOutput = '';
-
-        for (const file of glob.sync(
-            join(__dirname, '../../motoko/test/**/*.mo'),
-        )) {
-            // console.log(file);
-
-            const code = readFileSync(file, 'utf-8');
-
-            const formatted = prettier.format(code, {
-                filepath: file,
-                plugins: [motokoPlugin],
-            });
-
-            preOutput += `// >>> ${basename(file)} <<<\n\n${code}\n\n`;
-            postOutput += `// >>> ${basename(file)} <<<\n\n${formatted}\n\n`;
-
-            // expect(result).toStrictEqual('let /*{{*/ x = 0; //\n(x)\n');
-        }
-
-        writeFileSync(join(__dirname, 'motoko/_CompilerTests_Before.mo'), preOutput);
-        writeFileSync(join(__dirname, 'motoko/_CompilerTests_Formatted.mo'), postOutput);
+    test('anonymous functions', () => {
+        expect(format('func():() {}')).toStrictEqual('func() : () {}\n');
     });
+
+    test('multi-line statement indentation', () => {
+        const ident = 'x'.repeat(30)
+        expect(format(`${ident}.${ident}.${ident}`)).toStrictEqual(`${ident}\n  .${ident}\n  .${ident}\n`);
+    });
+
+    // test('generate diff files from compiler tests', () => {
+    //     let preOutput = '';
+    //     let postOutput = '';
+
+    //     for (const file of glob.sync(
+    //         join(__dirname, '../../motoko/test/**/*.mo'),
+    //     )) {
+    //         // console.log(file);
+
+    //         const code = readFileSync(file, 'utf-8');
+
+    //         const formatted = prettier.format(code, {
+    //             filepath: file,
+    //             plugins: [motokoPlugin],
+    //         });
+
+    //         preOutput += `// >>> ${basename(file)} <<<\n\n${code}\n\n`;
+    //         postOutput += `// >>> ${basename(file)} <<<\n\n${formatted}\n\n`;
+
+    //         // expect(result).toStrictEqual('let /*{{*/ x = 0; //\n(x)\n');
+    //     }
+
+    //     writeFileSync(join(__dirname, 'motoko/_CompilerTests_Before.mo'), preOutput);
+    //     writeFileSync(join(__dirname, 'motoko/_CompilerTests_Formatted.mo'), postOutput);
+    // });
 });
