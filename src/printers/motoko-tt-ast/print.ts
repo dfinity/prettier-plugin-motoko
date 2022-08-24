@@ -26,7 +26,8 @@ const {
 } = doc;
 
 const space = ' ';
-const wrapIndent = indent(line);
+// const wrapIndent = indent(line);
+const wrapIndent = line;
 
 export function parseSpace(input: Space): Doc {
     if (typeof input === 'string') {
@@ -42,9 +43,11 @@ export function parseSpace(input: Space): Doc {
             case 'hardline':
                 return hardline;
             case 'wrap':
-                return ifBreak(wrapIndent, space);
+                // return ifBreak(wrapIndent, space);
+                return line;
             case 'softwrap':
-                return ifBreak(wrapIndent);
+                // return ifBreak(wrapIndent);
+                return softline;
             default:
                 throw new Error(`Invalid space type: ${input}`);
         }
@@ -125,8 +128,8 @@ function printTokenTree(
         const endGroup = () => {
             if (resultGroup.length) {
                 results.push(
-                    // group([resultGroup[0]!, indent(resultGroup.slice(1))]),
-                    group(resultGroup),
+                    // group(resultGroup),
+                    fill(resultGroup),
                 );
                 resultGroup = [];
             }
