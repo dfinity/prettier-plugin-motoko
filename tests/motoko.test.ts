@@ -1,5 +1,5 @@
 import prettier from 'prettier';
-import motokoPlugin from '../src';
+import * as motokoPlugin from '../src';
 import glob from 'fast-glob';
 import { join, basename } from 'path';
 import { readFileSync, writeFileSync } from 'fs';
