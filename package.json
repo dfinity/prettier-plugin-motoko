@@ -4,7 +4,7 @@
     "description": "A code formatter for the Motoko smart contract language.",
     "main": "lib/index.js",
     "scripts": {
-        "build:typescript": "rm -rf ./lib && tsc -p tsconfig.json",
+        "build:typescript": "rimraf ./lib && tsc -p tsconfig.json",
         "build:wasm": "wasm-pack build wasm --target nodejs",
         "build": "run-s build:wasm build:typescript",
         "test": "npm run build:wasm && jest",
