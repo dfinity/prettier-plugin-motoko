@@ -63,34 +63,51 @@ describe('Motoko formatter', () => {
     //     expect(format(`${ident}.${ident}.${ident}`)).toStrictEqual(`${ident}\n  .${ident}\n  .${ident}\n`);
     // });
 
-    test('dot after block', () => {
+    test('dot after group', () => {
         expect(format('().0')).toStrictEqual('().0\n');
+        expect(format('(\n).0')).toStrictEqual('().0\n');
         expect(format('(\n\n).0')).toStrictEqual('(\n\n).0\n');
     });
 
-    test('generate diff files from compiler tests', () => {
-        let preOutput = '';
-        let postOutput = '';
-
-        for (const file of glob.sync(
-            join(__dirname, '../../motoko/test/**/*.mo'),
-        )) {
-            // console.log(file);
-
-            const code = readFileSync(file, 'utf-8');
-
-            const formatted = prettier.format(code, {
-                filepath: file,
-                plugins: [motokoPlugin],
-            });
-
-            preOutput += `// >>> ${basename(file)} <<<\n\n${code}\n\n`;
-            postOutput += `// >>> ${basename(file)} <<<\n\n${formatted}\n\n`;
-
-            // expect(result).toStrictEqual('let /*{{*/ x = 0; //\n(x)\n');
-        }
-
-        writeFileSync(join(__dirname, 'motoko/_CompilerTests_Before.mo'), preOutput);
-        writeFileSync(join(__dirname, 'motoko/_CompilerTests_Formatted.mo'), postOutput);
+    test('cursor position', () => {
+        expect(
+            prettier.formatWithCursor('{abc\n}', { ...config, cursorOffset: 1 }),
+        ).toStrictEqual({
+            comments: undefined,
+            cursorOffset: 4,
+            formatted: '{\n  abc\n}\n',
+        });
     });
+
+    // test('generate diff files from compiler tests', () => {
+    //     let preOutput = '';
+    //     let postOutput = '';
+
+    //     for (const file of glob.sync(
+    //         join(__dirname, '../../motoko/test/**/*.mo'),
+    //     )) {
+    //         // console.log(file);
+
+    //         const code = readFileSync(file, 'utf-8');
+
+    //         const formatted = prettier.format(code, {
+    //             filepath: file,
+    //             plugins: [motokoPlugin],
+    //         });
+
+    //         preOutput += `// >>> ${basename(file)} <<<\n\n${code}\n\n`;
+    //         postOutput += `// >>> ${basename(file)} <<<\n\n${formatted}\n\n`;
+
+    //         // expect(result).toStrictEqual('let /*{{*/ x = 0; //\n(x)\n');
+    //     }
+
+    //     writeFileSync(
+    //         join(__dirname, 'motoko/_CompilerTests_Before.mo'),
+    //         preOutput,
+    //     );
+    //     writeFileSync(
+    //         join(__dirname, 'motoko/_CompilerTests_Formatted.mo'),
+    //         postOutput,
+    //     );
+    // });
 });

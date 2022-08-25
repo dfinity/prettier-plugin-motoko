@@ -72,7 +72,7 @@ export type Token =
 export type Source = {
     line: number;
     col: number;
-    span: number;
+    span: [number, number];
 };
 
 export default function parse(
