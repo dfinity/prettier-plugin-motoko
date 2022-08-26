@@ -136,6 +136,9 @@ const spaceConfig: SpaceConfig = {
 
         // space between identifier and group
         [tokenEquals('func'), 'Group', 'nil'],
+        [tokenEquals('debug_show'), 'Paren', 'nil'],
+        [tokenEquals('to_candid'), 'Paren', 'nil'],
+        [tokenEquals('from_candid'), 'Paren', 'nil'],
         [keyword, 'Group', 'space'],
         // ['Ident', 'Curly', 'nil'],
         ['Ident', 'Paren', 'nil'],
