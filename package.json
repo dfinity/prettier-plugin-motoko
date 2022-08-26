@@ -1,6 +1,6 @@
 {
     "name": "prettier-plugin-motoko",
-    "version": "0.0.6",
+    "version": "0.1.0",
     "description": "A code formatter for the Motoko smart contract language.",
     "main": "lib/index.js",
     "scripts": {
@@ -9,7 +9,7 @@
         "build": "run-s build:wasm build:typescript",
         "test": "npm run build:wasm && jest",
         "test:quick": "jest",
-        "prepare": "npm run build"
+        "prepublishOnly": "npm run build"
     },
     "devDependencies": {
         "@types/jest": "^28.1.7",
