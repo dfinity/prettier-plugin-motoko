@@ -85,7 +85,11 @@ describe('Motoko formatter', () => {
     });
 
     test('add trailing delimiters', () => {
-        expect(format('(a\n,b,c,)')).toStrictEqual('(\n  a,\n  b,\n  c\n)\n');
+        expect(format('(a\n,b,c)')).toStrictEqual('(\n  a,\n  b,\n  c,\n)\n');
+        expect(format('(a\n,b,c,)')).toStrictEqual('(\n  a,\n  b,\n  c,\n)\n');
+        expect(format('(a\n,b,c,)', { trailingComma: 'none' })).toStrictEqual(
+            '(\n  a,\n  b,\n  c\n)\n',
+        );
     });
 
     test('remove trailing delimiters', () => {
