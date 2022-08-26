@@ -18,6 +18,10 @@ describe('Motoko formatter', () => {
         expect(format('')).toStrictEqual('');
     });
 
+    test('empty block', () => {
+        expect(format('{\n\n}')).toStrictEqual('{\n\n};\n');
+    });
+
     test('comments', () => {
         // expect(format('{//\n}//')).toStrictEqual('{\n  //\n} //\n');
         expect(format('//a\n//b')).toStrictEqual('//a\n//b\n');
@@ -27,11 +31,11 @@ describe('Motoko formatter', () => {
     });
 
     test('block with existing newline', () => {
-        expect(format('{a;\nb}')).toStrictEqual('{\n  a;\n  b\n}\n');
+        expect(format('{a;\nb}')).toStrictEqual('{\n  a;\n  b;\n};\n');
     });
 
     test('extra newlines', () => {
-        expect(format('a;\n\n\n\n\nb')).toStrictEqual('a;\n\nb\n');
+        expect(format('a;\n\n\n\n\nb')).toStrictEqual('a;\n\nb;\n');
     });
 
     test('group spacing', () => {
@@ -39,18 +43,24 @@ describe('Motoko formatter', () => {
     });
 
     test('unary operators', () => {
-        expect(format('-+5')).toStrictEqual('- +5\n');
+        expect(format('-+5')).toStrictEqual('-+5\n');
+        expect(format('+-a')).toStrictEqual('+-a\n');
+        expect(format('+ - ^5')).toStrictEqual('+ - ^5\n');
+        expect(format('^ ^a')).toStrictEqual('^ ^a\n');
+        expect(format('^ ^ a')).toStrictEqual('^ ^ a\n');
     });
 
     test('unary / binary operators', () => {
+        expect(format('1 +   5')).toStrictEqual('1 + 5\n');
         expect(format('1./+5')).toStrictEqual('1. / +5\n');
     });
 
     test('variants / text concatenation', () => {
-        expect(format('#5')).toStrictEqual('# 5\n');
-        // expect(format('# a')).toStrictEqual('#a\n');
-        expect(format('"a"# b')).toStrictEqual('"a" # b\n');
-        expect(format('"a"##b')).toStrictEqual('"a" # #b\n');
+        expect(format('# "A"')).toStrictEqual('# "A"\n');
+        expect(format('# 5')).toStrictEqual('# 5\n');
+        expect(format('#a')).toStrictEqual('#a\n');
+        expect(format('"A"# b')).toStrictEqual('"A" # b\n');
+        expect(format('"A"# #b')).toStrictEqual('"A" # #b\n');
     });
 
     test('anonymous functions', () => {
@@ -65,8 +75,8 @@ describe('Motoko formatter', () => {
 
     test('dot after group', () => {
         expect(format('().0')).toStrictEqual('().0\n');
-        expect(format('(\n).0')).toStrictEqual('().0\n');
-        expect(format('(\n\n).0')).toStrictEqual('(\n\n).0\n');
+        // expect(format('(\n).0')).toStrictEqual('().0\n');
+        expect(format('(\n\n).0')).toStrictEqual('(\n\n).0;\n');
     });
 
     // test('cursor position', () => {
@@ -85,11 +95,18 @@ describe('Motoko formatter', () => {
     });
 
     test('add trailing delimiters', () => {
-        expect(format('(a\n,b,c,)')).toStrictEqual('(\n  a,\n  b,\n  c\n)\n');
+        expect(format('(a\n,b,c)')).toStrictEqual('(\n  a,\n  b,\n  c,\n);\n');
+        expect(format('(a\n,b,c,)')).toStrictEqual('(\n  a,\n  b,\n  c,\n);\n');
+        expect(format('(a\n,b,c,)', { trailingComma: 'none' })).toStrictEqual(
+            '(\n  a,\n  b,\n  c\n);\n',
+        );
+        expect(format('(a\n,b,c,)', { semi: false })).toStrictEqual(
+            '(\n  a,\n  b,\n  c,\n)\n',
+        );
     });
 
     test('remove trailing delimiters', () => {
-        expect(format('(a,b,c,)')).toStrictEqual('(a,b,c)\n');
+        expect(format('(a,b,c,)')).toStrictEqual('(a, b, c)\n');
     });
 
     test('bracket spacing', () => {
@@ -113,6 +130,7 @@ describe('Motoko formatter', () => {
     //         const formatted = prettier.format(code, {
     //             filepath: file,
     //             plugins: [motokoPlugin],
+    //             semi: false,///
     //         });
 
     //         preOutput += `// >>> ${basename(file)} <<<\n\n${code}\n\n`;

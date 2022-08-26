@@ -20,6 +20,8 @@ interface SpaceConfig {
 export function doesTokenTreeMatchPattern(
     tt: TokenTree,
     pattern: Pattern,
+    // leftMap: Map<TokenTree, TokenTree>,
+    // rightMap: Map<TokenTree, TokenTree>,
 ): boolean {
     if (pattern === '_') {
         return true;
@@ -30,6 +32,27 @@ export function doesTokenTreeMatchPattern(
     if (tt.token_tree_type === pattern) {
         return true;
     }
+    // if (typeof pattern === 'string') {
+    //     if (pattern.includes('<')) {
+    //         const [otherPattern, mainPattern] = splitAt(
+    //             pattern,
+    //             pattern.indexOf('<'),
+    //             1,
+    //         );
+    //         const other = leftMap.get(tt);
+    //         return (
+    //             doesTokenTreeMatchPattern(
+    //                 other,
+    //                 otherPattern as Pattern,
+    //                 leftMap,
+    //                 rightMap,
+    //             ) &&
+    //             doesTokenTreeMatchPattern(tt, mainPattern as Pattern, leftMap, rightMap)
+    //         );
+    //     }
+    //     if (pattern.includes('>')) {
+    //     }
+    // }
     if (tt.token_tree_type === 'Token') {
         const token = tt.data[0];
         if (token.token_type === pattern) {
@@ -43,6 +66,10 @@ export function doesTokenTreeMatchPattern(
     }
     return false;
 }
+
+const splitAt = (s: string, index: number, take?: number): [string, string] => {
+    return [s.substring(0, index), s.substring(index + (take || 0))];
+};
 
 const keyword = (tt: TokenTree): boolean => {
     if (tt.token_tree_type === 'Token') {
@@ -89,6 +116,12 @@ const spaceConfig: SpaceConfig = {
         // [tokenEquals(';'), '_', 'hardline'],
         ['Delim', '_', 'line'],
         // ['Delim', 'Line', 'nil'],
+
+        // unary operators
+        [tokenEquals('#'), 'Ident', 'keep-space'],
+        [tokenEquals('+'), '_', 'keep-space'],
+        [tokenEquals('-'), '_', 'keep-space'],
+        [tokenEquals('^'), '_', 'keep-space'],
 
         // soft-wrapping operators
         ['_', 'Dot', 'nil'],
