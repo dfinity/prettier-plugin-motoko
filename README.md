@@ -4,13 +4,32 @@
 
 ---
 
-## Basic Usage
+## Setup
 
 After making sure [Node.js](https://nodejs.org/en/download/) is installed on your local machine, run the following command in your Motoko project directory:
 
 ```sh
 npm install --save-dev prettier prettier-plugin-motoko
 ```
+
+## Command-line usage
+
+Format your Motoko files using the [Prettier CLI](https://prettier.io/docs/en/cli.html):
+
+```sh
+npm exec prettier -- --write **/*.mo
+```
+
+Check if your Motoko files are correctly formatted:
+
+```sh
+npm exec prettier -- --check **/*.mo
+```
+
+## VS Code support
+
+- Works out of the box with the [Motoko extension](https://marketplace.visualstudio.com/items?itemName=dfinity-foundation.vscode-motoko).
+- Also compatible with the the [Prettier extension](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode).
 
 ## Customization
 
@@ -44,9 +63,3 @@ You can specifically configure Motoko files using a [configuration override](htt
     }]
 }
 ```
-
-## Usage in VS Code
-
-- Works out of the box with the [Motoko VSCode extension](https://marketplace.visualstudio.com/items?itemName=dfinity-foundation.vscode-motoko).
-- Compatible with the the [VS Code Prettier extension](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode).
-
