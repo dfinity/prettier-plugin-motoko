@@ -1,4 +1,8 @@
-import { Token, TokenTree } from './../../parsers/motoko-tt-parse/parse';
+import {
+    Token,
+    TokenTree,
+    GroupType,
+} from './../../parsers/motoko-tt-parse/parse';
 import { doc, AstPath, Doc, ParserOptions } from 'prettier';
 import spaceConfig, { doesTokenTreeMatchPattern } from './spaceConfig';
 
@@ -90,6 +94,16 @@ function printExact(tree: TokenTree): Doc {
     throw new Error(`Unexpected token tree: ${JSON.stringify(tree)}`);
 }
 
+function getGroupDelimToken(groupType: GroupType): Token {
+    return {
+        token_type: 'Delim',
+        data:
+            groupType === 'Unenclosed' || groupType === 'Curly'
+                ? [';', 'Semi']
+                : [',', 'Comma'],
+    };
+}
+
 function printTokenTree(
     tree: TokenTree,
     path: AstPath<any>,
@@ -134,26 +148,51 @@ function printTokenTree(
                 resultGroup = [];
             }
         };
+
+        // check if the most recent token was a delimiter or separator between token groups
+
         for (let i = 0; i < trees.length; i++) {
-            const a = trees[i]!;
+            let a = trees[i]!;
 
-            const isDelim =
-                a.token_tree_type === 'Token' &&
-                ['Delim', 'MultiLine', 'LineComment'].includes(
-                    a.data[0].token_type,
-                );
+            let isDelim = false;
+            let isSeparator = false;
+            if (a.token_tree_type === 'Token') {
+                const [token] = a.data;
+                isDelim = token.token_type === 'Delim';
+                isSeparator =
+                    isDelim ||
+                    ['MultiLine', 'LineComment'].includes(token.token_type);
+            }
 
-            if (isDelim) {
+            if (isSeparator) {
                 endGroup();
             }
-            const resultArray = isDelim ? results : resultGroup;
-            resultArray.push(printTokenTree(a, path, options, print, args));
+            const resultArray = isSeparator ? results : resultGroup;
+            // add everything except trailing delimiter
+            if (!isDelim || i !== trees.length - 1) {
+                resultArray.push(
+                    isDelim /* && options.replaceComma */
+                        ? printToken(getGroupDelimToken(groupType))
+                        : printTokenTree(a, path, options, print, args),
+                );
+            }
             if (i < trees.length - 1) {
                 const b = trees[i + 1]!;
                 resultArray.push(printBetween(a, b));
+            } else if (results.length || resultGroup.length) {
+                endGroup();
+                // Trailing delimiter
+                if (
+                    (!isSeparator || isDelim) &&
+                    options.trailingComma !== 'none'
+                ) {
+                    results.push(
+                        ifBreak(printToken(getGroupDelimToken(groupType))),
+                    );
+                }
             }
         }
-        endGroup();
+        // endGroup();
 
         const pairSpace: Doc =
             results.length === 0
