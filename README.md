@@ -1,4 +1,4 @@
-# Motoko Formatter &middot; [![GitHub license](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/dfinity/prettier-plugin-motoko/blob/main/LICENSE) [![npm version](https://img.shields.io/npm/v/prettier.svg?style=flat)](https://www.npmjs.com/package/prettier-plugin-motoko) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/dfinity/prettier-plugin-motoko/issues)
+# Motoko Formatter &middot; [![npm version](https://img.shields.io/npm/v/npm.svg?logo=npm)](https://www.npmjs.com/package/prettier-plugin-motoko) [![GitHub license](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/dfinity/prettier-plugin-motoko/issues)
 
 > ### A [Prettier](https://prettier.io/) plugin for the [Motoko](https://internetcomputer.org/docs/current/developer-docs/build/cdks/motoko-dfinity/motoko/) programming language.
 
