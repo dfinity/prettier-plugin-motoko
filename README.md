@@ -1,4 +1,4 @@
-# Motoko Formatter
+# Motoko Formatter &middot; [![GitHub license](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/dfinity/prettier-plugin-motoko/blob/main/LICENSE) [![npm version](https://img.shields.io/npm/v/prettier.svg?style=flat)](https://www.npmjs.com/package/prettier-plugin-motoko) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/dfinity/prettier-plugin-motoko/issues)
 
 > ### A [Prettier](https://prettier.io/) plugin for the [Motoko](https://internetcomputer.org/docs/current/developer-docs/build/cdks/motoko-dfinity/motoko/) programming language.
 
@@ -29,11 +29,11 @@ npm exec prettier -- --check **/*.mo
 ## VS Code support
 
 - Works out of the box with the [Motoko extension](https://marketplace.visualstudio.com/items?itemName=dfinity-foundation.vscode-motoko).
-- Also compatible with the the [Prettier extension](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode).
+- Compatible with the the [Prettier extension](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode).
 
 ## Customization
 
-Configure the formatter by creating a `.prettierrc` file. Learn more at [Prettier's config file documentation](https://prettier.io/docs/en/configuration.html)
+Configure the formatter by creating a `.prettierrc` file. Learn more at [Prettier's config file documentation](https://prettier.io/docs/en/configuration.html).
 
 ### Example `.prettierrc` configuration with default values:
 
@@ -49,7 +49,7 @@ Configure the formatter by creating a `.prettierrc` file. Learn more at [Prettie
 
 ## Multiple languages
 
-Note that this configuration will be shared between Motoko, JavaScript, CSS, HTML, and any other languages supported by Prettier. 
+Prettier will apply the same configuration to Motoko, JavaScript, CSS, HTML, and any other supported languages. 
 
 You can specifically configure Motoko files using a [configuration override](https://prettier.io/docs/en/configuration.html#configuration-overrides) in your `.prettierrc` file:
 
