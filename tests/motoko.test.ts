@@ -43,8 +43,11 @@ describe('Motoko formatter', () => {
     });
 
     test('unary operators', () => {
-        expect(format('-+5')).toStrictEqual('- +5\n');
-        expect(format('+-a')).toStrictEqual('+ -a\n');
+        expect(format('-+5')).toStrictEqual('-+5\n');
+        expect(format('+-a')).toStrictEqual('+-a\n');
+        expect(format('+ - ^5')).toStrictEqual('+ - ^5\n');
+        expect(format('^ ^a')).toStrictEqual('^ ^a\n');
+        expect(format('^ ^ a')).toStrictEqual('^ ^ a\n');
     });
 
     test('unary / binary operators', () => {
@@ -52,10 +55,11 @@ describe('Motoko formatter', () => {
     });
 
     test('variants / text concatenation', () => {
-        expect(format('#5')).toStrictEqual('# 5\n');
-        expect(format('# a')).toStrictEqual('#a\n');
-        expect(format('"a"# b')).toStrictEqual('"a" # b\n');
-        expect(format('"a"##b')).toStrictEqual('"a" # #b\n');
+        expect(format('# "A"')).toStrictEqual('# "A"\n');
+        expect(format('# 5')).toStrictEqual('# 5\n');
+        expect(format('#a')).toStrictEqual('#a\n');
+        expect(format('"A"# b')).toStrictEqual('"A" # b\n');
+        expect(format('"A"# #b')).toStrictEqual('"A" # #b\n');
     });
 
     test('anonymous functions', () => {
