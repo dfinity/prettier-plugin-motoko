@@ -79,6 +79,19 @@ describe('Motoko formatter', () => {
     //     });
     // });
 
+    test('replace delimiters', () => {
+        expect(format('(a;b;c)')).toStrictEqual('(a, b, c)\n');
+        expect(format('{a,b,c}')).toStrictEqual('{ a; b; c }\n');
+    });
+
+    test('add trailing delimiters', () => {
+        expect(format('(a\n,b,c,)')).toStrictEqual('(\n  a,\n  b,\n  c\n)\n');
+    });
+
+    test('remove trailing delimiters', () => {
+        expect(format('(a,b,c,)')).toStrictEqual('(a,b,c)\n');
+    });
+
     test('bracket spacing', () => {
         expect(format('{abc}')).toStrictEqual('{ abc }\n');
         expect(format('{ abc }', { bracketSpacing: false })).toStrictEqual(
