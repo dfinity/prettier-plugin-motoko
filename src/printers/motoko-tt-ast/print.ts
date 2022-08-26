@@ -7,7 +7,17 @@ import { doc, AstPath, Doc, ParserOptions } from 'prettier';
 import spaceConfig, { doesTokenTreeMatchPattern } from './spaceConfig';
 
 export type Space =
-    | ('nil' | 'space' | 'line' | 'softline' | 'hardline' | 'wrap' | 'softwrap')
+    | (
+          | 'nil'
+          | 'space'
+          | 'line'
+          | 'softline'
+          | 'hardline'
+          | 'wrap'
+          | 'softwrap'
+          | 'keep-space'
+      )
+    //   | 'keep-line'
     | Space[];
 
 // Documentation: https://github.com/prettier/prettier/blob/main/commands.md
@@ -33,7 +43,13 @@ const space = ' ';
 // const wrapIndent = indent(line);
 const wrapIndent = line;
 
-export function parseSpace(input: Space): Doc {
+export function parseSpace(
+    input: Space,
+    a: TokenTree,
+    b: TokenTree,
+    leftMap: Map<TokenTree, TokenTree>,
+    rightMap: Map<TokenTree, TokenTree>,
+): Doc {
     if (typeof input === 'string') {
         switch (input) {
             case 'nil':
@@ -52,11 +68,13 @@ export function parseSpace(input: Space): Doc {
             case 'softwrap':
                 // return ifBreak(wrapIndent);
                 return softline;
+            case 'keep-space':
+                return rightMap.get(a) !== b ? space : [];
             default:
-                throw new Error(`Invalid space type: ${input}`);
+                throw new Error(`Unimplemented space type: ${input}`);
         }
     } else if (Array.isArray(input)) {
-        return input.map((x) => parseSpace(x));
+        return input.map((x) => parseSpace(x, a, b, leftMap, rightMap));
     }
     throw new Error(`Unknown space: ${JSON.stringify(input)}`);
 }
@@ -120,8 +138,20 @@ function printTokenTree(
 
         // console.log(originalTrees.map((t) => t.data)); /////
 
+        const leftMap = new Map<TokenTree, TokenTree>();
+        const rightMap = new Map<TokenTree, TokenTree>();
+
         let shouldBreak = false;
         const trees = originalTrees.filter((tt, i) => {
+            const left = originalTrees[i - 1];
+            if (left) {
+                leftMap.set(tt, left);
+            }
+            const right = originalTrees[i + 1];
+            if (right) {
+                rightMap.set(tt, right);
+            }
+
             if (tt.token_tree_type === 'Token') {
                 const token = tt.data[0];
                 if (token.token_type === 'Line') {
@@ -178,7 +208,7 @@ function printTokenTree(
             }
             if (i < trees.length - 1) {
                 const b = trees[i + 1]!;
-                resultArray.push(printBetween(a, b));
+                resultArray.push(printBetween(a, b, leftMap, rightMap));
             } else if (results.length || resultGroup.length) {
                 endGroup();
                 // Trailing delimiter
@@ -244,14 +274,19 @@ function printToken(token: Token): Doc {
     return getTokenText(token);
 }
 
-function printBetween(a: TokenTree, b: TokenTree): Doc {
+function printBetween(
+    a: TokenTree,
+    b: TokenTree,
+    leftMap: Map<TokenTree, TokenTree>,
+    rightMap: Map<TokenTree, TokenTree>,
+): Doc {
     const rule = spaceConfig.rules.find(([aPattern, bPattern]) => {
         return (
             doesTokenTreeMatchPattern(a, aPattern) &&
             doesTokenTreeMatchPattern(b, bPattern)
         );
     });
-    return rule ? parseSpace(rule[2]) : [];
+    return rule ? parseSpace(rule[2], a, b, leftMap, rightMap) : [];
 }
 
 export function getTokenText(token: Token): string {

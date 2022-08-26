@@ -51,6 +51,7 @@ describe('Motoko formatter', () => {
     });
 
     test('unary / binary operators', () => {
+        expect(format('1 +   5')).toStrictEqual('1 + 5\n');
         expect(format('1./+5')).toStrictEqual('1. / +5\n');
     });
 
