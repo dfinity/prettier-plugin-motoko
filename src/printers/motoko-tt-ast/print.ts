@@ -1,9 +1,23 @@
-import { Token, TokenTree } from './../../parsers/motoko-tt-parse/parse';
+import {
+    Token,
+    TokenTree,
+    GroupType,
+} from './../../parsers/motoko-tt-parse/parse';
 import { doc, AstPath, Doc, ParserOptions } from 'prettier';
 import spaceConfig, { doesTokenTreeMatchPattern } from './spaceConfig';
 
 export type Space =
-    | ('nil' | 'space' | 'line' | 'softline' | 'hardline' | 'wrap' | 'softwrap')
+    | (
+          | 'nil'
+          | 'space'
+          | 'line'
+          | 'softline'
+          | 'hardline'
+          | 'wrap'
+          | 'softwrap'
+          | 'keep-space'
+      )
+    //   | 'keep-line'
     | Space[];
 
 // Documentation: https://github.com/prettier/prettier/blob/main/commands.md
@@ -29,7 +43,13 @@ const space = ' ';
 // const wrapIndent = indent(line);
 const wrapIndent = line;
 
-export function parseSpace(input: Space): Doc {
+export function parseSpace(
+    input: Space,
+    a: TokenTree,
+    b: TokenTree,
+    leftMap: Map<TokenTree, TokenTree>,
+    rightMap: Map<TokenTree, TokenTree>,
+): Doc {
     if (typeof input === 'string') {
         switch (input) {
             case 'nil':
@@ -48,11 +68,13 @@ export function parseSpace(input: Space): Doc {
             case 'softwrap':
                 // return ifBreak(wrapIndent);
                 return softline;
+            case 'keep-space':
+                return rightMap.get(a) !== b ? space : [];
             default:
-                throw new Error(`Invalid space type: ${input}`);
+                throw new Error(`Unimplemented space type: ${input}`);
         }
     } else if (Array.isArray(input)) {
-        return input.map((x) => parseSpace(x));
+        return input.map((x) => parseSpace(x, a, b, leftMap, rightMap));
     }
     throw new Error(`Unknown space: ${JSON.stringify(input)}`);
 }
@@ -90,6 +112,16 @@ function printExact(tree: TokenTree): Doc {
     throw new Error(`Unexpected token tree: ${JSON.stringify(tree)}`);
 }
 
+function getGroupDelimToken(groupType: GroupType): Token {
+    return {
+        token_type: 'Delim',
+        data:
+            groupType === 'Unenclosed' || groupType === 'Curly'
+                ? [';', 'Semi']
+                : [',', 'Comma'],
+    };
+}
+
 function printTokenTree(
     tree: TokenTree,
     path: AstPath<any>,
@@ -106,8 +138,20 @@ function printTokenTree(
 
         // console.log(originalTrees.map((t) => t.data)); /////
 
+        const leftMap = new Map<TokenTree, TokenTree>();
+        const rightMap = new Map<TokenTree, TokenTree>();
+
         let shouldBreak = false;
         const trees = originalTrees.filter((tt, i) => {
+            const left = originalTrees[i - 1];
+            if (left) {
+                leftMap.set(tt, left);
+            }
+            const right = originalTrees[i + 1];
+            if (right) {
+                rightMap.set(tt, right);
+            }
+
             if (tt.token_tree_type === 'Token') {
                 const token = tt.data[0];
                 if (token.token_type === 'Line') {
@@ -134,26 +178,51 @@ function printTokenTree(
                 resultGroup = [];
             }
         };
+
+        // check if the most recent token was a delimiter or separator between token groups
+
         for (let i = 0; i < trees.length; i++) {
-            const a = trees[i]!;
+            let a = trees[i]!;
 
-            const isDelim =
-                a.token_tree_type === 'Token' &&
-                ['Delim', 'MultiLine', 'LineComment'].includes(
-                    a.data[0].token_type,
-                );
+            let isDelim = false;
+            let isSeparator = false;
+            if (a.token_tree_type === 'Token') {
+                const [token] = a.data;
+                isDelim = token.token_type === 'Delim';
+                isSeparator =
+                    isDelim ||
+                    ['MultiLine', 'LineComment'].includes(token.token_type);
+            }
 
-            if (isDelim) {
+            if (isSeparator) {
                 endGroup();
             }
-            const resultArray = isDelim ? results : resultGroup;
-            resultArray.push(printTokenTree(a, path, options, print, args));
+            const resultArray = isSeparator ? results : resultGroup;
+            // add everything except trailing delimiter
+            if (!isDelim || i !== trees.length - 1) {
+                resultArray.push(
+                    isDelim /* && options.replaceComma */
+                        ? printToken(getGroupDelimToken(groupType))
+                        : printTokenTree(a, path, options, print, args),
+                );
+            }
             if (i < trees.length - 1) {
                 const b = trees[i + 1]!;
-                resultArray.push(printBetween(a, b));
+                resultArray.push(printBetween(a, b, leftMap, rightMap));
+            } else if (results.length || resultGroup.length) {
+                endGroup();
+                // Trailing delimiter
+                if (
+                    (!isSeparator || isDelim) &&
+                    options.trailingComma !== 'none'
+                ) {
+                    results.push(
+                        ifBreak(printToken(getGroupDelimToken(groupType))),
+                    );
+                }
             }
         }
-        endGroup();
+        // endGroup();
 
         const pairSpace: Doc =
             results.length === 0
@@ -205,14 +274,19 @@ function printToken(token: Token): Doc {
     return getTokenText(token);
 }
 
-function printBetween(a: TokenTree, b: TokenTree): Doc {
+function printBetween(
+    a: TokenTree,
+    b: TokenTree,
+    leftMap: Map<TokenTree, TokenTree>,
+    rightMap: Map<TokenTree, TokenTree>,
+): Doc {
     const rule = spaceConfig.rules.find(([aPattern, bPattern]) => {
         return (
             doesTokenTreeMatchPattern(a, aPattern) &&
             doesTokenTreeMatchPattern(b, bPattern)
         );
     });
-    return rule ? parseSpace(rule[2]) : [];
+    return rule ? parseSpace(rule[2], a, b, leftMap, rightMap) : [];
 }
 
 export function getTokenText(token: Token): string {
