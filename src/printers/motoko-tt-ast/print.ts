@@ -156,7 +156,11 @@ function printTokenTree(
         endGroup();
 
         const pairSpace: Doc =
-            results.length === 0 ? [] : groupType === 'Curly' ? line : softline;
+            results.length === 0
+                ? []
+                : groupType === 'Curly' && options.bracketSpacing
+                ? line
+                : softline;
 
         const resultDoc = pair
             ? [
