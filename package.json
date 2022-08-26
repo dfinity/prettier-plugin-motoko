@@ -9,7 +9,7 @@
         "build": "run-s build:wasm build:typescript",
         "test": "npm run build:wasm && jest",
         "test:quick": "jest",
-        "prepare": "npm run build"
+        "prepublishOnly": "npm run build"
     },
     "devDependencies": {
         "@types/jest": "^28.1.7",
