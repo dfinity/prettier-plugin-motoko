@@ -208,7 +208,10 @@ function printTokenTree(
             }
             if (i < trees.length - 1) {
                 const b = trees[i + 1]!;
-                resultArray.push(printBetween(a, b, leftMap, rightMap));
+                // resultArray.push(printBetween(a, b, leftMap, rightMap));
+                resultArray.push(
+                    printBetween(trees, i, i + 1, leftMap, rightMap),
+                );
             } else if (results.length || resultGroup.length) {
                 endGroup();
                 // Trailing delimiter
@@ -277,18 +280,26 @@ function printToken(token: Token): Doc {
 }
 
 function printBetween(
-    a: TokenTree,
-    b: TokenTree,
+    trees: TokenTree[],
+    aIndex: number,
+    bIndex: number,
+    // a: TokenTree,
+    // b: TokenTree,
     leftMap: Map<TokenTree, TokenTree>,
     rightMap: Map<TokenTree, TokenTree>,
 ): Doc {
     const rule = spaceConfig.rules.find(([aPattern, bPattern]) => {
         return (
-            doesTokenTreeMatchPattern(a, aPattern) &&
-            doesTokenTreeMatchPattern(b, bPattern)
+            // doesTokenTreeMatchPattern(a, aPattern) &&
+            // doesTokenTreeMatchPattern(b, bPattern)
+            doesTokenTreeMatchPattern(aPattern, trees, aIndex) &&
+            doesTokenTreeMatchPattern(bPattern, trees, bIndex)
         );
     });
-    return rule ? parseSpace(rule[2], a, b, leftMap, rightMap) : [];
+    // return rule ? parseSpace(rule[2], a, b, leftMap, rightMap) : [];
+    return rule
+        ? parseSpace(rule[2], trees[aIndex], trees[bIndex], leftMap, rightMap)
+        : [];
 }
 
 export function getTokenText(token: Token): string {

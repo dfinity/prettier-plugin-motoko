@@ -63,6 +63,11 @@ describe('Motoko formatter', () => {
         expect(format('"A"# #b')).toStrictEqual('"A" # #b\n');
     });
 
+    test('do ? / optional', () => {
+        expect(format('?{}')).toStrictEqual('?{}\n');
+        expect(format('do?{}')).toStrictEqual('do ? {}\n');
+    });
+
     test('anonymous functions', () => {
         expect(format('func ():() {}')).toStrictEqual('func() : () {}\n');
         expect(format('func <T> () {}')).toStrictEqual('func<T>() {}\n');
