@@ -98,7 +98,10 @@ describe('Motoko formatter', () => {
         expect(format('(a\n,b,c)')).toStrictEqual('(\n  a,\n  b,\n  c,\n);\n');
         expect(format('(a\n,b,c,)')).toStrictEqual('(\n  a,\n  b,\n  c,\n);\n');
         expect(format('(a\n,b,c,)', { trailingComma: 'none' })).toStrictEqual(
-            '(\n  a,\n  b,\n  c\n)\n',
+            '(\n  a,\n  b,\n  c\n);\n',
+        );
+        expect(format('(a\n,b,c,)', { semi: false })).toStrictEqual(
+            '(\n  a,\n  b,\n  c,\n)\n',
         );
     });
 
@@ -127,6 +130,7 @@ describe('Motoko formatter', () => {
     //         const formatted = prettier.format(code, {
     //             filepath: file,
     //             plugins: [motokoPlugin],
+    //             semi: false,///
     //         });
 
     //         preOutput += `// >>> ${basename(file)} <<<\n\n${code}\n\n`;

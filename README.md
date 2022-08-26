@@ -41,6 +41,7 @@ Configure the formatter by creating a `.prettierrc` file. Learn more at [Prettie
 {
     "bracketSpacing": true,
     "printWidth": 80,
+    "semi": true,
     "tabWidth": 2,
     "trailingComma": "es5",
     "useTabs": false

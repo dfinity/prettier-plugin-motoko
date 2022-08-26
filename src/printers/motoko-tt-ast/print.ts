@@ -214,7 +214,9 @@ function printTokenTree(
                 // Trailing delimiter
                 if (
                     (!isSeparator || isDelim) &&
-                    options.trailingComma !== 'none'
+                    (groupType === 'Unenclosed' || groupType === 'Curly'
+                        ? options.semi
+                        : options.trailingComma !== 'none')
                 ) {
                     results.push(
                         ifBreak(printToken(getGroupDelimToken(groupType))),
