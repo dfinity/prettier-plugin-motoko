@@ -33,7 +33,7 @@ npm exec prettier -- --check **/*.mo
 
 ## Customization
 
-Configure the formatter by creating a `.prettierrc` file. Learn more at [Prettier's config file documentation](https://prettier.io/docs/en/configuration.html).
+Configure the formatter by creating a `.prettierrc` file in your project directory ([full documentation](https://prettier.io/docs/en/configuration.html)).
 
 ### Example `.prettierrc` configuration with default values:
 
