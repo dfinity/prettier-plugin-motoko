@@ -122,35 +122,31 @@ describe('Motoko formatter', () => {
     });
 
     // test('generate diff files from compiler tests', () => {
-    //     let preOutput = '';
-    //     let postOutput = '';
-
-    //     for (const file of glob.sync(
-    //         join(__dirname, '../../motoko/test/**/*.mo'),
-    //     )) {
-    //         // console.log(file);
-
-    //         const code = readFileSync(file, 'utf-8');
-
-    //         const formatted = prettier.format(code, {
-    //             filepath: file,
-    //             plugins: [motokoPlugin],
-    //             semi: false,///
-    //         });
-
-    //         preOutput += `// >>> ${basename(file)} <<<\n\n${code}\n\n`;
-    //         postOutput += `// >>> ${basename(file)} <<<\n\n${formatted}\n\n`;
-
-    //         // expect(result).toStrictEqual('let /*{{*/ x = 0; //\n(x)\n');
+    //     for (const extension of ['mo', 'did']) {
+    //         let preOutput = '';
+    //         let postOutput = '';
+    //         for (const file of glob.sync(
+    //             join(__dirname, `../../motoko/test/**/*.${extension}`),
+    //         )) {
+    //             const code = readFileSync(file, 'utf-8');
+    //             const formatted = prettier.format(code, {
+    //                 filepath: file,
+    //                 plugins: [motokoPlugin],
+    //                 // semi: false,///
+    //             });
+    //             preOutput += `// >>> ${basename(file)} <<<\n\n${code}\n\n`;
+    //             postOutput += `// >>> ${basename(
+    //                 file,
+    //             )} <<<\n\n${formatted}\n\n`;
+    //         }
+    //         writeFileSync(
+    //             join(__dirname, `motoko/_CompilerTests_Before.${extension}`),
+    //             preOutput,
+    //         );
+    //         writeFileSync(
+    //             join(__dirname, `motoko/_CompilerTests_Formatted.${extension}`),
+    //             postOutput,
+    //         );
     //     }
-
-    //     writeFileSync(
-    //         join(__dirname, 'motoko/_CompilerTests_Before.mo'),
-    //         preOutput,
-    //     );
-    //     writeFileSync(
-    //         join(__dirname, 'motoko/_CompilerTests_Formatted.mo'),
-    //         postOutput,
-    //     );
     // });
 });
