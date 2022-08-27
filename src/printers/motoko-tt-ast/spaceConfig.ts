@@ -11,6 +11,7 @@ type Pattern =
     | TokenTree['token_tree_type']
     | GroupType
     | ((tt: TokenTree) => boolean)
+    | { main: Pattern; left?: Pattern; right?: Pattern }
     | '_';
 
 interface SpaceConfig {
@@ -18,11 +19,17 @@ interface SpaceConfig {
 }
 
 export function doesTokenTreeMatchPattern(
-    tt: TokenTree,
+    // tt: TokenTree,
     pattern: Pattern,
+    trees: TokenTree[],
+    index: number,
     // leftMap: Map<TokenTree, TokenTree>,
     // rightMap: Map<TokenTree, TokenTree>,
 ): boolean {
+    const tt = trees[index];
+    if (!tt) {
+        return false;
+    }
     if (pattern === '_') {
         return true;
     }
@@ -32,44 +39,36 @@ export function doesTokenTreeMatchPattern(
     if (tt.token_tree_type === pattern) {
         return true;
     }
-    // if (typeof pattern === 'string') {
-    //     if (pattern.includes('<')) {
-    //         const [otherPattern, mainPattern] = splitAt(
-    //             pattern,
-    //             pattern.indexOf('<'),
-    //             1,
-    //         );
-    //         const other = leftMap.get(tt);
-    //         return (
-    //             doesTokenTreeMatchPattern(
-    //                 other,
-    //                 otherPattern as Pattern,
-    //                 leftMap,
-    //                 rightMap,
-    //             ) &&
-    //             doesTokenTreeMatchPattern(tt, mainPattern as Pattern, leftMap, rightMap)
-    //         );
-    //     }
-    //     if (pattern.includes('>')) {
-    //     }
-    // }
+    if (typeof pattern === 'object' && pattern.main) {
+        if (
+            pattern.main &&
+            !doesTokenTreeMatchPattern(pattern.main, trees, index)
+        ) {
+            return false;
+        }
+        if (
+            pattern.left &&
+            !doesTokenTreeMatchPattern(pattern.left, trees, index - 1)
+        ) {
+            return false;
+        }
+        if (
+            pattern.right &&
+            !doesTokenTreeMatchPattern(pattern.right, trees, index + 1)
+        ) {
+            return false;
+        }
+        return true;
+    }
     if (tt.token_tree_type === 'Token') {
         const token = tt.data[0];
-        if (token.token_type === pattern) {
-            return true;
-        }
+        return token.token_type === pattern;
     }
     if (tt.token_tree_type === 'Group') {
-        if (tt.data[1] === pattern) {
-            return true;
-        }
+        return tt.data[1] === pattern;
     }
-    return false;
+    throw new Error(`Unexpected pattern: ${pattern}`);
 }
-
-const splitAt = (s: string, index: number, take?: number): [string, string] => {
-    return [s.substring(0, index), s.substring(index + (take || 0))];
-};
 
 const keyword = (tt: TokenTree): boolean => {
     if (tt.token_tree_type === 'Token') {
@@ -130,6 +129,8 @@ const spaceConfig: SpaceConfig = {
         ['Assign', '_', 'space'],
 
         // prefix/postfix operators
+        [{ left: tokenEquals('do'), main: tokenEquals('?') }, '_', 'space'],
+        // [tokenEquals('?'), 'Curly', 'keep-space'],
         [tokenEquals('?'), '_', 'nil'],
         // [tokenEquals('#'), 'Ident', 'nil'], ///
         ['_', tokenEquals('!'), 'nil'],
@@ -137,7 +138,6 @@ const spaceConfig: SpaceConfig = {
         // space between identifier and group
         [tokenEquals('func'), 'Group', 'nil'],
         [keyword, 'Group', 'space'],
-        // ['Ident', 'Curly', 'nil'],
         ['Ident', 'Paren', 'nil'],
         ['Ident', 'Square', 'nil'],
         ['Ident', 'Angle', 'nil'],
