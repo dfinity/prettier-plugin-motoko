@@ -1,10 +1,11 @@
-import { getTokenText as getTokenText, Space } from './print';
+import { Space } from './print';
 import {
     Token,
     TokenTree,
     GroupType,
 } from '../../parsers/motoko-tt-parse/parse';
 import wasm from '../../wasm';
+import { getToken, getTokenText } from './utils';
 
 type Pattern =
     | Token['token_type']
@@ -83,7 +84,8 @@ const keyword = (tt: TokenTree): boolean => {
 const token =
     (fn: (token: Token) => boolean) =>
     (tt: TokenTree): boolean => {
-        return tt.token_tree_type === 'Token' && fn(tt.data[0]);
+        const token = getToken(tt);
+        return !!token && fn(token);
     };
 
 const tokenEquals = (data: string) =>
@@ -112,7 +114,6 @@ const spaceConfig: SpaceConfig = {
 
         // delimiters
         ['_', 'Delim', 'nil'],
-        // [tokenEquals(';'), '_', 'hardline'],
         ['Delim', '_', 'line'],
         // ['Delim', 'Line', 'nil'],
 

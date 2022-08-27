@@ -83,7 +83,9 @@ describe('Motoko formatter', () => {
         expect(format('if true (a) else (b)')).toStrictEqual(
             'if true (a) else (b)\n',
         );
-        expect(format('if true {\na} else if false {\nb} else {\nc}')).toStrictEqual(
+        expect(
+            format('if true {\na} else if false {\nb} else {\nc}'),
+        ).toStrictEqual(
             'if true {\n  a;\n} else if false {\n  b;\n} else {\n  c;\n};\n',
         );
     });
@@ -156,6 +158,27 @@ describe('Motoko formatter', () => {
             '{abc}\n',
         );
     });
+
+    test('prettier-ignore', () => {
+        expect(format('//prettier-ignore\n1*1;\n2*2')).toStrictEqual(
+            '//prettier-ignore\n1*1;\n2 * 2;\n',
+        );
+        expect(format('// prettier-ignore\n{\nabc}')).toStrictEqual(
+            '// prettier-ignore\n{\nabc}\n',
+        );
+        expect(format('/*prettier-ignore*/{\nabc\n\n1}')).toStrictEqual(
+            '/*prettier-ignore*/{\nabc\n\n1}\n',
+        );
+    });
+
+    // test('prettier-ignore-start / prettier-ignore-end', () => {
+    //     expect(format('//prettier-ignore-start\n1*1;//prettier-ignore-end\n2*2')).toStrictEqual(
+    //         '//prettier-ignore-start\n1*1;//prettier-ignore-end\n2 * 2;\n',
+    //     );
+    //     expect(format('/* prettier-ignore-start */{1\nabc/*prettier-ignore-end*/};abc')).toStrictEqual(
+    //         '/* prettier-ignore-start */{1\nabc/*prettier-ignore-end*/\n};\nabc;\n',
+    //     );
+    // });
 
     // test('generate diff files from compiler tests', () => {
     //     for (const extension of ['mo', 'did']) {
