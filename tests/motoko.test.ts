@@ -73,20 +73,20 @@ describe('Motoko formatter', () => {
         expect(format('func <T> () {}')).toStrictEqual('func<T>() {}\n');
     });
 
-    // test('if-else wrapping', () => {
-    //     expect(format('if true () else ()')).toStrictEqual(
-    //         'if true () else ()\n',
-    //     );
-    //     expect(format('if true {} else {}')).toStrictEqual(
-    //         'if true {} else {}\n',
-    //     );
-    //     expect(format('if true (a) else (b)')).toStrictEqual(
-    //         'if true (a) else (b)\n',
-    //     );
-    //     expect(format('if true {a} else {b}')).toStrictEqual(
-    //         'if true {\n  a;\n} else {\n  b;\n};\n',
-    //     );
-    // });
+    test('if-else wrapping', () => {
+        expect(format('if true () else ()')).toStrictEqual(
+            'if true () else ()\n',
+        );
+        expect(format('if true {} else {}')).toStrictEqual(
+            'if true {} else {}\n',
+        );
+        expect(format('if true (a) else (b)')).toStrictEqual(
+            'if true (a) else (b)\n',
+        );
+        expect(format('if true {\na} else if false {\nb} else {\nc}')).toStrictEqual(
+            'if true {\n  a;\n} else if false {\n  b;\n} else {\n  c;\n};\n',
+        );
+    });
 
     test('type bindings', () => {
         expect(format('func foo<A<:Any>(x:A) {}')).toStrictEqual(
