@@ -64,3 +64,14 @@ You can specifically configure Motoko files using a [configuration override](htt
     }]
 }
 ```
+
+## Ignoring code
+
+Skip formatting a statement using a `prettier-ignore` comment:
+
+```motoko
+// prettier-ignore
+func ignored<A>(a:A){a};
+
+func formatted<B>(b: B) { b };
+```
