@@ -73,6 +73,42 @@ describe('Motoko formatter', () => {
         expect(format('func <T> () {}')).toStrictEqual('func<T>() {}\n');
     });
 
+    // test('if-else wrapping', () => {
+    //     expect(format('if true () else ()')).toStrictEqual(
+    //         'if true () else ()\n',
+    //     );
+    //     expect(format('if true {} else {}')).toStrictEqual(
+    //         'if true {} else {}\n',
+    //     );
+    //     expect(format('if true (a) else (b)')).toStrictEqual(
+    //         'if true (a) else (b)\n',
+    //     );
+    //     expect(format('if true {a} else {b}')).toStrictEqual(
+    //         'if true {\n  a;\n} else {\n  b;\n};\n',
+    //     );
+    // });
+
+    test('type bindings', () => {
+        expect(format('func foo<A<:Any>(x:A) {}')).toStrictEqual(
+            'func foo<A <: Any>(x : A) {}\n',
+        );
+        expect(format('func foo <A <: Any>(x:A) {}')).toStrictEqual(
+            'func foo<A <: Any>(x : A) {}\n',
+        );
+    });
+
+    test('type binding line breaks', () => {
+        const parens = `<(${Array(5)
+            .fill(['x'.repeat(20)])
+            .join(', ')})>;\n`;
+        expect(format(parens)).toStrictEqual(parens);
+
+        const curly = `<{ ${Array(5)
+            .fill(['x'.repeat(20)])
+            .join('; ')} }>;\n`;
+        expect(format(parens)).toStrictEqual(parens);
+    });
+
     // test('multi-line statement indentation', () => {
     //     const ident = 'x'.repeat(50)
     //     expect(format(`${ident}.${ident}.${ident}`)).toStrictEqual(`${ident}\n  .${ident}\n  .${ident}\n`);
@@ -122,35 +158,31 @@ describe('Motoko formatter', () => {
     });
 
     // test('generate diff files from compiler tests', () => {
-    //     let preOutput = '';
-    //     let postOutput = '';
-
-    //     for (const file of glob.sync(
-    //         join(__dirname, '../../motoko/test/**/*.mo'),
-    //     )) {
-    //         // console.log(file);
-
-    //         const code = readFileSync(file, 'utf-8');
-
-    //         const formatted = prettier.format(code, {
-    //             filepath: file,
-    //             plugins: [motokoPlugin],
-    //             semi: false,///
-    //         });
-
-    //         preOutput += `// >>> ${basename(file)} <<<\n\n${code}\n\n`;
-    //         postOutput += `// >>> ${basename(file)} <<<\n\n${formatted}\n\n`;
-
-    //         // expect(result).toStrictEqual('let /*{{*/ x = 0; //\n(x)\n');
+    //     for (const extension of ['mo', 'did']) {
+    //         let preOutput = '';
+    //         let postOutput = '';
+    //         for (const file of glob.sync(
+    //             join(__dirname, `../../motoko/test/**/*.${extension}`),
+    //         )) {
+    //             const code = readFileSync(file, 'utf-8');
+    //             const formatted = prettier.format(code, {
+    //                 filepath: file,
+    //                 plugins: [motokoPlugin],
+    //                 // semi: false,///
+    //             });
+    //             preOutput += `// >>> ${basename(file)} <<<\n\n${code}\n\n`;
+    //             postOutput += `// >>> ${basename(
+    //                 file,
+    //             )} <<<\n\n${formatted}\n\n`;
+    //         }
+    //         writeFileSync(
+    //             join(__dirname, `motoko/_CompilerTests_Before.${extension}`),
+    //             preOutput,
+    //         );
+    //         writeFileSync(
+    //             join(__dirname, `motoko/_CompilerTests_Formatted.${extension}`),
+    //             postOutput,
+    //         );
     //     }
-
-    //     writeFileSync(
-    //         join(__dirname, 'motoko/_CompilerTests_Before.mo'),
-    //         preOutput,
-    //     );
-    //     writeFileSync(
-    //         join(__dirname, 'motoko/_CompilerTests_Formatted.mo'),
-    //         postOutput,
-    //     );
     // });
 });

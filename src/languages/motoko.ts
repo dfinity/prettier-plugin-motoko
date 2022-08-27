@@ -8,10 +8,10 @@ const motokoLanguage: SupportLanguage = {
     // color: '#fbb03b',
     aceMode: 'text',
     tmScope: 'source.mo',
-    extensions: ['.mo'],
+    extensions: ['.mo', '.did'], // TODO: separate Candid language
     parsers: [MOTOKO_TT_PARSE],
     vscodeLanguageIds: ['motoko'],
-    interpreters: [], // TODO!
+    interpreters: [], // TODO?
 };
 
 export default motokoLanguage;

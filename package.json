@@ -1,6 +1,6 @@
 {
     "name": "prettier-plugin-motoko",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "A code formatter for the Motoko smart contract language.",
     "main": "lib/index.js",
     "scripts": {
