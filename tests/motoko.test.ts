@@ -163,6 +163,9 @@ describe('Motoko formatter', () => {
         expect(format('//prettier-ignore\n1*1;\n2*2')).toStrictEqual(
             '//prettier-ignore\n1*1;\n2 * 2;\n',
         );
+        expect(format('//prettier-ignore\n1*1;\n\n2*2')).toStrictEqual(
+            '//prettier-ignore\n1*1;\n\n2 * 2;\n',
+        );
         expect(format('// prettier-ignore\n{\nabc}')).toStrictEqual(
             '// prettier-ignore\n{\nabc}\n',
         );
