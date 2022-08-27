@@ -5,7 +5,12 @@ import {
 } from './../../parsers/motoko-tt-parse/parse';
 import { doc, AstPath, Doc, ParserOptions } from 'prettier';
 import spaceConfig, { doesTokenTreeMatchPattern } from './spaceConfig';
-import { withoutLineBreaks } from './utils';
+import {
+    getToken,
+    getTokenText,
+    getTokenTreeText,
+    withoutLineBreaks,
+} from './utils';
 
 export type Space =
     | (
@@ -99,18 +104,9 @@ export default function print(
     }
 }
 
-function printExact(tree: TokenTree): Doc {
-    if (tree.token_tree_type === 'Group') {
-        const [trees, groupType, pair] = tree.data;
-        const results = trees.map((tt: TokenTree) => printExact(tt));
-        return pair
-            ? [getTokenText(pair[0][0]), results, getTokenText(pair[1][0])]
-            : results;
-    }
-    if (tree.token_tree_type === 'Token') {
-        return getTokenText(tree.data[0]);
-    }
-    throw new Error(`Unexpected token tree: ${JSON.stringify(tree)}`);
+function shouldSkipTokenTree(tree: TokenTree): boolean {
+    const token = getToken(tree);
+    return !!token && removeTokenTypes.includes(token.token_type);
 }
 
 function getGroupDelimToken(groupType: GroupType): Token {
@@ -134,7 +130,7 @@ function printTokenTree(
         const [originalTrees, groupType, pair] = tree.data;
 
         if (groupType === 'BlockComment') {
-            return printExact(tree);
+            return getTokenTreeText(tree);
         }
 
         // console.log(originalTrees.map((t) => t.data)); /////
@@ -153,23 +149,15 @@ function printTokenTree(
                 rightMap.set(tt, right);
             }
 
-            if (tt.token_tree_type === 'Token') {
-                const token = tt.data[0];
-                if (token.token_type === 'Line') {
-                    shouldBreak = true;
-                }
-                return !removeTokenTypes.includes(tt.data[0].token_type) /* &&
-                    !(i === 0 && token.token_type === 'Line') &&
-                    !(
-                        i === originalTrees.length - 1 &&
-                        token.token_type === 'Line'
-                    ) */;
+            if (getToken(tt)?.token_type === 'Line') {
+                shouldBreak = true;
             }
-            return true;
+            return !shouldSkipTokenTree(tt);
         });
 
         const results: Doc[] = [];
         let resultGroup: Doc[] = [];
+        let ignoringNextStatement = false;
         const endGroup = () => {
             if (resultGroup.length) {
                 results.push(
@@ -177,59 +165,98 @@ function printTokenTree(
                     fill(resultGroup),
                 );
                 resultGroup = [];
+                ignoringNextStatement = false;
             }
         };
-
-        // check if the most recent token was a delimiter or separator between token groups
 
         for (let i = 0; i < trees.length; i++) {
             let a = trees[i]!;
 
+            // check if the most recent token is a delimiter and/or line break separator
             let isDelim = false;
             let isSeparator = false;
+            let comment;
             if (a.token_tree_type === 'Token') {
                 const [token] = a.data;
                 isDelim = token.token_type === 'Delim';
                 isSeparator =
                     isDelim ||
                     ['MultiLine', 'LineComment'].includes(token.token_type);
+
+                if (token.token_type === 'LineComment') {
+                    comment = getTokenText(token).substring(2).trim();
+                }
+            } else if (a.token_tree_type === 'Group') {
+                const [, groupType] = a.data;
+                if (groupType === 'BlockComment') {
+                    comment = getTokenTreeText(a).slice(2, -2).trim();
+                }
+            }
+
+            // check for prettier-ignore* comments
+            if (comment) {
+                if (comment === 'prettier-ignore') {
+                    ignoringNextStatement = true;
+                }
+                // else if (comment === 'prettier-ignore-start') {
+                //     ignoringUntilEnd = true;
+                // } else if (comment === 'prettier-ignore-end') {
+                //     ignoringUntilEnd = false;
+                // }
             }
 
             if (isSeparator) {
                 endGroup();
             }
-            const resultArray = isSeparator ? results : resultGroup;
-            // add everything except trailing delimiter
-            if (!isDelim || i !== trees.length - 1) {
-                resultArray.push(
-                    isDelim /* && options.replaceComma */
-                        ? printToken(getGroupDelimToken(groupType))
-                        : printTokenTree(a, path, options, print, args),
+
+            if (ignoringNextStatement) {
+                // print without formatting
+
+                const ignoreDoc = [];
+                let tt = a;
+                do {
+                    ignoreDoc.unshift(getTokenTreeText(tt));
+                } while (
+                    leftMap.has(tt) &&
+                    shouldSkipTokenTree((tt = leftMap.get(tt)))
                 );
-            }
-            if (i < trees.length - 1) {
-                const b = trees[i + 1]!;
-                // resultArray.push(printBetween(a, b, leftMap, rightMap));
-                resultArray.push(
-                    printBetween(trees, i, i + 1, leftMap, rightMap),
-                );
-            } else if (results.length || resultGroup.length) {
-                endGroup();
-                // Trailing delimiter
-                if (
-                    (!isSeparator || isDelim) &&
-                    groupType !== 'Angle' &&
-                    (groupType === 'Unenclosed' || groupType === 'Curly'
-                        ? options.semi
-                        : options.trailingComma !== 'none')
-                ) {
-                    results.push(
-                        ifBreak(printToken(getGroupDelimToken(groupType))),
+                resultGroup.push(ignoreDoc);
+            } else {
+                // format token
+
+                const resultArray = isSeparator ? results : resultGroup;
+                // add everything except trailing delimiter
+                if (!isDelim || i !== trees.length - 1) {
+                    resultArray.push(
+                        isDelim /* && options.replaceComma */
+                            ? printToken(getGroupDelimToken(groupType))
+                            : printTokenTree(a, path, options, print, args),
                     );
+                }
+                if (i < trees.length - 1) {
+                    const b = trees[i + 1]!;
+                    // resultArray.push(printBetween(a, b, leftMap, rightMap));
+                    resultArray.push(
+                        printBetween(trees, i, i + 1, leftMap, rightMap),
+                    );
+                } else if (results.length || resultGroup.length) {
+                    endGroup();
+                    // Trailing delimiter
+                    if (
+                        (!isSeparator || isDelim) &&
+                        groupType !== 'Angle' &&
+                        (groupType === 'Unenclosed' || groupType === 'Curly'
+                            ? options.semi
+                            : options.trailingComma !== 'none')
+                    ) {
+                        results.push(
+                            ifBreak(printToken(getGroupDelimToken(groupType))),
+                        );
+                    }
                 }
             }
         }
-        // endGroup();
+        endGroup();
 
         const pairSpace: Doc =
             results.length === 0
@@ -306,12 +333,4 @@ function printBetween(
     return rule
         ? parseSpace(rule[2], trees[aIndex], trees[bIndex], leftMap, rightMap)
         : [];
-}
-
-export function getTokenText(token: Token): string {
-    if (Array.isArray(token.data)) {
-        return token.data[0];
-    } else {
-        return token.data;
-    }
 }
