@@ -5,6 +5,7 @@ import {
 } from './../../parsers/motoko-tt-parse/parse';
 import { doc, AstPath, Doc, ParserOptions } from 'prettier';
 import spaceConfig, { doesTokenTreeMatchPattern } from './spaceConfig';
+import { withoutLineBreaks } from './utils';
 
 export type Space =
     | (
@@ -217,6 +218,7 @@ function printTokenTree(
                 // Trailing delimiter
                 if (
                     (!isSeparator || isDelim) &&
+                    groupType !== 'Angle' &&
                     (groupType === 'Unenclosed' || groupType === 'Curly'
                         ? options.semi
                         : options.trailingComma !== 'none')
@@ -234,22 +236,26 @@ function printTokenTree(
                 ? []
                 : groupType === 'Curly' && options.bracketSpacing
                 ? line
+                : groupType === 'Angle'
+                ? []
                 : softline;
 
-        const resultDoc = pair
-            ? [
-                  printToken(pair[0][0]),
-                  //   pairSpace,
-                  //   results,
-                  indent([pairSpace, results]),
-                  pairSpace,
-                  printToken(pair[1][0]),
-              ]
-            : results;
-
-        return group(resultDoc, {
-            shouldBreak,
-        });
+        const resultDoc = group(
+            pair
+                ? [
+                      printToken(pair[0][0]),
+                      //   pairSpace,
+                      //   results,
+                      indent([pairSpace, results]),
+                      pairSpace,
+                      printToken(pair[1][0]),
+                  ]
+                : results,
+            {
+                shouldBreak,
+            },
+        );
+        return groupType === 'Angle' ? withoutLineBreaks(resultDoc) : resultDoc;
     } else if (tree.token_tree_type === 'Token') {
         const [token] = tree.data;
 

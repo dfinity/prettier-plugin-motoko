@@ -73,6 +73,42 @@ describe('Motoko formatter', () => {
         expect(format('func <T> () {}')).toStrictEqual('func<T>() {}\n');
     });
 
+    // test('if-else wrapping', () => {
+    //     expect(format('if true () else ()')).toStrictEqual(
+    //         'if true () else ()\n',
+    //     );
+    //     expect(format('if true {} else {}')).toStrictEqual(
+    //         'if true {} else {}\n',
+    //     );
+    //     expect(format('if true (a) else (b)')).toStrictEqual(
+    //         'if true (a) else (b)\n',
+    //     );
+    //     expect(format('if true {a} else {b}')).toStrictEqual(
+    //         'if true {\n  a;\n} else {\n  b;\n};\n',
+    //     );
+    // });
+
+    test('type bindings', () => {
+        expect(format('func foo<A<:Any>(x:A) {}')).toStrictEqual(
+            'func foo<A <: Any>(x : A) {}\n',
+        );
+        expect(format('func foo <A <: Any>(x:A) {}')).toStrictEqual(
+            'func foo<A <: Any>(x : A) {}\n',
+        );
+    });
+
+    test('type binding line breaks', () => {
+        const parens = `<(${Array(5)
+            .fill(['x'.repeat(20)])
+            .join(', ')})>;\n`;
+        expect(format(parens)).toStrictEqual(parens);
+
+        const curly = `<{ ${Array(5)
+            .fill(['x'.repeat(20)])
+            .join('; ')} }>;\n`;
+        expect(format(parens)).toStrictEqual(parens);
+    });
+
     // test('multi-line statement indentation', () => {
     //     const ident = 'x'.repeat(50)
     //     expect(format(`${ident}.${ident}.${ident}`)).toStrictEqual(`${ident}\n  .${ident}\n  .${ident}\n`);
