@@ -75,3 +75,9 @@ func ignored<A>(a:A){a};
 
 func formatted<B>(b: B) { b };
 ```
+
+## Contributing
+
+Feel free to [submit a GitHub issue](https://github.com/dfinity/prettier-plugin-motoko/issues/new) to report a bug or suggest a feature. 
+
+If you're interested in becoming an open-source contributor, be sure to check out the [open issues](https://github.com/dfinity/prettier-plugin-motoko/issues) in case anything catches your eye. 
