@@ -100,6 +100,11 @@ describe('Motoko formatter', () => {
     });
 
     test('type binding line breaks', () => {
+        const basic = `<${Array(5)
+            .fill(['x'.repeat(20)])
+            .join(', ')}>;\n`;
+        expect(format(basic)).toStrictEqual(basic);
+
         const parens = `<(${Array(5)
             .fill(['x'.repeat(20)])
             .join(', ')})>;\n`;
@@ -111,6 +116,14 @@ describe('Motoko formatter', () => {
         expect(format(parens)).toStrictEqual(parens);
     });
 
+    test('tuple line breaks', () => {
+        expect(format(`(${Array(5)
+            .fill(['x'.repeat(20)])
+            .join(', ')});\n`)).toStrictEqual(`(${Array(5)
+                .fill(['x'.repeat(20)])
+                .join(',\n  ')});\n`);
+    });
+
     // test('multi-line statement indentation', () => {
     //     const ident = 'x'.repeat(50)
     //     expect(format(`${ident}.${ident}.${ident}`)).toStrictEqual(`${ident}\n  .${ident}\n  .${ident}\n`);
@@ -119,7 +132,7 @@ describe('Motoko formatter', () => {
     test('dot after group', () => {
         expect(format('().0')).toStrictEqual('().0\n');
         // expect(format('(\n).0')).toStrictEqual('().0\n');
-        expect(format('(\n\n).0')).toStrictEqual('(\n\n).0;\n');
+        expect(format('{\n\n}.0')).toStrictEqual('{\n\n}.0;\n');
     });
 
     // test('cursor position', () => {
@@ -138,13 +151,13 @@ describe('Motoko formatter', () => {
     });
 
     test('add trailing delimiters', () => {
-        expect(format('(a\n,b,c)')).toStrictEqual('(\n  a,\n  b,\n  c,\n);\n');
-        expect(format('(a\n,b,c,)')).toStrictEqual('(\n  a,\n  b,\n  c,\n);\n');
-        expect(format('(a\n,b,c,)', { trailingComma: 'none' })).toStrictEqual(
-            '(\n  a,\n  b,\n  c\n);\n',
+        expect(format('[a\n,b,c]')).toStrictEqual('[\n  a,\n  b,\n  c,\n];\n');
+        expect(format('[a\n,b,c,]')).toStrictEqual('[\n  a,\n  b,\n  c,\n];\n');
+        expect(format('[a\n,b,c,]', { trailingComma: 'none' })).toStrictEqual(
+            '[\n  a,\n  b,\n  c\n];\n',
         );
-        expect(format('(a\n,b,c,)', { semi: false })).toStrictEqual(
-            '(\n  a,\n  b,\n  c,\n)\n',
+        expect(format('[a\n,b,c,]', { semi: false })).toStrictEqual(
+            '[\n  a,\n  b,\n  c,\n]\n',
         );
     });
 

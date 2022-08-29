@@ -245,6 +245,7 @@ function printTokenTree(
                     if (
                         (!isSeparator || isDelim) &&
                         groupType !== 'Angle' &&
+                        groupType !== 'Paren' && // ??
                         (groupType === 'Unenclosed' || groupType === 'Curly'
                             ? options.semi
                             : options.trailingComma !== 'none')
@@ -263,26 +264,40 @@ function printTokenTree(
                 ? []
                 : groupType === 'Curly' && options.bracketSpacing
                 ? line
-                : groupType === 'Angle'
+                : groupType === 'Angle' || /* ??? */ groupType === 'Paren'
                 ? []
                 : softline;
 
-        const resultDoc = group(
-            pair
-                ? [
-                      printToken(pair[0][0]),
-                      //   pairSpace,
-                      //   results,
-                      indent([pairSpace, results]),
-                      pairSpace,
-                      printToken(pair[1][0]),
-                  ]
-                : results,
-            {
-                shouldBreak,
-            },
-        );
-        return groupType === 'Angle' ? withoutLineBreaks(resultDoc) : resultDoc;
+        // const resultDoc = group(
+        //     pair
+        //         ? [
+        //               printToken(pair[0][0]),
+        //               //   pairSpace,
+        //               //   results,
+        //               indent([pairSpace, results]),
+        //               pairSpace,
+        //               printToken(pair[1][0]),
+        //           ]
+        //         : results,
+        //     { shouldBreak },
+        // );
+        const resultDoc = pair
+            ? [
+                  printToken(pair[0][0]),
+                  //   pairSpace,
+                  //   results,
+                  indent([pairSpace, results]),
+                  pairSpace,
+                  printToken(pair[1][0]),
+              ]
+            : results;
+
+        // return groupType === 'Angle' ? withoutLineBreaks(resultDoc) : resultDoc;
+        return groupType === 'Angle'
+            ? withoutLineBreaks(resultDoc)
+            : groupType === 'Paren'
+            ? fill(resultDoc)
+            : group(resultDoc, { shouldBreak });
     } else if (tree.token_tree_type === 'Token') {
         const [token] = tree.data;
 
