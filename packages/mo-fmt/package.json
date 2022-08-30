@@ -28,17 +28,17 @@
         "prettier": "^2.7"
     },
     "files": [
-        "lib/**/*",
-        "wasm/pkg/**/*"
+        "src/**/*"
     ],
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/dfinity/prettier-plugin-motoko.git"
+        "url": "git+https://github.com/dfinity/prettier-plugin-motoko.git",
+        "directory": "packages/mo-fmt"
     },
     "author": "Ryan Vandersmith (https://github.com/rvanasa)",
     "license": "Apache-2.0",
     "bugs": {
         "url": "https://github.com/dfinity/prettier-plugin-motoko/issues"
     },
-    "homepage": "https://github.com/dfinity/prettier-plugin-motoko#readme"
+    "homepage": "https://github.com/dfinity/prettier-plugin-motoko/tree/main/package/mo-fmt#readme"
 }
