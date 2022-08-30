@@ -12,9 +12,9 @@ If you have [Node.js](https://nodejs.org/en/download/) installed on your system:
 npm install -g mo-fmt
 ```
 
-If you don't want to install Node.js, you can also download a portable executable from the [GitHub releases](https://github.com/dfinity/prettier-plugin-motoko/releases) page.
+This command is also available using [npx](https://docs.npmjs.com/cli/v7/commands/npx), e.g. `npx mo-fmt`.
 
-This command is also available using [npx](https://docs.npmjs.com/cli/v7/commands/npx), e.g. `npx mo-fmt ...`.
+For environments without Node.js, you can also download a portable executable from the [GitHub releases](https://github.com/dfinity/prettier-plugin-motoko/releases) page.
 
 ## Usage
 
