@@ -10,18 +10,13 @@ jobs:
   build:
     uses: ./.github/workflows/Tests.yml
     secrets: inherit
-  tag-npm-release:
-    name: Tag new npm package releases
-    runs-on: ubuntu-latest
-    steps:
-      - uses: neverendingqs/gh-action-tag-on-npm-version@master
   release:
     name: Create Release
     runs-on: ubuntu-latest
     strategy:
       matrix:
         node-version: [16.x]
-    needs: [build, tag-npm-release]
+    needs: [build]
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
