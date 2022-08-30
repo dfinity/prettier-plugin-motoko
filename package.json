@@ -40,8 +40,5 @@
     "bugs": {
         "url": "https://github.com/dfinity/prettier-plugin-motoko/issues"
     },
-    "homepage": "https://github.com/dfinity/prettier-plugin-motoko#readme",
-    "dependencies": {
-        "commander": "^9.4.0"
-    }
+    "homepage": "https://github.com/dfinity/prettier-plugin-motoko#readme"
 }
