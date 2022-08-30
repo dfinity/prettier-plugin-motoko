@@ -9,16 +9,19 @@ const glob = require('fast-glob');
 
 // console.log(prettier.getSupportInfo().options);
 
-const { check, paths } = program.option('-c, --check', 'check whether the files are formatted (instead of formatting)').argument('paths...', 'file paths to format (default: **/*.mo)').parse().opts();
+const { check } = program
+    .argument('[paths...]', 'file paths to format', ['**/*.mo'])
+    .option('-c, --check', 'check whether the files are formatted (instead of formatting)')
+    .parse()
+    .opts();
 
 prettier.resolveConfig.sync(prettier.resolveConfigFile.sync());
 
-let success = true;
+let success = undefined;
 
-const patterns = paths.length ? path : ['**/*.mo'];
 Promise.all(
-    patterns.map(async (pattern) => {
-        for (const file of await glob(pattern)) {
+    program.processedArgs[0].map(async (pattern) => {
+        for (const file of await glob(pattern, { onlyFiles: true })) {
             const source = readFileSync(file, 'utf-8');
             const shouldFormat = !prettier.check(source, {
                 plugins: [motokoPlugin],
@@ -41,6 +44,9 @@ Promise.all(
                     writeFileSync(file, formatted);
                     console.log('*', file);
                 }
+            }
+            if (success === undefined) {
+                success = true;
             }
         }
     }),
