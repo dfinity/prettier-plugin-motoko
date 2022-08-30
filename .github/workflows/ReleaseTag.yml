@@ -1,0 +1,10 @@
+name: Tag new `mo-fmt` package releases
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - packages/mo-fmt/package.json
+jobs:
+  tag-release:
+    - RELEASE_TAG=v$(node -e "console.log(require('./packages/mo-fmt/package.json').version)") && git tag $RELEASE_TAG && git push origin $RELEASE_TAG || exit 0
