@@ -1,0 +1,68 @@
+name: Release
+
+on:
+  push:
+    # Sequence of patterns matched against refs/tags
+    tags:
+      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+
+jobs:
+  build:
+    uses: ./.github/workflows/Tests.yml
+    secrets: inherit
+  tag-npm-release:
+    name: Tag new npm package releases
+    runs-on: ubuntu-latest
+    steps:
+      - uses: neverendingqs/gh-action-tag-on-npm-version@master
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [16.x]
+    needs: [build, tag-npm-release]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by GitHub Actions
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: mo-fmt ${{ github.ref }}
+          draft: false
+          prerelease: false
+      - run: npm --prefix package/mo-fmt run package
+      - name: Upload Release (Linux)
+        id: upload-release-linux
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: packages/mo-fmt/pkg/mo-fmt-linux
+          asset_name: mo-fmt-linux
+          asset_content_type: application/octet-stream
+      - name: Upload Release (macOS)
+        id: upload-release-macos
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: packages/mo-fmt/pkg/mo-fmt-macos
+          asset_name: mo-fmt-macos
+          asset_content_type: application/octet-stream
+      - name: Upload Release (Linux)
+        id: upload-release-windows
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: packages/mo-fmt/pkg/mo-fmt-windows.exe
+          asset_name: mo-fmt-windows.exe
+          asset_content_type: application/octet-stream
