@@ -9,9 +9,10 @@ const glob = require('fast-glob');
 
 // console.log(prettier.getSupportInfo().options);
 
-const { check } = program
+const { check, ignore } = program
     .argument('[paths...]', 'file paths to format', ['**/*.mo'])
     .option('-c, --check', 'check whether the files are formatted (instead of formatting)')
+    .option('-i, --ignore [paths]', 'file paths to ignore, comma-separated', '**/node_modules')
     .parse()
     .opts();
 
@@ -21,9 +22,10 @@ let fileCount = 0;
 let checkCount = 0;
 let formatCount = 0;
 
+const ignorePatterns = ignore.split(',');
 Promise.all(
     program.processedArgs[0].map(async (pattern) => {
-        for (const file of await glob(pattern)) {
+        for (const file of await glob(pattern, { onlyFiles: true, ignore: ignorePatterns })) {
             fileCount += 1;
             const source = readFileSync(file, 'utf-8');
             const shouldFormat = !prettier.check(source, {
