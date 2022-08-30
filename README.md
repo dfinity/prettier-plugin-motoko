@@ -17,14 +17,16 @@ npm install --save-dev prettier prettier-plugin-motoko
 Format your Motoko files using the [Prettier CLI](https://prettier.io/docs/en/cli.html):
 
 ```sh
-npm exec prettier -- --write **/*.mo
+npx prettier -- --write **/*.mo
 ```
 
 Check if your Motoko files are correctly formatted:
 
 ```sh
-npm exec prettier -- --check **/*.mo
+npx prettier -- --check **/*.mo
 ```
+
+Alternatively, check out [`mo-fmt`](https://github.com/dfinity/prettier-plugin-motoko/tree/main/package/mo-fmt) for a standalone Motoko formatter CLI.
 
 ## VS Code support
 
