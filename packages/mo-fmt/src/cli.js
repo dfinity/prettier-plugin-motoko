@@ -18,7 +18,8 @@ const { check } = program
 prettier.resolveConfig.sync(prettier.resolveConfigFile.sync());
 
 let fileCount = 0;
-let successCount = 0;
+let checkCount = 0;
+let formatCount = 0;
 
 Promise.all(
     program.processedArgs[0].map(async (pattern) => {
@@ -33,7 +34,7 @@ Promise.all(
                 if (shouldFormat) {
                     console.log('!', file);
                 } else {
-                    successCount++;
+                    checkCount++;
                 }
             } else if (shouldFormat) {
                 const formatted = prettier.format(source, {
@@ -46,20 +47,21 @@ Promise.all(
                 } else {
                     writeFileSync(file, formatted);
                     console.log('*', file);
-                    successCount++;
+                    checkCount++;///
+                    formatCount++;
                 }
             } else {
-                successCount++;
+                checkCount++;
             }
         }
     }),
 ).then(() => {
-    if (successCount === fileCount) {
+    if (checkCount === fileCount) {
         const fileText = fileCount === 1 ? 'file' : 'files';
         if (check) {
             console.log(`Checked ${fileCount} ${fileText}.`);
         } else {
-            console.log(`Formatted ${fileCount} ${fileText}.`);
+            console.log(`Updated ${formatCount} / ${fileCount} ${fileText}.`);
         }
     }
     else {
