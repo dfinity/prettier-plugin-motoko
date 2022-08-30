@@ -17,11 +17,13 @@ const { check } = program
 
 prettier.resolveConfig.sync(prettier.resolveConfigFile.sync());
 
-let success = undefined;
+let fileCount = 0;
+let successCount = 0;
 
 Promise.all(
     program.processedArgs[0].map(async (pattern) => {
-        for (const file of await glob(pattern, { onlyFiles: true })) {
+        for (const file of await glob(pattern)) {
+            fileCount += 1;
             const source = readFileSync(file, 'utf-8');
             const shouldFormat = !prettier.check(source, {
                 plugins: [motokoPlugin],
@@ -30,7 +32,8 @@ Promise.all(
             if (check) {
                 if (shouldFormat) {
                     console.log('!', file);
-                    success = false;
+                } else {
+                    successCount++;
                 }
             } else if (shouldFormat) {
                 const formatted = prettier.format(source, {
@@ -39,19 +42,30 @@ Promise.all(
                 });
                 if (source.trim() && !formatted) {
                     success = false;
-                    console.log('!!', file);
+                    console.log('Error:', file);
                 } else {
                     writeFileSync(file, formatted);
                     console.log('*', file);
+                    successCount++;
                 }
-            }
-            if (success === undefined) {
-                success = true;
+            } else {
+                successCount++;
             }
         }
     }),
-).catch((err) => console.error(err));
-
-if (!success) {
+).then(() => {
+    if (successCount === fileCount) {
+        const fileText = fileCount === 1 ? 'file' : 'files';
+        if (check) {
+            console.log(`Checked ${fileCount} ${fileText}.`);
+        } else {
+            console.log(`Formatted ${fileCount} ${fileText}.`);
+        }
+    }
+    else {
+        process.exit(1);
+    }
+}).catch((err) => {
+    console.error(err);
     process.exit(1);
-}
+});
