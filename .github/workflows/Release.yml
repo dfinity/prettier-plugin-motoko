@@ -1,4 +1,4 @@
-name: Tag mo-fmt
+name: Release
 
 on:
   push:
@@ -23,6 +23,7 @@ jobs:
   
   release:
     name: Release mo-fmt
+    needs: [tag-release]
     if: needs.tag-release.outputs.tag-outcome == 'success'
     runs-on: ubuntu-latest
     steps:
