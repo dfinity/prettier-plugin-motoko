@@ -35,7 +35,7 @@ jobs:
           cache: 'npm'
       - run: npm --prefix packages/mo-fmt ci
       - run: npm --prefix packages/mo-fmt run package
-      - name: Get tag version
+      - name: Get version
         id: version
         run: echo ::set-output\ name=TAG_NAME::v$(node -e "console.log(require('./packages/mo-fmt/package.json').version)")
       - name: Create Release
@@ -75,6 +75,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: packages/mo-fmt/pkg/mo-fmt-windows.exe
-          asset_name: mo-fmt-windows.exe
+          asset_path: packages/mo-fmt/pkg/mo-fmt-win.exe
+          asset_name: mo-fmt-win.exe
           asset_content_type: application/octet-stream
