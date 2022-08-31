@@ -19,7 +19,7 @@ jobs:
         run: RELEASE_TAG=v$(node -e "console.log(require('./packages/mo-fmt/package.json').version)") && git tag $RELEASE_TAG && git push origin $RELEASE_TAG
         continue-on-error: true
     outputs:
-      - tag-outcome: ${{ steps.create-tag.outcome }}
+      tag-outcome: ${{ steps.create-tag.outcome }}
   release:
     needs: [tag-release]
     uses: ./.github/workflows/Release.yml
