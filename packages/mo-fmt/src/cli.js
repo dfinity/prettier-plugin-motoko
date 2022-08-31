@@ -1,4 +1,3 @@
-#! /usr/bin/env node
 'use strict'
 
 const { readFileSync, fstat, writeFileSync } = require('fs');
