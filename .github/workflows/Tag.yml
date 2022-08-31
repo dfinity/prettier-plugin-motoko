@@ -14,4 +14,5 @@ jobs:
     name: Create release tag
     runs-on: ubuntu-latest
     steps:
+    - uses: actions/checkout@v3
     - run: RELEASE_TAG=v$(node -e "console.log(require('./packages/mo-fmt/package.json').version)") && git tag $RELEASE_TAG && git push origin $RELEASE_TAG || exit 0
