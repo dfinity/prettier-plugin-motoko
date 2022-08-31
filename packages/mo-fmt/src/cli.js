@@ -15,7 +15,15 @@ const { check, ignore } = program
     .parse()
     .opts();
 
-prettier.resolveConfig.sync(prettier.resolveConfigFile.sync());
+if (!program.args.length) {
+    console.log(program.helpInformation());
+    process.exit(0);
+}
+
+const configPath = prettier.resolveConfigFile.sync();
+if (configPath) {
+    prettier.resolveConfig.sync(configPath);
+}
 
 let fileCount = 0;
 let checkCount = 0;
