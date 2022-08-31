@@ -19,18 +19,18 @@ For environments without Node.js, you can also download a portable executable fr
 ## Usage
 
 ```bash
-# Format `**/*.mo` in-place
-mo-fmt
+# Format all Motoko files in-place
+mo-fmt **/*.mo
 
 # Format `File.mo` in-place
-mo-fmt Main.mo
+mo-fmt File.mo
 
-# Format `Main.mo` and all `*.mo` files in the `lib/` directory
-mo-fmt Main.mo lib/*.mo
+# Format `File.mo` and all Motoko files in the `lib/` directory
+mo-fmt File.mo lib/*.mo
 
 # Check that all files are formatted
-mo-fmt -c
+mo-fmt -c **/*.mo
 
-# Quick reference
-mo-fmt --help
+# Show help information
+mo-fmt
 ```
