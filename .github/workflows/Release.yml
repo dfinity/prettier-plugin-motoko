@@ -11,8 +11,16 @@ on:
 
 jobs:
   build:
-    uses: ./.github/workflows/Tests.yml
-    secrets: inherit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+          cache: 'npm'
+      - run: npm --prefix packages/mo-fmt ci
+      - run: npm --prefix packages/mo-fmt run package
   release:
     name: Create Release
     runs-on: ubuntu-latest
@@ -28,7 +36,6 @@ jobs:
           release_name: mo-fmt ${{ github.ref }}
           draft: false
           prerelease: false
-      - run: npm --prefix packages/mo-fmt run package
       - name: Upload Release (Linux)
         id: upload-release-linux
         uses: actions/upload-release-asset@v1
