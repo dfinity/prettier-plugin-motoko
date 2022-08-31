@@ -46,6 +46,7 @@ jobs:
         with:
           tag_name: ${{ steps.version.outputs.TAG_NAME }}
           release_name: mo-fmt ${{ steps.version.outputs.TAG_NAME }}
+          body: Portable `mo-fmt` binaries for Linux, macOS, and Windows.
           draft: false
           prerelease: false
       - name: Upload Release (Linux)
