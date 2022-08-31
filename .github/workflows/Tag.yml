@@ -14,5 +14,12 @@ jobs:
     name: Create release tag
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - run: RELEASE_TAG=v$(node -e "console.log(require('./packages/mo-fmt/package.json').version)") && git tag $RELEASE_TAG && git push origin $RELEASE_TAG || exit 0
+      - uses: actions/checkout@v3
+      - id: create-tag
+        run: RELEASE_TAG=v$(node -e "console.log(require('./packages/mo-fmt/package.json').version)") && git tag $RELEASE_TAG && git push origin $RELEASE_TAG
+        continue-on-error: true
+  release:
+    needs: [tag-release]
+    uses: ./.github/workflows/Release.yml
+    secrets: inherit
+    if: needs.tag-release.steps.create-tag.outcome == 'success'
