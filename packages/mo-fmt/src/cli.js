@@ -11,7 +11,7 @@ const glob = require('fast-glob');
 const { check, ignore } = program
     .argument('[paths...]', 'file paths to format (examples: File.mo, **/*.mo)')
     .option('-c, --check', 'check whether the files are formatted (instead of formatting)')
-    .option('-i, --ignore [paths]', 'file paths to ignore, comma-separated', '**/node_modules')
+    .option('-i, --ignore [paths]', 'file paths to ignore, comma-separated', '**/node_modules/**/*')
     .parse()
     .opts();
 
@@ -32,6 +32,10 @@ let formatCount = 0;
 const ignorePatterns = ignore.split(',');
 Promise.all(
     (program.processedArgs[0] || []).map(async (pattern) => {
+        // if (pattern.endsWith('*')) {
+        //     pattern = `${pattern}.{mo,did}`;
+        // }
+
         for (const file of await glob(pattern, { onlyFiles: true, ignore: ignorePatterns })) {
             // Enforce file extensions
             if (!file.endsWith('.mo') && !file.endsWith('.did')) {
