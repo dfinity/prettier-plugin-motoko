@@ -1,17 +1,29 @@
-name: Release
+name: Tag mo-fmt
 
 on:
   push:
-    # Sequence of patterns matched against refs/tags
-    tags:
-      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
-
-  workflow_call:
+    branches:
+      - main
+    paths:
+      - packages/mo-fmt/package.json
+    
   workflow_dispatch:
 
 jobs:
+  tag-release:
+    name: Create release tag
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - id: create-tag
+        run: RELEASE_TAG=v$(node -e "console.log(require('./packages/mo-fmt/package.json').version)") && git tag $RELEASE_TAG && git push origin $RELEASE_TAG
+        continue-on-error: true
+    outputs:
+      tag-outcome: ${{ steps.create-tag.outcome }}
+  
   release:
-    name: Create Release
+    name: Release mo-fmt
+    if: needs.tag-release.outputs.tag-outcome == 'success'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -22,14 +34,17 @@ jobs:
           cache: 'npm'
       - run: npm --prefix packages/mo-fmt ci
       - run: npm --prefix packages/mo-fmt run package
+      - name: Get tag version
+        id: version
+        run: echo ::set-output\ name=TAG_NAME::v$(node -e "console.log(require('./packages/mo-fmt/package.json').version)")
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by GitHub Actions
         with:
-          tag_name: ${{ github.ref }}
-          release_name: mo-fmt ${{ github.ref }}
+          tag_name: ${{ steps.version.outputs.TAG_NAME }}
+          release_name: mo-fmt ${{ steps.version.outputs.TAG_NAME }}
           draft: false
           prerelease: false
       - name: Upload Release (Linux)
