@@ -1,6 +1,6 @@
 'use strict'
 
-const { readFileSync, fstat, writeFileSync } = require('fs');
+const { readFileSync, writeFileSync } = require('fs');
 const motokoPlugin = require('prettier-plugin-motoko');
 const prettier = require('prettier');
 const { program } = require('commander');
@@ -9,7 +9,7 @@ const glob = require('fast-glob');
 // console.log(prettier.getSupportInfo().options);
 
 const { check, ignore } = program
-    .argument('[paths...]', 'file paths to format', ['**/*.mo'])
+    .argument('[paths...]', 'file paths to format (examples: File.mo, **/*.mo)')
     .option('-c, --check', 'check whether the files are formatted (instead of formatting)')
     .option('-i, --ignore [paths]', 'file paths to ignore, comma-separated', '**/node_modules')
     .parse()
@@ -23,8 +23,13 @@ let formatCount = 0;
 
 const ignorePatterns = ignore.split(',');
 Promise.all(
-    program.processedArgs[0].map(async (pattern) => {
+    (program.processedArgs[0] || []).map(async (pattern) => {
         for (const file of await glob(pattern, { onlyFiles: true, ignore: ignorePatterns })) {
+            // Enforce file extensions
+            if (!file.endsWith('.mo') && !file.endsWith('.did')) {
+                continue;
+            }
+
             fileCount += 1;
             const source = readFileSync(file, 'utf-8');
             const shouldFormat = !prettier.check(source, {
