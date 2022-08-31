@@ -35,7 +35,7 @@ jobs:
           cache: 'npm'
       - run: npm --prefix packages/mo-fmt ci
       - run: npm --prefix packages/mo-fmt run package
-      - name: Get version
+      - name: Get Version
         id: version
         run: echo ::set-output\ name=TAG_NAME::v$(node -e "console.log(require('./packages/mo-fmt/package.json').version)")
       - name: Create Release
