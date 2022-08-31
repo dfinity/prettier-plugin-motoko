@@ -6,6 +6,8 @@ on:
       - main
     paths:
       - packages/mo-fmt/package.json
+    
+  workflow_dispatch:
 
 jobs:
   tag-release:
