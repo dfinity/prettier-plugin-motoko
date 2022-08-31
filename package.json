@@ -32,6 +32,7 @@
         "prettier": "^2.7"
     },
     "files": [
+        "src/**/*",
         "lib/**/*",
         "wasm/pkg/**/*"
     ],
