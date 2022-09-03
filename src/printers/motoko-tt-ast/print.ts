@@ -156,10 +156,13 @@ function printTokenTree(
         });
 
         const shouldKeepSameLine = () => {
-            return (
-                groupType === 'Angle' ||
-                (groupType === 'Square' && results.length <= 1 && !shouldBreak)
-            );
+            if (groupType === 'Angle') {
+                return true;
+            }
+            if (groupType === 'Square' || groupType === 'Paren') {
+                results.length <= 1 && !shouldBreak;
+            }
+            return false;
         };
 
         const results: Doc[] = [];
