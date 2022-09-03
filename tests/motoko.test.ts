@@ -119,7 +119,8 @@ describe('Motoko formatter', () => {
     test('dot after group', () => {
         expect(format('().0')).toStrictEqual('().0\n');
         // expect(format('(\n).0')).toStrictEqual('().0\n');
-        expect(format('(\n\n).0')).toStrictEqual('(\n\n).0;\n');
+        expect(format('(\n\n\n).0')).toStrictEqual('().0\n');
+        expect(format('(\na\n).0')).toStrictEqual('(\n  a,\n).0;\n');
     });
 
     // test('cursor position', () => {

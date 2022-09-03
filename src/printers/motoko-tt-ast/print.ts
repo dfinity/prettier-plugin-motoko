@@ -160,7 +160,7 @@ function printTokenTree(
                 return true;
             }
             if (groupType === 'Square' || groupType === 'Paren') {
-                results.length <= 1 && !shouldBreak;
+                return results.length <= 1 && !shouldBreak;
             }
             return false;
         };
