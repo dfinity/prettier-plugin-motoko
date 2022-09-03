@@ -75,7 +75,7 @@ Skip formatting a statement using a `prettier-ignore` comment:
 // prettier-ignore
 func ignored<A>(a:A){a};
 
-func formatted<B>(b: B) { b };
+func formatted<B>(b : B) { b };
 ```
 
 ## Contributing
