@@ -183,6 +183,21 @@ describe('Motoko formatter', () => {
     //     );
     // });
 
+    test('array indexing line break', () => {
+        expect(format(`${'x'.repeat(80)}[0]`)).toStrictEqual(
+            `${'x'.repeat(80)}[0];\n`,
+        );
+        expect(format(`${'x'.repeat(80)}[\n0]`)).toStrictEqual(
+            `${'x'.repeat(80)}[\n  0,\n];\n`,
+        );
+        expect(format(`${'x'.repeat(80)}[0,]`)).toStrictEqual(
+            `${'x'.repeat(80)}[0];\n`,
+        );
+        // expect(format(`${'x'.repeat(80)}[[\na]]`)).toStrictEqual(
+        //     `${'x'.repeat(80)}[\n  [\n    a,\n  ],\n];\n`,
+        // );
+    });
+
     // test('generate diff files from compiler tests', () => {
     //     for (const extension of ['mo', 'did']) {
     //         let preOutput = '';
