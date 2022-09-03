@@ -119,7 +119,8 @@ describe('Motoko formatter', () => {
     test('dot after group', () => {
         expect(format('().0')).toStrictEqual('().0\n');
         // expect(format('(\n).0')).toStrictEqual('().0\n');
-        expect(format('(\n\n).0')).toStrictEqual('(\n\n).0;\n');
+        expect(format('(\n\n\n).0')).toStrictEqual('().0\n');
+        expect(format('(\na\n).0')).toStrictEqual('(\n  a,\n).0;\n');
     });
 
     // test('cursor position', () => {
@@ -182,6 +183,21 @@ describe('Motoko formatter', () => {
     //         '/* prettier-ignore-start */{1\nabc/*prettier-ignore-end*/\n};\nabc;\n',
     //     );
     // });
+
+    test('array indexing line break', () => {
+        expect(format(`${'x'.repeat(80)}[0]`)).toStrictEqual(
+            `${'x'.repeat(80)}[0];\n`,
+        );
+        expect(format(`${'x'.repeat(80)}[\n0]`)).toStrictEqual(
+            `${'x'.repeat(80)}[\n  0,\n];\n`,
+        );
+        expect(format(`${'x'.repeat(80)}[0,]`)).toStrictEqual(
+            `${'x'.repeat(80)}[0];\n`,
+        );
+        // expect(format(`${'x'.repeat(80)}[[\na]]`)).toStrictEqual(
+        //     `${'x'.repeat(80)}[\n  [\n    a,\n  ],\n];\n`,
+        // );
+    });
 
     // test('generate diff files from compiler tests', () => {
     //     for (const extension of ['mo', 'did']) {

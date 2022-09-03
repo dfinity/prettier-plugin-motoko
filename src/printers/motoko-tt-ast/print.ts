@@ -155,6 +155,16 @@ function printTokenTree(
             return !shouldSkipTokenTree(tt);
         });
 
+        const shouldKeepSameLine = () => {
+            if (groupType === 'Angle') {
+                return true;
+            }
+            if (groupType === 'Square' || groupType === 'Paren') {
+                return results.length <= 1 && !shouldBreak;
+            }
+            return false;
+        };
+
         const results: Doc[] = [];
         let resultGroup: Doc[] = [];
         let ignoringNextStatement = false;
@@ -244,7 +254,7 @@ function printTokenTree(
                     // Trailing delimiter
                     if (
                         (!isSeparator || isDelim) &&
-                        groupType !== 'Angle' &&
+                        !shouldKeepSameLine() &&
                         (groupType === 'Unenclosed' || groupType === 'Curly'
                             ? options.semi
                             : options.trailingComma !== 'none')
@@ -282,7 +292,7 @@ function printTokenTree(
                 shouldBreak,
             },
         );
-        return groupType === 'Angle' ? withoutLineBreaks(resultDoc) : resultDoc;
+        return shouldKeepSameLine() ? withoutLineBreaks(resultDoc) : resultDoc;
     } else if (tree.token_tree_type === 'Token') {
         const [token] = tree.data;
 
