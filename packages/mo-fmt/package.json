@@ -14,7 +14,7 @@
         "package:zip": "run-s package:zip:linux package:zip:macos package:zip:win",
         "package:zip:linux": "cd pkg && mkdir linux && cp mo-fmt-linux linux/mo-fmt && cd linux && tar -czvf ../mo-fmt-linux.tar.gz mo-fmt",
         "package:zip:macos": "cd pkg && mkdir macos && cp mo-fmt-macos macos/mo-fmt && cd macos && tar -czvf ../mo-fmt-macos.tar.gz mo-fmt",
-        "package:zip:win": "cd pkg && mkdir win && cp mo-fmt-win.exe win/mo-fmt.exe && cd win && zip ../mo-fmt-win.zip mo-fmt.exe",
+        "package:zip:win": "cd pkg && mkdir win && cp mo-fmt-win.exe win/mo-fmt.exe && cd win && zip ../mo-fmt-windows.zip mo-fmt.exe",
         "prepublishOnly": "run-s test"
     },
     "dependencies": {

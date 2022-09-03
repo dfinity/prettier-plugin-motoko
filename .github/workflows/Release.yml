@@ -76,6 +76,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: packages/mo-fmt/pkg/mo-fmt-win.zip
-          asset_name: mo-fmt-win.zip
+          asset_path: packages/mo-fmt/pkg/mo-fmt-windows.zip
+          asset_name: mo-fmt-windows.zip
           asset_content_type: application/octet-stream
