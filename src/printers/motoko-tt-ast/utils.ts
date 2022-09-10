@@ -4,7 +4,7 @@ import { Doc } from 'prettier';
 /// Get the unmodified source text from a TokenTree
 export function getTokenTreeText(tree: TokenTree): string {
     if (tree.token_tree_type === 'Group') {
-        const [trees, groupType, pair] = tree.data;
+        const [trees, _, pair] = tree.data;
         const results = trees.map((tt: TokenTree) => getTokenTreeText(tt));
         return (
             pair

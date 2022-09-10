@@ -199,6 +199,18 @@ describe('Motoko formatter', () => {
         // );
     });
 
+    test('unclosed quotes in comments', () => {
+        expect(format("// a'b\n '")).toStrictEqual("// a'b\n';\n");
+        expect(format('// a"b\n "')).toStrictEqual('// a"b\n";\n');
+        expect(format("//'\n '")).toStrictEqual("//'\n';\n");
+        expect(format('//"\n "')).toStrictEqual('//"\n";\n');
+
+        expect(format("/*'*/  '")).toStrictEqual("/*'*/ '\n");
+        // expect(format('/*"*/  "')).toStrictEqual('/*\n"*/ "\n');
+        expect(format("/* a'b */  '")).toStrictEqual("/* a'b */\n';\n");
+        // expect(format('/* a"b */  "')).toStrictEqual('/* a"b */\n";\n');
+    });
+
     // test('generate diff files from compiler tests', () => {
     //     for (const extension of ['mo', 'did']) {
     //         let preOutput = '';
