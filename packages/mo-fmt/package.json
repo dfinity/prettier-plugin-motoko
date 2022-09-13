@@ -40,7 +40,8 @@
     },
     "files": [
         "bin/**/*",
-        "src/**/*"
+        "src/**/*",
+        "wasm/pkg/**/*"
     ],
     "repository": {
         "type": "git",
