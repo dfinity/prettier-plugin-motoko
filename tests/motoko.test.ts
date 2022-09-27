@@ -104,17 +104,19 @@ describe('Motoko formatter', () => {
             .fill(['\n  ' + 'x'.repeat(20)])
             .join(',')},\n);\n`;
         expect(format(wrapped)).toStrictEqual(wrapped);
+    });
 
+    test('nested group line breaks', () => {
         expect(
             format(
-                `((${Array(5)
+                `(\n(${Array(5)
                     .fill(['\n' + 'x'.repeat(20)])
                     .join(', ')}));\n`,
             ),
         ).toStrictEqual(
-            `(\n  (${Array(5)
-                .fill(['\n    ' + 'x'.repeat(20)])
-                .join(',')},\n  ),\n);\n`,
+            `((${Array(5)
+                .fill(['\n  ' + 'x'.repeat(20)])
+                .join(',')},\n));\n`,
         );
     });
 
