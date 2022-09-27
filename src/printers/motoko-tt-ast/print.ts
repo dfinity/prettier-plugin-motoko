@@ -160,6 +160,13 @@ function printTokenTree(
                 return true;
             }
             if (groupType === 'Square' || groupType === 'Paren') {
+                if (
+                    trees.length === 1 &&
+                    trees[0].token_tree_type === 'Group'
+                ) {
+                    // allow wrapping for nested groups such as `((a, b, ...))`
+                    return false;
+                }
                 return results.length <= 1 && !shouldBreak;
             }
             return false;
@@ -251,6 +258,7 @@ function printTokenTree(
                     );
                 } else if (results.length || resultGroup.length) {
                     endGroup();
+
                     // Trailing delimiter
                     if (
                         (!isSeparator || isDelim) &&
