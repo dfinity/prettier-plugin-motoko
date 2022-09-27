@@ -1,8 +1,9 @@
 {
     "name": "prettier-plugin-motoko",
-    "version": "0.1.7",
+    "version": "0.1.8",
     "description": "A code formatter for the Motoko smart contract language.",
     "main": "lib/environments/node.js",
+    "browser": "lib/environments/web.js",
     "types": "lib/index.d.ts",
     "scripts": {
         "build:typescript": "rimraf ./lib && tsc -p .",
