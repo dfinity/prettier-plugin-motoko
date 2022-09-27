@@ -155,11 +155,20 @@ function printTokenTree(
             return !shouldSkipTokenTree(tt);
         });
 
+        // nested groups such as `((a, b, ...))`
+        const hasNestedGroup =
+            (groupType === 'Square' || groupType === 'Paren') &&
+            trees.length === 1 &&
+            trees[0].token_tree_type === 'Group';
+
         const shouldKeepSameLine = () => {
             if (groupType === 'Angle') {
                 return true;
             }
             if (groupType === 'Square' || groupType === 'Paren') {
+                if (hasNestedGroup) {
+                    return false;
+                }
                 return results.length <= 1 && !shouldBreak;
             }
             return false;
@@ -251,9 +260,11 @@ function printTokenTree(
                     );
                 } else if (results.length || resultGroup.length) {
                     endGroup();
+
                     // Trailing delimiter
                     if (
                         (!isSeparator || isDelim) &&
+                        !hasNestedGroup &&
                         !shouldKeepSameLine() &&
                         (groupType === 'Unenclosed' || groupType === 'Curly'
                             ? options.semi
@@ -279,14 +290,16 @@ function printTokenTree(
 
         const resultDoc = group(
             pair
-                ? [
-                      printToken(pair[0][0]),
-                      //   pairSpace,
-                      //   results,
-                      indent([pairSpace, results]),
-                      pairSpace,
-                      printToken(pair[1][0]),
-                  ]
+                ? hasNestedGroup
+                    ? [printToken(pair[0][0]), results, printToken(pair[1][0])]
+                    : [
+                          printToken(pair[0][0]),
+                          //   pairSpace,
+                          //   results,
+                          indent([pairSpace, results]),
+                          pairSpace,
+                          printToken(pair[1][0]),
+                      ]
                 : results,
             {
                 shouldBreak,

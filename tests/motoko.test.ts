@@ -99,6 +99,27 @@ describe('Motoko formatter', () => {
         );
     });
 
+    test('tuple line breaks', () => {
+        const wrapped = `(${Array(5)
+            .fill(['\n  ' + 'x'.repeat(20)])
+            .join(',')},\n);\n`;
+        expect(format(wrapped)).toStrictEqual(wrapped);
+    });
+
+    test('nested group line breaks', () => {
+        expect(
+            format(
+                `(\n(${Array(5)
+                    .fill(['\n' + 'x'.repeat(20)])
+                    .join(', ')}));\n`,
+            ),
+        ).toStrictEqual(
+            `((${Array(5)
+                .fill(['\n  ' + 'x'.repeat(20)])
+                .join(',')},\n));\n`,
+        );
+    });
+
     test('type binding line breaks', () => {
         const parens = `<(${Array(5)
             .fill(['x'.repeat(20)])
