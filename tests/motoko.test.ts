@@ -21,8 +21,12 @@ describe('Motoko formatter', () => {
 
     test('trailing newline', () => {
         expect(format('a')).toStrictEqual('a\n');
+    });
+
+    test('extra whitespace', () => {
         expect(format('\n\na')).toStrictEqual('a\n');
         expect(format('\n\na\n\n')).toStrictEqual('a\n');
+        expect(format('\n\na;\n\n\nb;\n\n')).toStrictEqual('a;\n\nb;\n');
     });
 
     test('empty block', () => {
