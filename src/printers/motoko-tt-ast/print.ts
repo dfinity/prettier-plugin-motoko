@@ -21,6 +21,7 @@ export type Space =
           | 'hardline'
           | 'wrap'
           | 'softwrap'
+          | 'keep'
           | 'keep-space'
       )
     //   | 'keep-line'
@@ -74,8 +75,26 @@ export function parseSpace(
             case 'softwrap':
                 // return ifBreak(wrapIndent);
                 return softline;
+            case 'keep':
             case 'keep-space':
-                return rightMap.get(a) !== b ? space : [];
+                let right = rightMap.get(a);
+                if (right === b) {
+                    return input === 'keep-space' ? space : [];
+                }
+                let result: Doc = space;
+                do {
+                    const token = getToken(right);
+                    if (token) {
+                        if (token.token_type === 'MultiLine') {
+                            return printToken(token);
+                        }
+                        if (token.token_type === 'Line') {
+                            result = line;
+                        }
+                    }
+                    right = rightMap.get(right);
+                } while (right !== b);
+                return result;
             default:
                 throw new Error(`Unimplemented space type: ${input}`);
         }
