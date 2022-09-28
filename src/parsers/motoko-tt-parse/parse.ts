@@ -80,7 +80,7 @@ export default function parse(
     parsers: object,
     options: object,
 ): TokenTree {
-    let tt = wasm.parse_token_tree(text);
+    let tt = wasm.parse_token_tree(text.trim());
 
     // console.log(tt);
 

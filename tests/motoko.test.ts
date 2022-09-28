@@ -16,6 +16,13 @@ const format = (input: string, options?: prettier.Options): string => {
 describe('Motoko formatter', () => {
     test('empty', () => {
         expect(format('')).toStrictEqual('');
+        expect(format('\n\n\n')).toStrictEqual('');
+    });
+
+    test('trailing newline', () => {
+        expect(format('a')).toStrictEqual('a\n');
+        expect(format('\n\na')).toStrictEqual('a\n');
+        expect(format('\n\na\n\n')).toStrictEqual('a\n');
     });
 
     test('empty block', () => {
@@ -33,6 +40,7 @@ describe('Motoko formatter', () => {
         expect(format('let/*{{*/x = 0;//x\n (x)')).toStrictEqual(
             'let/*{{*/x = 0; //x\n(x);\n',
         );
+        expect(format('\n/**/\n\n\n/**/')).toStrictEqual('/**/\n\n/**/;\n');
     });
 
     test('block with existing newline', () => {
