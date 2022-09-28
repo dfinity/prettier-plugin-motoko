@@ -16,18 +16,35 @@ const format = (input: string, options?: prettier.Options): string => {
 describe('Motoko formatter', () => {
     test('empty', () => {
         expect(format('')).toStrictEqual('');
+        expect(format('\n\n\n')).toStrictEqual('');
+    });
+
+    test('trailing newline', () => {
+        expect(format('a')).toStrictEqual('a\n');
+    });
+
+    test('extra whitespace', () => {
+        expect(format('\n\na')).toStrictEqual('a\n');
+        expect(format('\n\na\n\n')).toStrictEqual('a\n');
+        expect(format('\n\na;\n\n\nb;\n\n')).toStrictEqual('a;\n\nb;\n');
     });
 
     test('empty block', () => {
         expect(format('{\n\n}')).toStrictEqual('{\n\n};\n');
     });
 
-    test('comments', () => {
-        // expect(format('{//\n}//')).toStrictEqual('{\n  //\n} //\n');
+    test('line comments', () => {
+        expect(format('{//\n}//')).toStrictEqual('{\n  //\n} //\n');
+        expect(format('{\n//\n}\n//')).toStrictEqual('{\n  //\n}\n//\n');
         expect(format('//a\n//b')).toStrictEqual('//a\n//b\n');
-        // expect(format('let/*{{*/x = 0; //x\n (x)')).toStrictEqual(
-        //     'let /*{{*/ x = 0; //x\n(x)\n',
-        // );
+        expect(format('//a\n\n\n//b')).toStrictEqual('//a\n\n//b\n');
+    });
+
+    test('block comments', () => {
+        expect(format('let/*{{*/x = 0;//x\n (x)')).toStrictEqual(
+            'let/*{{*/x = 0; //x\n(x);\n',
+        );
+        expect(format('\n/**/\n\n\n/**/')).toStrictEqual('/**/\n\n/**/;\n');
     });
 
     test('block with existing newline', () => {
@@ -228,7 +245,7 @@ describe('Motoko formatter', () => {
 
         expect(format("/*'*/  '")).toStrictEqual("/*'*/ '\n");
         // expect(format('/*"*/  "')).toStrictEqual('/*\n"*/ "\n');
-        expect(format("/* a'b */  '")).toStrictEqual("/* a'b */\n';\n");
+        expect(format("/* a'b */  '")).toStrictEqual("/* a'b */ '\n");
         // expect(format('/* a"b */  "')).toStrictEqual('/* a"b */\n";\n');
     });
 

@@ -6,5 +6,6 @@ describe('mo-fmt CLI', () => {
         expect(cliPackage.dependencies['prettier-plugin-motoko']).toStrictEqual(
             `^${pluginPackage.version}`,
         );
+        // expect(cliPackage.version).toStrictEqual(`^${pluginPackage.version}`);
     });
 });

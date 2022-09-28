@@ -99,16 +99,16 @@ const spaceConfig: SpaceConfig = {
     // whitespace rules, prioritized from top to bottom
     rules: [
         // whitespace / comment tokens
+        ['LineComment', '_', 'hardline'],
         ['MultiLine', '_', 'hardline'],
         ['_', 'MultiLine', 'hardline'],
         ['Space', '_', 'nil'],
         ['_', 'Space', 'nil'],
         ['Line', '_', 'nil'],
         ['_', 'Line', 'nil'],
-        ['LineComment', '_', 'hardline'],
-        ['_', 'LineComment', 'hardline'], // 'keep'
-        ['_', 'BlockComment', 'hardline'], // 'keep'
-        ['BlockComment', '_', 'hardline'], // 'keep'
+        ['_', 'LineComment', 'keep-space'],
+        ['_', 'BlockComment', 'keep'],
+        ['BlockComment', '_', 'keep'],
         ['_', tokenStartsWith(' '), 'nil'],
         [tokenEndsWith(' '), '_', 'nil'],
 
@@ -118,10 +118,10 @@ const spaceConfig: SpaceConfig = {
         // ['Delim', 'Line', 'nil'],
 
         // unary operators
-        [tokenEquals('#'), 'Ident', 'keep-space'],
-        [tokenEquals('+'), '_', 'keep-space'],
-        [tokenEquals('-'), '_', 'keep-space'],
-        [tokenEquals('^'), '_', 'keep-space'],
+        [tokenEquals('#'), 'Ident', 'keep'],
+        [tokenEquals('+'), '_', 'keep'],
+        [tokenEquals('-'), '_', 'keep'],
+        [tokenEquals('^'), '_', 'keep'],
 
         // soft-wrapping operators
         ['_', 'Dot', 'nil'],
@@ -131,7 +131,7 @@ const spaceConfig: SpaceConfig = {
 
         // prefix/postfix operators
         [{ left: tokenEquals('do'), main: tokenEquals('?') }, '_', 'space'],
-        // [tokenEquals('?'), 'Curly', 'keep-space'],
+        // [tokenEquals('?'), 'Curly', 'keep'],
         [tokenEquals('?'), '_', 'nil'],
         // [tokenEquals('#'), 'Ident', 'nil'], ///
         ['_', tokenEquals('!'), 'nil'],
@@ -139,8 +139,6 @@ const spaceConfig: SpaceConfig = {
         // space between identifier and group
         [tokenEquals('func'), 'Paren', 'nil'],
         [tokenEquals('func'), 'Angle', 'nil'],
-        [tokenEquals('shared'), 'Paren', 'nil'],
-        [tokenEquals('shared'), 'Angle', 'nil'],
         [keyword, 'Group', 'space'],
         ['Ident', 'Paren', 'nil'],
         ['Ident', 'Square', 'nil'],
