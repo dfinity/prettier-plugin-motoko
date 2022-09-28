@@ -89,7 +89,7 @@ export function parseSpace(
                             return printToken(token);
                         }
                         if (token.token_type === 'Line') {
-                            result = line;
+                            result = printToken(token);
                         }
                     }
                     right = rightMap.get(right);

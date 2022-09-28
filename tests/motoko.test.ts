@@ -31,7 +31,7 @@ describe('Motoko formatter', () => {
 
     test('block comments', () => {
         expect(format('let/*{{*/x = 0;//x\n (x)')).toStrictEqual(
-            'let /*{{*/ x = 0; //x\n(x);\n',
+            'let/*{{*/x = 0; //x\n(x);\n',
         );
     });
 
