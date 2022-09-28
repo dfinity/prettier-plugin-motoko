@@ -24,7 +24,6 @@ export type Space =
           | 'keep'
           | 'keep-space'
       )
-    //   | 'keep-line'
     | Space[];
 
 // Documentation: https://github.com/prettier/prettier/blob/main/commands.md

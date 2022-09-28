@@ -99,13 +99,13 @@ const spaceConfig: SpaceConfig = {
     // whitespace rules, prioritized from top to bottom
     rules: [
         // whitespace / comment tokens
+        ['LineComment', '_', 'hardline'],
         ['MultiLine', '_', 'hardline'],
         ['_', 'MultiLine', 'hardline'],
         ['Space', '_', 'nil'],
         ['_', 'Space', 'nil'],
         ['Line', '_', 'nil'],
         ['_', 'Line', 'nil'],
-        ['LineComment', '_', 'hardline'],
         ['_', 'LineComment', 'keep-space'],
         ['_', 'BlockComment', 'keep'],
         ['BlockComment', '_', 'keep'],
