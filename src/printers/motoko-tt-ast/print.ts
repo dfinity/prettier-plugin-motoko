@@ -163,23 +163,29 @@ function printTokenTree(
                 // use incremental cache to reduce time complexity
                 return tt._shouldBreak;
             }
-            if (tt.token_tree_type === 'Token') {
-                const token = getToken(tt);
-                if (!token) {
-                    return false;
-                }
-                if (
-                    token.token_type === 'Line' ||
-                    token.token_type === 'MultiLine' ||
-                    token.token_type === 'LineComment'
-                ) {
-                    return true;
-                }
-            } else if (tt.token_tree_type === 'Group') {
+            if (tt.token_tree_type === 'Group') {
                 const [trees] = tt.data;
-                tt._shouldBreak = trees.some((tt) => shouldBreak(tt));
-                return tt._shouldBreak;
+                tt._shouldBreak =
+                    trees.some((tt) => shouldBreak(tt)) &&
+                    !trees.every((tt) => {
+                        // don't force break if all whitespace and/or nested groups
+                        const token = getToken(tt);
+                        return (
+                            !token || // group
+                            token.token_type === 'Line' ||
+                            token.token_type === 'MultiLine'
+                        );
+                    });
+            } else {
+                const token = getToken(tt);
+                if (token) {
+                    tt._shouldBreak =
+                        token.token_type === 'Line' ||
+                        token.token_type === 'MultiLine' ||
+                        token.token_type === 'LineComment';
+                }
             }
+            return tt._shouldBreak;
         };
         let shouldBreakTree = shouldBreak(tree);
 
@@ -206,10 +212,11 @@ function printTokenTree(
                 return true;
             }
             if (groupType === 'Square' || groupType === 'Paren') {
-                if (hasNestedGroup) {
-                    return false;
-                }
-                return results.length <= 1 && !shouldBreakTree;
+                // if (hasNestedGroup) {
+                //     return false;
+                // }
+                // return results.length <= 1 && !shouldBreakTree;
+                return !hasNestedGroup && !shouldBreakTree;
             }
             return false;
         };

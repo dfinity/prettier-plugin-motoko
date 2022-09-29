@@ -242,7 +242,7 @@ describe('Motoko formatter', () => {
     });
 
     test('line comment in single line', () => {
-        expect(format("a<(b,\n//c\n)>()")).toStrictEqual("a<(b, /* c */)>();\n");
+        expect(format("a<(b,\n//c\n)>()")).toStrictEqual("a<(b, /* c */)>()\n");
     });
 
     test('unclosed quotes in comments', () => {
