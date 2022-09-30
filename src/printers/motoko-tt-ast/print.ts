@@ -156,7 +156,39 @@ function printTokenTree(
         const leftMap = new Map<TokenTree, TokenTree>();
         const rightMap = new Map<TokenTree, TokenTree>();
 
-        let shouldBreak = false;
+        const shouldBreak = (
+            tt: TokenTree & { _shouldBreak?: boolean },
+        ): boolean => {
+            if ('_shouldBreak' in tt) {
+                // use incremental cache to reduce time complexity
+                return tt._shouldBreak;
+            }
+            if (tt.token_tree_type === 'Group') {
+                const [trees] = tt.data;
+                tt._shouldBreak =
+                    trees.some((tt) => shouldBreak(tt)) &&
+                    !trees.every((tt) => {
+                        // don't force break if all whitespace and/or nested groups
+                        const token = getToken(tt);
+                        return (
+                            !token || // group
+                            token.token_type === 'Line' ||
+                            token.token_type === 'MultiLine'
+                        );
+                    });
+            } else {
+                const token = getToken(tt);
+                if (token) {
+                    tt._shouldBreak =
+                        token.token_type === 'Line' ||
+                        token.token_type === 'MultiLine' ||
+                        token.token_type === 'LineComment';
+                }
+            }
+            return tt._shouldBreak;
+        };
+        let shouldBreakTree = shouldBreak(tree);
+
         const trees = originalTrees.filter((tt, i) => {
             const left = originalTrees[i - 1];
             if (left) {
@@ -165,10 +197,6 @@ function printTokenTree(
             const right = originalTrees[i + 1];
             if (right) {
                 rightMap.set(tt, right);
-            }
-
-            if (getToken(tt)?.token_type === 'Line') {
-                shouldBreak = true;
             }
             return !shouldSkipTokenTree(tt);
         });
@@ -184,10 +212,11 @@ function printTokenTree(
                 return true;
             }
             if (groupType === 'Square' || groupType === 'Paren') {
-                if (hasNestedGroup) {
-                    return false;
-                }
-                return results.length <= 1 && !shouldBreak;
+                // if (hasNestedGroup) {
+                //     return false;
+                // }
+                // return results.length <= 1 && !shouldBreakTree;
+                return !hasNestedGroup && !shouldBreakTree;
             }
             return false;
         };
@@ -320,7 +349,7 @@ function printTokenTree(
                       ]
                 : results,
             {
-                shouldBreak,
+                shouldBreak: shouldBreakTree,
             },
         );
         return shouldKeepSameLine() ? withoutLineBreaks(resultDoc) : resultDoc;
@@ -338,16 +367,15 @@ function printToken(token: Token): Doc {
         case 'Space':
             return space;
         case 'Line':
-            // return breakParent;
             return hardline;
         case 'MultiLine':
-            // return [breakParent, hardline];
-            // return [hardline, hardline];
             return [breakParent];
         case 'LineComment':
-            // return [token.data, hardline];
-            return token.data;
-        // return token.data;
+            // return token.data;
+            return ifBreak(
+                token.data,
+                `/* ${token.data.substring(2).trim()} */`,
+            );
         // return lineSuffix(token.data);
     }
     return getTokenText(token);

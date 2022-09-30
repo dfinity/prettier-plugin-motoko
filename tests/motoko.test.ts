@@ -237,6 +237,14 @@ describe('Motoko formatter', () => {
         // );
     });
 
+    test('anonymous function line break', () => {
+        expect(format("(func() {\na\n})")).toStrictEqual("(\n  func() {\n    a;\n  },\n);\n");
+    });
+
+    test('line comment in single line', () => {
+        expect(format("a<(b,\n//c\n)>()")).toStrictEqual("a<(b, /* c */)>()\n");
+    });
+
     test('unclosed quotes in comments', () => {
         expect(format("// a'b\n '")).toStrictEqual("// a'b\n';\n");
         expect(format('// a"b\n "')).toStrictEqual('// a"b\n";\n');
@@ -268,11 +276,11 @@ describe('Motoko formatter', () => {
     //             )} <<<\n\n${formatted}\n\n`;
     //         }
     //         writeFileSync(
-    //             join(__dirname, `motoko/_CompilerTests_Before.${extension}`),
+    //             join(__dirname, `generated/_CompilerTests_Before.${extension}_`),
     //             preOutput,
     //         );
     //         writeFileSync(
-    //             join(__dirname, `motoko/_CompilerTests_Formatted.${extension}`),
+    //             join(__dirname, `generated/_CompilerTests_Formatted.${extension}_`),
     //             postOutput,
     //         );
     //     }
