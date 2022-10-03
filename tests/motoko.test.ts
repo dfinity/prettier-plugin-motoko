@@ -259,6 +259,17 @@ describe('Motoko formatter', () => {
         // expect(format('/* a"b */  "')).toStrictEqual('/* a"b */\n";\n');
     });
 
+    test('Line comment spacing', () => {
+        expect(format('//x\n')).toStrictEqual('// x\n');
+        expect(format('///x\n')).toStrictEqual('/// x\n');
+        expect(format('////x\n')).toStrictEqual('/// /x\n');
+    });
+
+    test('Doc comments', () => {
+        expect(format('//! x\n')).toStrictEqual('/// x\n');
+        expect(format('//!x\n')).toStrictEqual('/// x\n');
+    });
+
     // test('generate diff files from compiler tests', () => {
     //     for (const extension of ['mo', 'did']) {
     //         let preOutput = '';
