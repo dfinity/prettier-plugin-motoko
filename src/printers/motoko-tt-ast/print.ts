@@ -46,8 +46,6 @@ const {
 } = doc;
 
 const space = ' ';
-// const wrapIndent = indent(line);
-const wrapIndent = line;
 
 export function parseSpace(
     input: Space,
@@ -69,10 +67,8 @@ export function parseSpace(
             case 'hardline':
                 return hardline;
             case 'wrap':
-                // return ifBreak(wrapIndent, space);
                 return line;
             case 'softwrap':
-                // return ifBreak(wrapIndent);
                 return softline;
             case 'keep':
             case 'keep-space':
@@ -145,9 +141,9 @@ function printTokenTree(
     args?: unknown,
 ): Doc {
     if (tree.token_tree_type === 'Group') {
-        const [originalTrees, groupType, pair] = tree.data;
+        const [originalTrees, treeType, pair] = tree.data;
 
-        if (groupType === 'BlockComment') {
+        if (treeType === 'BlockComment') {
             return getTokenTreeText(tree);
         }
 
@@ -160,7 +156,7 @@ function printTokenTree(
             tt: TokenTree & { _shouldBreak?: boolean },
         ): boolean => {
             if ('_shouldBreak' in tt) {
-                // use incremental cache to reduce time complexity
+                // Use incremental cache to reduce time complexity
                 return tt._shouldBreak;
             }
             if (tt.token_tree_type === 'Group') {
@@ -168,10 +164,10 @@ function printTokenTree(
                 tt._shouldBreak =
                     trees.some((tt) => shouldBreak(tt)) &&
                     !trees.every((tt) => {
-                        // don't force break if all whitespace and/or nested groups
+                        // Don't force break if all whitespace and/or nested groups
                         const token = getToken(tt);
                         return (
-                            !token || // group
+                            !token || // Group
                             token.token_type === 'Line' ||
                             token.token_type === 'MultiLine'
                         );
@@ -201,21 +197,17 @@ function printTokenTree(
             return !shouldSkipTokenTree(tt);
         });
 
-        // nested groups such as `((a, b, ...))`
+        // Nested groups such as `((a, b, ...))`
         const hasNestedGroup =
-            (groupType === 'Square' || groupType === 'Paren') &&
+            (treeType === 'Square' || treeType === 'Paren') &&
             trees.length === 1 &&
             trees[0].token_tree_type === 'Group';
 
         const shouldKeepSameLine = () => {
-            if (groupType === 'Angle') {
+            if (treeType === 'Angle') {
                 return true;
             }
-            if (groupType === 'Square' || groupType === 'Paren') {
-                // if (hasNestedGroup) {
-                //     return false;
-                // }
-                // return results.length <= 1 && !shouldBreakTree;
+            if (treeType === 'Square' || treeType === 'Paren') {
                 return !hasNestedGroup && !shouldBreakTree;
             }
             return false;
@@ -225,12 +217,23 @@ function printTokenTree(
         let resultGroup: Doc[] = [];
         let ignoringNextStatement = false;
         const endGroup = () => {
+<<<<<<< Updated upstream
             if (resultGroup.length) {
                 results.push(
                     // group(resultGroup),
                     fill(resultGroup),
                 );
                 resultGroup = [];
+=======
+            if (nextGroup.length) {
+                if (nextImport) {
+                    imports.push(nextImport);
+                    nextImport = null;
+                } else {
+                    groups.push(fill(nextGroup));
+                }
+                nextGroup = [];
+>>>>>>> Stashed changes
                 ignoringNextStatement = false;
             }
         };
@@ -238,7 +241,7 @@ function printTokenTree(
         for (let i = 0; i < trees.length; i++) {
             let a = trees[i]!;
 
-            // check if the most recent token is a delimiter and/or line break separator
+            // Check if the most recent token is a delimiter and/or line break separator
             let isDelim = false;
             let isSeparator = false;
             let comment;
@@ -251,15 +254,58 @@ function printTokenTree(
 
                 if (token.token_type === 'LineComment') {
                     comment = getTokenText(token).substring(2).trim();
+<<<<<<< Updated upstream
+=======
+                } else if (
+                    token.token_type === 'Ident' &&
+                    getTokenText(token) === 'import'
+                ) {
+                    // Start building an import
+                    nextImport = { group: nextGroup };
+>>>>>>> Stashed changes
                 }
             } else if (a.token_tree_type === 'Group') {
-                const [, groupType] = a.data;
-                if (groupType === 'BlockComment') {
+                const [, aType] = a.data;
+                if (aType === 'BlockComment') {
                     comment = getTokenTreeText(a).slice(2, -2).trim();
                 }
             }
 
+<<<<<<< Updated upstream
             // check for prettier-ignore* comments
+=======
+            if (nextImport) {
+                if (!nextImport.pattern) {
+                    // Import name or pattern
+                    const token = getToken(a);
+                    if (token) {
+                        if (token.token_type === 'Ident') {
+                            // `import Abc`
+                            nextImport.pattern = a;
+                            nextImport.name = getTokenText(token);
+                        }
+                    } else if (a.token_tree_type === 'Group') {
+                        const [, groupType] = a.data;
+                        if (groupType === 'Curly') {
+                            // `import { ... }`
+                            nextImport.pattern = a;
+                        }
+                    }
+                } else if (!nextImport.pathToken) {
+                    // Import path
+                    const token = getToken(a);
+                    if (
+                        token &&
+                        token.token_type === 'Literal' &&
+                        token.data[1] === 'Text'
+                    ) {
+                        nextImport.pathToken = token;
+                    }
+                }
+            }
+
+            // Check for prettier-ignore* comments
+>>>>>>> Stashed changes
             if (comment) {
                 if (comment === 'prettier-ignore') {
                     ignoringNextStatement = true;
@@ -276,7 +322,7 @@ function printTokenTree(
             }
 
             if (ignoringNextStatement) {
-                // print without formatting
+                // Print without formatting
 
                 const ignoreDoc = [];
                 let tt = a;
@@ -288,24 +334,33 @@ function printTokenTree(
                 );
                 resultGroup.push(ignoreDoc);
             } else {
-                // format token
+                // Format next token
 
+<<<<<<< Updated upstream
                 const resultArray = isSeparator ? results : resultGroup;
                 // add everything except trailing delimiter
                 if (!isDelim || i !== trees.length - 1) {
+=======
+                const resultArray = isSeparator ? groups : nextGroup;
+                // Add everything except trailing delimiter
+                if (!nextImport && !(isDelim && i === trees.length - 1)) {
+>>>>>>> Stashed changes
                     resultArray.push(
                         isDelim /* && options.replaceComma */
-                            ? printToken(getGroupDelimToken(groupType))
+                            ? printToken(getGroupDelimToken(treeType))
                             : printTokenTree(a, path, options, print, args),
                     );
                 }
                 if (i < trees.length - 1) {
-                    const b = trees[i + 1]!;
-                    // resultArray.push(printBetween(a, b, leftMap, rightMap));
+                    // const b = trees[i + 1]!;
                     resultArray.push(
                         printBetween(trees, i, i + 1, leftMap, rightMap),
                     );
+<<<<<<< Updated upstream
                 } else if (results.length || resultGroup.length) {
+=======
+                } else if (!nextImport && (groups.length || nextGroup.length)) {
+>>>>>>> Stashed changes
                     endGroup();
 
                     // Trailing delimiter
@@ -313,12 +368,17 @@ function printTokenTree(
                         (!isSeparator || isDelim) &&
                         !hasNestedGroup &&
                         !shouldKeepSameLine() &&
-                        (groupType === 'Unenclosed' || groupType === 'Curly'
+                        (treeType === 'Unenclosed' || treeType === 'Curly'
                             ? options.semi
                             : options.trailingComma !== 'none')
                     ) {
+<<<<<<< Updated upstream
                         results.push(
                             ifBreak(printToken(getGroupDelimToken(groupType))),
+=======
+                        groups.push(
+                            ifBreak(printToken(getGroupDelimToken(treeType))),
+>>>>>>> Stashed changes
                         );
                     }
                 }
@@ -326,12 +386,19 @@ function printTokenTree(
         }
         endGroup();
 
+<<<<<<< Updated upstream
+=======
+        if (imports.length) {
+            groups.unshift([printImports(imports), hardline]);
+        }
+
+>>>>>>> Stashed changes
         const pairSpace: Doc =
             results.length === 0
                 ? []
-                : groupType === 'Curly' && options.bracketSpacing
+                : treeType === 'Curly' && options.bracketSpacing
                 ? line
-                : groupType === 'Angle'
+                : treeType === 'Angle'
                 ? []
                 : softline;
 
