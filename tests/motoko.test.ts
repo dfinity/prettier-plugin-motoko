@@ -238,11 +238,13 @@ describe('Motoko formatter', () => {
     });
 
     test('anonymous function line break', () => {
-        expect(format("(func() {\na\n})")).toStrictEqual("(\n  func() {\n    a;\n  },\n);\n");
+        expect(format('(func() {\na\n})')).toStrictEqual(
+            '(\n  func() {\n    a;\n  },\n);\n',
+        );
     });
 
     test('line comment in single line', () => {
-        expect(format("a<(b,\n//c\n)>()")).toStrictEqual("a<(b, /* c */)>()\n");
+        expect(format('a<(b,\n//c\n)>()')).toStrictEqual('a<(b, /* c */)>()\n');
     });
 
     test('unclosed quotes in comments', () => {
@@ -255,6 +257,12 @@ describe('Motoko formatter', () => {
         // expect(format('/*"*/  "')).toStrictEqual('/*\n"*/ "\n');
         expect(format("/* a'b */  '")).toStrictEqual("/* a'b */ '\n");
         // expect(format('/* a"b */  "')).toStrictEqual('/* a"b */\n";\n');
+    });
+
+    test('wrappable block in parentheses', () => {
+        expect(
+            format(`(${'x'.repeat(50)}, do {${'x'.repeat(50)}})`),
+        ).toStrictEqual(`(${'x'.repeat(50)}, do\n{    ${'x'.repeat(50)}\n  }\n)`);
     });
 
     // test('generate diff files from compiler tests', () => {
