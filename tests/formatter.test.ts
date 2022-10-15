@@ -238,11 +238,13 @@ describe('Motoko formatter', () => {
     });
 
     test('anonymous function line break', () => {
-        expect(format("(func() {\na\n})")).toStrictEqual("(\n  func() {\n    a;\n  },\n);\n");
+        expect(format('(func() {\na\n})')).toStrictEqual(
+            '(\n  func() {\n    a;\n  },\n);\n',
+        );
     });
 
     test('line comment in single line', () => {
-        expect(format("a<(b,\n//c\n)>()")).toStrictEqual("a<(b, /* c */)>()\n");
+        expect(format('a<(b,\n//c\n)>()')).toStrictEqual('a<(b, /* c */)>()\n');
     });
 
     test('unclosed quotes in comments', () => {

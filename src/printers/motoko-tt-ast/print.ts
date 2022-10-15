@@ -11,6 +11,7 @@ import {
     getTokenTreeText,
     withoutLineBreaks,
 } from './utils';
+import { printImports, ImportEntry } from './imports';
 
 export type Space =
     | (
@@ -221,16 +222,22 @@ function printTokenTree(
             return false;
         };
 
-        const results: Doc[] = [];
-        let resultGroup: Doc[] = [];
+        const imports: ImportEntry[] = [];
+        let nextImport: ImportEntry = null;
+        const groups: Doc[] = [];
+        let nextGroup: Doc[] = [];
         let ignoringNextStatement = false;
         const endGroup = () => {
-            if (resultGroup.length) {
-                results.push(
+            if (nextGroup.length) {
+                if (nextImport) {
+                    imports.push(nextImport);
+                    nextImport = null;
+                }
+                groups.push(
                     // group(resultGroup),
-                    fill(resultGroup),
+                    fill(nextGroup),
                 );
-                resultGroup = [];
+                nextGroup = [];
                 ignoringNextStatement = false;
             }
         };
@@ -251,11 +258,46 @@ function printTokenTree(
 
                 if (token.token_type === 'LineComment') {
                     comment = getTokenText(token).substring(2).trim();
+                } else if (
+                    token.token_type === 'Ident' &&
+                    getTokenText(token) === 'import'
+                ) {
+                    // start building an import
+                    nextImport = { group: nextGroup };
                 }
             } else if (a.token_tree_type === 'Group') {
                 const [, groupType] = a.data;
                 if (groupType === 'BlockComment') {
                     comment = getTokenTreeText(a).slice(2, -2).trim();
+                }
+            }
+
+            if (nextImport) {
+                if (!nextImport.pattern) {
+                    // import name or pattern
+                    const token = getToken(a);
+                    if (token) {
+                        if (token.token_type === 'Ident') {
+                            // `import Abc`
+                            nextImport.pattern = a;
+                            nextImport.name = getTokenText(token);
+                        }
+                    } else if (a.token_tree_type === 'Group') {
+                        const [, groupType] = a.data;
+                        if (groupType === 'Curly') {
+                            // `import { ... }`
+                            nextImport.pattern = a;
+                        }
+                    }
+                } else if (!nextImport.pathToken) {
+                    // import path
+                    const token = getToken(a);
+                    if (
+                        token.token_type === 'Literal' &&
+                        token.data[1] === 'Text'
+                    ) {
+                        nextImport.pathToken = token;
+                    }
                 }
             }
 
@@ -286,11 +328,11 @@ function printTokenTree(
                     leftMap.has(tt) &&
                     shouldSkipTokenTree((tt = leftMap.get(tt)))
                 );
-                resultGroup.push(ignoreDoc);
+                nextGroup.push(ignoreDoc);
             } else {
                 // format token
 
-                const resultArray = isSeparator ? results : resultGroup;
+                const resultArray = isSeparator ? groups : nextGroup;
                 // add everything except trailing delimiter
                 if (!isDelim || i !== trees.length - 1) {
                     resultArray.push(
@@ -305,7 +347,7 @@ function printTokenTree(
                     resultArray.push(
                         printBetween(trees, i, i + 1, leftMap, rightMap),
                     );
-                } else if (results.length || resultGroup.length) {
+                } else if (groups.length || nextGroup.length) {
                     endGroup();
 
                     // Trailing delimiter
@@ -317,7 +359,7 @@ function printTokenTree(
                             ? options.semi
                             : options.trailingComma !== 'none')
                     ) {
-                        results.push(
+                        groups.push(
                             ifBreak(printToken(getGroupDelimToken(groupType))),
                         );
                     }
@@ -326,8 +368,12 @@ function printTokenTree(
         }
         endGroup();
 
+        if (imports.length) {
+            groups.unshift(printImports(imports).map((doc) => [doc, hardline]));
+        }
+
         const pairSpace: Doc =
-            results.length === 0
+            groups.length === 0
                 ? []
                 : groupType === 'Curly' && options.bracketSpacing
                 ? line
@@ -338,16 +384,16 @@ function printTokenTree(
         const resultDoc = group(
             pair
                 ? hasNestedGroup
-                    ? [printToken(pair[0][0]), results, printToken(pair[1][0])]
+                    ? [printToken(pair[0][0]), groups, printToken(pair[1][0])]
                     : [
                           printToken(pair[0][0]),
                           //   pairSpace,
                           //   results,
-                          indent([pairSpace, results]),
+                          indent([pairSpace, groups]),
                           pairSpace,
                           printToken(pair[1][0]),
                       ]
-                : results,
+                : groups,
             {
                 shouldBreak: shouldBreakTree,
             },
