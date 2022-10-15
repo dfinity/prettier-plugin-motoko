@@ -257,6 +257,17 @@ describe('Motoko formatter', () => {
         // expect(format('/* a"b */  "')).toStrictEqual('/* a"b */\n";\n');
     });
 
+    test('shared and query keywords', () => {
+        expect(format("shared({})")).toStrictEqual("shared ({})\n");
+        expect(format("shared query({})")).toStrictEqual("shared query ({})\n");
+    });
+
+    test('tuple indices', () => {
+        expect(format("x.0.y")).toStrictEqual("x.0.y\n");
+        expect(format("0. y")).toStrictEqual("0. y\n");
+        expect(format("0.\ny")).toStrictEqual("0.\ny;\n");
+    });
+
     // test('generate diff files from compiler tests', () => {
     //     for (const extension of ['mo', 'did']) {
     //         let preOutput = '';
