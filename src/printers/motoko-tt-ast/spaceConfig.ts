@@ -144,6 +144,9 @@ const spaceConfig: SpaceConfig = {
         ['Ident', 'Square', 'nil'],
         ['Ident', 'Angle', 'nil'],
 
+        // space after dot
+        [tokenEndsWith('.'), 'Ident', 'keep'],
+
         // groups
         ['Group', 'Paren', 'nil'],
         ['Group', 'Square', 'nil'],
