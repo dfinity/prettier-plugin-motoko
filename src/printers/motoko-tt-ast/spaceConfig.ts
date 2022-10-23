@@ -95,6 +95,12 @@ const tokenStartsWith = (start: string) =>
 const tokenEndsWith = (end: string) =>
     token((token) => getTokenText(token).endsWith(end));
 
+// match both "block comments" and "comment groups" (lexer implementation detail)
+const blockComment = (tt: TokenTree) =>
+    tt.token_tree_type === 'Group'
+        ? tt.data[1] === 'Comment'
+        : getToken(tt).token_type === 'BlockComment';
+
 const spaceConfig: SpaceConfig = {
     // whitespace rules, prioritized from top to bottom
     rules: [
@@ -107,10 +113,9 @@ const spaceConfig: SpaceConfig = {
         ['Line', '_', 'nil'],
         ['_', 'Line', 'nil'],
         ['_', 'LineComment', 'keep-space'],
-        ['_', 'BlockComment', 'keep-space'],
-        ['BlockComment', '_', 'keep-space'],
-        ['_', 'Comment', 'keep-space'],
-        ['Comment', '_', 'keep-space'],
+        ['_', blockComment, 'keep-space'],
+        [blockComment, 'Delim', 'keep'],
+        [blockComment, '_', 'keep-space'],
         ['_', tokenStartsWith(' '), 'nil'],
         [tokenEndsWith(' '), '_', 'nil'],
 
