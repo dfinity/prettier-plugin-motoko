@@ -13,6 +13,9 @@ const format = (input: string, options?: prettier.Options): string => {
     return prettier.format(input, { ...prettierOptions, ...options });
 };
 
+const expectFormatted = (input: string) =>
+    expect(format(input)).toStrictEqual(input);
+
 describe('Motoko formatter', () => {
     test('empty', () => {
         expect(format('')).toStrictEqual('');
@@ -41,10 +44,21 @@ describe('Motoko formatter', () => {
     });
 
     test('block comments', () => {
+        for (let i = 0; i < 10; i++) {
+            expectFormatted(`/*${'*'.repeat(i)}*/\n`);
+        }
         expect(format('let/*{{*/x = 0;//x\n (x)')).toStrictEqual(
-            'let/*{{*/x = 0; //x\n(x);\n',
+            'let /*{{*/ x = 0; //x\n(x);\n',
         );
         expect(format('\n/**/\n\n\n/**/')).toStrictEqual('/**/\n\n/**/;\n');
+        expectFormatted('/*=*/\n');
+        expectFormatted('/**=*/\n');
+        expectFormatted('/**=**/\n');
+        expectFormatted('/** **/\n');
+        expectFormatted('/*** **/\n');
+        expectFormatted('/** ***/\n');
+        expectFormatted('/****\n-----\n******/\n');
+        expectFormatted('{\n  /****\n  -----\n  ******/;\n};\n');
     });
 
     test('block with existing newline', () => {
@@ -238,11 +252,13 @@ describe('Motoko formatter', () => {
     });
 
     test('anonymous function line break', () => {
-        expect(format("(func() {\na\n})")).toStrictEqual("(\n  func() {\n    a;\n  },\n);\n");
+        expect(format('(func() {\na\n})')).toStrictEqual(
+            '(\n  func() {\n    a;\n  },\n);\n',
+        );
     });
 
     test('line comment in single line', () => {
-        expect(format("a<(b,\n//c\n)>()")).toStrictEqual("a<(b, /* c */)>()\n");
+        expect(format('a<(b,\n//c\n)>()')).toStrictEqual('a<(b, /* c */)>()\n');
     });
 
     test('unclosed quotes in comments', () => {
@@ -258,14 +274,14 @@ describe('Motoko formatter', () => {
     });
 
     test('shared and query keywords', () => {
-        expect(format("shared({})")).toStrictEqual("shared ({})\n");
-        expect(format("shared query({})")).toStrictEqual("shared query ({})\n");
+        expect(format('shared({})')).toStrictEqual('shared ({})\n');
+        expect(format('shared query({})')).toStrictEqual('shared query ({})\n');
     });
 
     test('tuple indices', () => {
-        expect(format("x.0.y")).toStrictEqual("x.0.y\n");
-        expect(format("0. y")).toStrictEqual("0. y\n");
-        expect(format("0.\ny")).toStrictEqual("0.\ny;\n");
+        expect(format('x.0.y')).toStrictEqual('x.0.y\n');
+        expect(format('0. y')).toStrictEqual('0. y\n');
+        expect(format('0.\ny')).toStrictEqual('0.\ny;\n');
     });
 
     // test('generate diff files from compiler tests', () => {
