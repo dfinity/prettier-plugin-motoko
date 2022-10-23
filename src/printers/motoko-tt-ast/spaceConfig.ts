@@ -107,8 +107,10 @@ const spaceConfig: SpaceConfig = {
         ['Line', '_', 'nil'],
         ['_', 'Line', 'nil'],
         ['_', 'LineComment', 'keep-space'],
-        ['_', 'BlockComment', 'keep'],
-        ['BlockComment', '_', 'keep'],
+        ['_', 'BlockComment', 'keep-space'],
+        ['BlockComment', '_', 'keep-space'],
+        ['_', 'Comment', 'keep-space'],
+        ['Comment', '_', 'keep-space'],
         ['_', tokenStartsWith(' '), 'nil'],
         [tokenEndsWith(' '), '_', 'nil'],
 

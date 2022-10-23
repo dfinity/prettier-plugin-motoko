@@ -8,7 +8,7 @@ export type GroupType =
     | 'Curly'
     | 'Square'
     | 'Angle'
-    | 'BlockComment';
+    | 'Comment';
 
 export type TokenTree =
     | {
@@ -56,6 +56,7 @@ export type Token =
     | {
           token_type:
               | 'LineComment'
+              | 'BlockComment'
               | 'Dot'
               | 'Colon'
               | 'Assign'

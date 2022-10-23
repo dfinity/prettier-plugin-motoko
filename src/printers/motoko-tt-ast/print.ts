@@ -147,7 +147,7 @@ function printTokenTree(
     if (tree.token_tree_type === 'Group') {
         const [originalTrees, groupType, pair] = tree.data;
 
-        if (groupType === 'BlockComment') {
+        if (groupType === 'Comment') {
             return getTokenTreeText(tree);
         }
 
@@ -250,11 +250,13 @@ function printTokenTree(
                     ['MultiLine', 'LineComment'].includes(token.token_type);
 
                 if (token.token_type === 'LineComment') {
-                    comment = getTokenText(token).substring(2).trim();
+                    comment = getTokenText(token).slice(2).trim();
+                } else if (token.token_type === 'BlockComment') {
+                    comment = getTokenText(token).slice(2, -2).trim();
                 }
             } else if (a.token_tree_type === 'Group') {
                 const [, groupType] = a.data;
-                if (groupType === 'BlockComment') {
+                if (groupType === 'Comment') {
                     comment = getTokenTreeText(a).slice(2, -2).trim();
                 }
             }

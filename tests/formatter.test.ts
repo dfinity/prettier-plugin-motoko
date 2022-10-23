@@ -44,12 +44,18 @@ describe('Motoko formatter', () => {
     });
 
     test('block comments', () => {
+        for (let i = 0; i < 10; i++) {
+            expectFormatted(`/*${'*'.repeat(i)}*/\n`);
+        }
         expect(format('let/*{{*/x = 0;//x\n (x)')).toStrictEqual(
-            'let/*{{*/x = 0; //x\n(x);\n',
+            'let /*{{*/ x = 0; //x\n(x);\n',
         );
         expect(format('\n/**/\n\n\n/**/')).toStrictEqual('/**/\n\n/**/;\n');
-        expectFormatted('/*****\n-----\n*****/\n');
-        expectFormatted('{\n  /*****\n  -----\n  *****/;\n};\n');
+        expectFormatted('/*=*/\n');
+        expectFormatted('/**=*/\n');
+        expectFormatted('/**=**/\n');
+        expectFormatted('/****\n-----\n******/\n');
+        expectFormatted('{\n  /****\n  -----\n  ******/;\n};\n');
     });
 
     test('block with existing newline', () => {
