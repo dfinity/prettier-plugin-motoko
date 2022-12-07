@@ -61,6 +61,10 @@ describe('Motoko formatter', () => {
         expectFormatted('{\n  /****\n  -----\n  ******/;\n};\n');
     });
 
+    test('block comment in empty indented group', () => {
+        expect(format('{\n/**//**/}')).toStrictEqual('{\n  /**/ /**/\n};\n');
+    });
+
     test('block with existing newline', () => {
         expect(format('{a;\nb}')).toStrictEqual('{\n  a;\n  b;\n};\n');
     });
