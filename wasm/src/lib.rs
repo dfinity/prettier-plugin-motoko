@@ -8,8 +8,8 @@ extern "C" {
 }
 
 fn js_return<T: Serialize>(value: &T) -> Result<JsValue, JsError> {
-    JsValue::from_serde(value)
-        .map_err(|e| JsError::new(&format!("Serialization error ({:?})", e.classify())))
+    serde_wasm_bindgen::to_value(value)
+        .map_err(|e| JsError::new(&format!("Serialization error ({})", e)))
 }
 
 #[wasm_bindgen(start)]
