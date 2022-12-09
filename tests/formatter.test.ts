@@ -58,7 +58,7 @@ describe('Motoko formatter', () => {
         expectFormatted('/*** **/\n');
         expectFormatted('/** ***/\n');
         expectFormatted('/****\n-----\n******/\n');
-        expectFormatted('{\n  /****\n  -----\n  ******/;\n};\n');
+        expectFormatted('{\n  /****\n  -----\n  ******/\n};\n');
     });
 
     test('block comment in empty indented group', () => {
