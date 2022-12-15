@@ -1,5 +1,6 @@
 use motoko::lexer::create_token_tree;
 use serde::Serialize;
+use serde_wasm_bindgen::to_value;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
@@ -7,9 +8,8 @@ extern "C" {
     // fn alert(s: &str);
 }
 
-fn js_return<T: Serialize>(value: &T) -> Result<JsValue, JsError> {
-    JsValue::from_serde(value)
-        .map_err(|e| JsError::new(&format!("Serialization error ({:?})", e.classify())))
+fn js_return<T: Serialize + ?Sized>(value: &T) -> Result<JsValue, JsError> {
+    to_value(value).map_err(|e| JsError::new(&format!("Serialization error ({})", e)))
 }
 
 #[wasm_bindgen(start)]
