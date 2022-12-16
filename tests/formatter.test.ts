@@ -284,6 +284,19 @@ describe('Motoko formatter', () => {
         expect(format('0.\ny')).toStrictEqual('0.\ny;\n');
     });
 
+    test('repeated delimiters', () => {
+        expect(format('{;}')).toStrictEqual('{}\n');
+        expect(format('{;;}')).toStrictEqual('{}\n');
+        expect(format('{,;}')).toStrictEqual('{}\n');
+        expect(format('{;,;}')).toStrictEqual('{}\n');
+        expect(format('{a;}')).toStrictEqual('{ a }\n');
+        expect(format('{a;;}')).toStrictEqual('{ a }\n');
+        expect(format('{a,;}')).toStrictEqual('{ a }\n');
+        expect(format('{,;a}')).toStrictEqual('{ a }\n');
+        expect(format('{;a,,b;,}')).toStrictEqual('{ a; b };\n');
+        expect(format('{;a,\nb;,}')).toStrictEqual('{\n  a;\n  b;\n};\n');
+    });
+
     // test('generate diff files from compiler tests', () => {
     //     for (const extension of ['mo', 'did']) {
     //         let preOutput = '';

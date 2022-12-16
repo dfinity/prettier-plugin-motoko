@@ -103,6 +103,7 @@ const blockComment = (tt: TokenTree) =>
 
 const spaceConfig: SpaceConfig = {
     // whitespace rules, prioritized from top to bottom
+    // [leftToken, rightToken, spaceRule]
     rules: [
         // whitespace / comment tokens
         ['LineComment', '_', 'hardline'],

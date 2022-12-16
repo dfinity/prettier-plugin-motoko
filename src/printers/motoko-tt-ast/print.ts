@@ -160,7 +160,7 @@ function printTokenTree(
             tt: TokenTree & { _shouldBreak?: boolean },
         ): boolean => {
             if ('_shouldBreak' in tt) {
-                // use incremental cache to reduce time complexity
+                // Use incremental cache to reduce time complexity
                 return tt._shouldBreak;
             }
             if (tt.token_tree_type === 'Group') {
@@ -168,7 +168,7 @@ function printTokenTree(
                 tt._shouldBreak =
                     trees.some((tt) => shouldBreak(tt)) &&
                     !trees.every((tt) => {
-                        // don't force break if all whitespace and/or nested groups
+                        // Don't force break if all whitespace and/or nested groups
                         const token = getToken(tt);
                         return (
                             !token || // group
@@ -201,7 +201,7 @@ function printTokenTree(
             return !shouldSkipTokenTree(tt);
         });
 
-        // nested groups such as `((a, b, ...))`
+        // Nested groups such as `((a, b, ...))`
         const hasNestedGroup =
             (groupType === 'Square' || groupType === 'Paren') &&
             trees.length === 1 &&
@@ -221,6 +221,12 @@ function printTokenTree(
             return false;
         };
 
+        const pushNonEmpty = (array: Doc[], doc: Doc) => {
+            if (!Array.isArray(doc) || doc.length) {
+                array.push(doc);
+            }
+        };
+
         const results: Doc[] = [];
         let resultGroup: Doc[] = [];
         let ignoringNextStatement = false;
@@ -235,10 +241,12 @@ function printTokenTree(
             }
         };
 
+        let previousDelim = false;
+
         for (let i = 0; i < trees.length; i++) {
             let a = trees[i]!;
 
-            // check if the most recent token is a delimiter and/or line break separator
+            // Check if the most recent token is a delimiter and/or line break separator
             let isDelim = false;
             let isSeparator = false;
             let comment;
@@ -261,7 +269,7 @@ function printTokenTree(
                 }
             }
 
-            // check for prettier-ignore* comments
+            // Check for prettier-ignore* comments
             if (comment) {
                 if (comment === 'prettier-ignore') {
                     ignoringNextStatement = true;
@@ -278,7 +286,7 @@ function printTokenTree(
             }
 
             if (ignoringNextStatement) {
-                // print without formatting
+                // Print without formatting
 
                 const ignoreDoc = [];
                 let tt = a;
@@ -290,21 +298,26 @@ function printTokenTree(
                 );
                 resultGroup.push(ignoreDoc);
             } else {
-                // format token
+                // Format token
 
                 const resultArray = isSeparator ? results : resultGroup;
-                // add everything except trailing delimiter
-                if (!isDelim || i !== trees.length - 1) {
-                    resultArray.push(
+                // Add everything except trailing delimiter
+                if (
+                    !isDelim ||
+                    (i !== trees.length - 1 && results.length && !previousDelim)
+                ) {
+                    pushNonEmpty(
+                        resultArray,
                         isDelim /* && options.replaceComma */
                             ? printToken(getGroupDelimToken(groupType))
                             : printTokenTree(a, path, options, print, args),
                     );
                 }
                 if (i < trees.length - 1) {
-                    const b = trees[i + 1]!;
+                    // const b = trees[i + 1]!;
                     // resultArray.push(printBetween(a, b, leftMap, rightMap));
-                    resultArray.push(
+                    pushNonEmpty(
+                        resultArray,
                         printBetween(trees, i, i + 1, leftMap, rightMap),
                     );
                 } else if (results.length || resultGroup.length) {
@@ -325,8 +338,12 @@ function printTokenTree(
                     }
                 }
             }
+
+            previousDelim = isDelim;
         }
         endGroup();
+
+        // console.log(results); ///
 
         const pairSpace: Doc =
             results.length === 0
