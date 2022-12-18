@@ -221,6 +221,40 @@ function printTokenTree(
             return false;
         };
 
+        // Check if the current block is possibly a record extension (see #70)
+        const isPossiblyRecordExtension = () => {
+            if (groupType !== 'Curly') {
+                return false;
+            }
+            let hasWith = false;
+            let hasAnd = false;
+            let hasAssign = false;
+            let hasColon = false;
+            let hasDelim = false;
+            trees.forEach((tree) => {
+                let token = getToken(tree);
+                if (!token) {
+                    return false;
+                } else if (token.token_type === 'Ident') {
+                    if (token.data === 'and') {
+                        hasAnd = true;
+                    } else if (token.data === 'with') {
+                        hasWith = true;
+                    }
+                } else if (
+                    token.token_type === 'Assign' &&
+                    token.data === '='
+                ) {
+                    hasAssign = true;
+                } else if (token.token_type === 'Colon') {
+                    hasColon = true;
+                } else if (token.token_type === 'Delim') {
+                    hasDelim = true;
+                }
+            });
+            return !hasDelim && ((hasWith && hasAssign) || hasAnd);
+        };
+
         const results: Doc[] = [];
         let resultGroup: Doc[] = [];
         let ignoringNextStatement = false;
@@ -317,7 +351,8 @@ function printTokenTree(
                         !shouldKeepSameLine() &&
                         (groupType === 'Unenclosed' || groupType === 'Curly'
                             ? options.semi
-                            : options.trailingComma !== 'none')
+                            : options.trailingComma !== 'none') &&
+                        !isPossiblyRecordExtension()
                     ) {
                         results.push(
                             ifBreak(printToken(getGroupDelimToken(groupType))),

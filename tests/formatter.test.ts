@@ -205,6 +205,17 @@ describe('Motoko formatter', () => {
         expect(format('(a,b,c,)')).toStrictEqual('(a, b, c)\n');
     });
 
+    test('no delimiter for record extension', () => {
+        expect(format('{\na}')).toStrictEqual('{\n  a;\n};\n');
+        expect(format('{\na : b}')).toStrictEqual('{\n  a : b;\n};\n');
+        expect(format('{\na = b}')).toStrictEqual('{\n  a = b;\n};\n');
+        expect(format('{\na and b}')).toStrictEqual('{\n  a and b\n};\n');
+        expect(format('{\na with b = c}')).toStrictEqual('{\n  a with b = c\n};\n');
+        expect(format('{\na and b;}')).toStrictEqual('{\n  a and b;\n};\n');
+        // expect(format('{\na : A and B}')).toStrictEqual('{\n  a : A and B;\n};\n');
+        // expect(format('{\na = b and c}')).toStrictEqual('{\n  a = b and c;\n};\n');
+    });
+
     test('bracket spacing', () => {
         expect(format('{abc}')).toStrictEqual('{ abc }\n');
         expect(format('{ abc }', { bracketSpacing: false })).toStrictEqual(
