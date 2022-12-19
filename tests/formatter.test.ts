@@ -247,6 +247,11 @@ describe('Motoko formatter', () => {
     //     );
     // });
 
+    test('identifier tokens', ()=>{
+        expect(format('x.0.e0x')).toStrictEqual('x.0.e0x\n');
+        expect(format('x.0.e0 x')).toStrictEqual('x.0.e0 x\n');
+    })
+
     test('array indexing line break', () => {
         expect(format(`${'x'.repeat(80)}[0]`)).toStrictEqual(
             `${'x'.repeat(80)}[0];\n`,
