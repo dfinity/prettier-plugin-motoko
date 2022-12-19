@@ -163,6 +163,17 @@ const spaceConfig: SpaceConfig = {
         ['Open', '_', 'nil'],
         ['_', 'Close', 'nil'],
 
+        // identifier after float in exponential notation (fixes #74)
+        [
+            token(
+                (token) =>
+                    token.token_type === 'Literal' &&
+                    /\.[a-z]/i.test(token.data[0]),
+            ),
+            'Ident',
+            'keep',
+        ],
+
         // default
         ['_', '_', 'space'],
     ],
