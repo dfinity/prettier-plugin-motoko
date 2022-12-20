@@ -210,7 +210,9 @@ describe('Motoko formatter', () => {
         expect(format('{\na : b}')).toStrictEqual('{\n  a : b;\n};\n');
         expect(format('{\na = b}')).toStrictEqual('{\n  a = b;\n};\n');
         expect(format('{\na and b}')).toStrictEqual('{\n  a and b\n};\n');
-        expect(format('{\na with b = c}')).toStrictEqual('{\n  a with b = c\n};\n');
+        expect(format('{\na with b = c}')).toStrictEqual(
+            '{\n  a with b = c\n};\n',
+        );
         expect(format('{\na and b;}')).toStrictEqual('{\n  a and b;\n};\n');
         // expect(format('{\na : A and B}')).toStrictEqual('{\n  a : A and B;\n};\n');
         // expect(format('{\na = b and c}')).toStrictEqual('{\n  a = b and c;\n};\n');
@@ -247,10 +249,17 @@ describe('Motoko formatter', () => {
     //     );
     // });
 
-    test('identifier tokens', ()=>{
+    test('identifier tokens', () => {
         expect(format('x.0.e0x')).toStrictEqual('x.0.e0x\n');
         expect(format('x.0.e0 x')).toStrictEqual('x.0.e0 x\n');
-    })
+    });
+
+    test('exponential notation', () => {
+        expect(format('1e1')).toStrictEqual('1e1\n');
+        expect(format('1e-1')).toStrictEqual('1e-1\n');
+        expect(format('1.e1')).toStrictEqual('1.e1\n');
+        expect(format('.1e1')).toStrictEqual('.1e1\n');
+    });
 
     test('array indexing line break', () => {
         expect(format(`${'x'.repeat(80)}[0]`)).toStrictEqual(
