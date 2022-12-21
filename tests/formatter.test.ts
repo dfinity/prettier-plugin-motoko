@@ -261,6 +261,14 @@ describe('Motoko formatter', () => {
         expect(format('.1e1')).toStrictEqual('.1e1\n');
     });
 
+    test('hexadecimal notation', () => {
+        expect(format('0xf')).toStrictEqual('0xf\n');
+        expect(format('0xF')).toStrictEqual('0xF\n');
+        expect(format('0xf_f')).toStrictEqual('0xf_f\n');
+        expect(format('0xF_f')).toStrictEqual('0xF_f\n');
+        expect(format('0xF_F')).toStrictEqual('0xF_F\n');
+    });
+
     test('array indexing line break', () => {
         expect(format(`${'x'.repeat(80)}[0]`)).toStrictEqual(
             `${'x'.repeat(80)}[0];\n`,
