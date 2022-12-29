@@ -317,6 +317,11 @@ describe('Motoko formatter', () => {
         expect(format('0.\ny')).toStrictEqual('0.\ny;\n');
     });
 
+    test('automatic semicolons', () => {
+        expect(format('{\n}\nA\n')).toStrictEqual('{};\nA;\n');
+        expect(format('{\n// }\n}\nA\n')).toStrictEqual('{\n  // }\n};\nA;\n');
+    });
+
     // test('generate diff files from compiler tests', () => {
     //     for (const extension of ['mo', 'did']) {
     //         let preOutput = '';
