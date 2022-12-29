@@ -38,7 +38,7 @@ describe('Motoko formatter', () => {
 
     test('line comments', () => {
         expect(format('{//\n}//')).toStrictEqual('{\n  //\n} //\n');
-        expect(format('{\n//\n}\n//')).toStrictEqual('{\n  //\n}\n//\n');
+        expect(format('{\n//\n}\n//')).toStrictEqual('{\n  //\n};\n//\n');
         expect(format('//a\n//b')).toStrictEqual('//a\n//b\n');
         expect(format('//a\n\n\n//b')).toStrictEqual('//a\n\n//b\n');
     });

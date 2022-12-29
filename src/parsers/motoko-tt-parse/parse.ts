@@ -1,4 +1,6 @@
+import { ParserOptions } from 'prettier';
 import wasm from '../../wasm';
+import preprocess from './preprocess';
 
 type Loc<T> = [T, Source];
 
@@ -79,11 +81,11 @@ export type Source = {
 export default function parse(
     text: string,
     parsers: object,
-    options: object,
+    options: ParserOptions<any>,
 ): TokenTree {
-    let tt = wasm.parse_token_tree(text.trim());
+    text = preprocess(text, options);
 
+    const tt = wasm.parse_token_tree(text.trim());
     // console.log(tt);
-
     return tt;
 }
