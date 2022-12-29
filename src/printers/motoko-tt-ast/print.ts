@@ -1,9 +1,9 @@
+import { AstPath, Doc, ParserOptions, doc } from 'prettier';
 import {
+    GroupType,
     Token,
     TokenTree,
-    GroupType,
 } from './../../parsers/motoko-tt-parse/parse';
-import { doc, AstPath, Doc, ParserOptions } from 'prettier';
 import spaceConfig, { doesTokenTreeMatchPattern } from './spaceConfig';
 import {
     getToken,
@@ -151,8 +151,6 @@ function printTokenTree(
             return getTokenTreeText(tree);
         }
 
-        // console.log(originalTrees.map((t) => t.data)); /////
-
         const leftMap = new Map<TokenTree, TokenTree>();
         const rightMap = new Map<TokenTree, TokenTree>();
 
@@ -221,7 +219,7 @@ function printTokenTree(
             return false;
         };
 
-        // Check if the current block is possibly a record extension (see #70)
+        // check if the current block is possibly a record extension (see #70)
         const isPossiblyRecordExtension = () => {
             if (groupType !== 'Curly') {
                 return false;
@@ -337,7 +335,6 @@ function printTokenTree(
                 }
                 if (i < trees.length - 1) {
                     const b = trees[i + 1]!;
-                    // resultArray.push(printBetween(a, b, leftMap, rightMap));
                     resultArray.push(
                         printBetween(trees, i, i + 1, leftMap, rightMap),
                     );
@@ -378,8 +375,6 @@ function printTokenTree(
                     ? [printToken(pair[0][0]), results, printToken(pair[1][0])]
                     : [
                           printToken(pair[0][0]),
-                          //   pairSpace,
-                          //   results,
                           indent([pairSpace, results]),
                           pairSpace,
                           printToken(pair[1][0]),
@@ -408,12 +403,10 @@ function printToken(token: Token): Doc {
         case 'MultiLine':
             return [breakParent];
         case 'LineComment':
-            // return token.data;
             return ifBreak(
                 token.data,
                 `/* ${token.data.substring(2).trim()} */`,
             );
-        // return lineSuffix(token.data);
     }
     return getTokenText(token);
 }
@@ -422,20 +415,15 @@ function printBetween(
     trees: TokenTree[],
     aIndex: number,
     bIndex: number,
-    // a: TokenTree,
-    // b: TokenTree,
     leftMap: Map<TokenTree, TokenTree>,
     rightMap: Map<TokenTree, TokenTree>,
 ): Doc {
     const rule = spaceConfig.rules.find(([aPattern, bPattern]) => {
         return (
-            // doesTokenTreeMatchPattern(a, aPattern) &&
-            // doesTokenTreeMatchPattern(b, bPattern)
             doesTokenTreeMatchPattern(aPattern, trees, aIndex) &&
             doesTokenTreeMatchPattern(bPattern, trees, bIndex)
         );
     });
-    // return rule ? parseSpace(rule[2], a, b, leftMap, rightMap) : [];
     return rule
         ? parseSpace(rule[2], trees[aIndex], trees[bIndex], leftMap, rightMap)
         : [];
