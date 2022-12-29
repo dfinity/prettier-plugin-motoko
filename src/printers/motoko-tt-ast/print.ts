@@ -221,7 +221,7 @@ function printTokenTree(
             return false;
         };
 
-        // Check if the current block is possibly a record extension (see #70)
+        // check if the current block is possibly a record extension (see #70)
         const isPossiblyRecordExtension = () => {
             if (groupType !== 'Curly') {
                 return false;
@@ -260,10 +260,7 @@ function printTokenTree(
         let ignoringNextStatement = false;
         const endGroup = () => {
             if (resultGroup.length) {
-                results.push(
-                    // group(resultGroup),
-                    fill(resultGroup),
-                );
+                results.push(fill(resultGroup));
                 resultGroup = [];
                 ignoringNextStatement = false;
             }
@@ -295,16 +292,11 @@ function printTokenTree(
                 }
             }
 
-            // check for prettier-ignore* comments
+            // check for prettier-ignore comments
             if (comment) {
                 if (comment === 'prettier-ignore') {
                     ignoringNextStatement = true;
                 }
-                // else if (comment === 'prettier-ignore-start') {
-                //     ignoringUntilEnd = true;
-                // } else if (comment === 'prettier-ignore-end') {
-                //     ignoringUntilEnd = false;
-                // }
             }
 
             if (isSeparator) {
@@ -330,21 +322,19 @@ function printTokenTree(
                 // add everything except trailing delimiter
                 if (!isDelim || i !== trees.length - 1) {
                     resultArray.push(
-                        isDelim /* && options.replaceComma */
+                        isDelim 
                             ? printToken(getGroupDelimToken(groupType))
                             : printTokenTree(a, path, options, print, args),
                     );
                 }
                 if (i < trees.length - 1) {
-                    const b = trees[i + 1]!;
-                    // resultArray.push(printBetween(a, b, leftMap, rightMap));
                     resultArray.push(
                         printBetween(trees, i, i + 1, leftMap, rightMap),
                     );
                 } else if (results.length || resultGroup.length) {
                     endGroup();
 
-                    // Trailing delimiter
+                    // trailing delimiter
                     if (
                         (!isSeparator || isDelim) &&
                         !hasNestedGroup &&
@@ -378,8 +368,6 @@ function printTokenTree(
                     ? [printToken(pair[0][0]), results, printToken(pair[1][0])]
                     : [
                           printToken(pair[0][0]),
-                          //   pairSpace,
-                          //   results,
                           indent([pairSpace, results]),
                           pairSpace,
                           printToken(pair[1][0]),
@@ -392,7 +380,6 @@ function printTokenTree(
         return shouldKeepSameLine() ? withoutLineBreaks(resultDoc) : resultDoc;
     } else if (tree.token_tree_type === 'Token') {
         const [token] = tree.data;
-
         return printToken(token);
     }
 
@@ -408,12 +395,10 @@ function printToken(token: Token): Doc {
         case 'MultiLine':
             return [breakParent];
         case 'LineComment':
-            // return token.data;
             return ifBreak(
                 token.data,
                 `/* ${token.data.substring(2).trim()} */`,
             );
-        // return lineSuffix(token.data);
     }
     return getTokenText(token);
 }
@@ -422,20 +407,15 @@ function printBetween(
     trees: TokenTree[],
     aIndex: number,
     bIndex: number,
-    // a: TokenTree,
-    // b: TokenTree,
     leftMap: Map<TokenTree, TokenTree>,
     rightMap: Map<TokenTree, TokenTree>,
 ): Doc {
     const rule = spaceConfig.rules.find(([aPattern, bPattern]) => {
         return (
-            // doesTokenTreeMatchPattern(a, aPattern) &&
-            // doesTokenTreeMatchPattern(b, bPattern)
             doesTokenTreeMatchPattern(aPattern, trees, aIndex) &&
             doesTokenTreeMatchPattern(bPattern, trees, bIndex)
         );
     });
-    // return rule ? parseSpace(rule[2], a, b, leftMap, rightMap) : [];
     return rule
         ? parseSpace(rule[2], trees[aIndex], trees[bIndex], leftMap, rightMap)
         : [];
