@@ -11,7 +11,7 @@
         "build:wasm:bundler": "wasm-pack build wasm --target bundler --out-dir pkg/bundler",
         "build:wasm:nodejs": "wasm-pack build wasm --target nodejs --out-dir pkg/nodejs",
         "build": "run-s build:wasm build:typescript",
-        "test": "npm run build:wasm && jest",
+        "test": "npm run build:wasm:nodejs && jest",
         "test:quick": "jest",
         "package": "rimraf ./pkg && run-s build test && pkg -t node14-linux,node14-win,node14-macos bin/mo-fmt.js -o pkg/mo-fmt",
         "prepublishOnly": "run-s build test:quick"
