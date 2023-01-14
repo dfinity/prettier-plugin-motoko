@@ -301,9 +301,9 @@ describe('Motoko formatter', () => {
         expect(format('//"\n "')).toStrictEqual('//"\n";\n');
 
         expect(format("/*'*/  '")).toStrictEqual("/*'*/ '\n");
-        // expect(format('/*"*/  "')).toStrictEqual('/*\n"*/ "\n');
+        expect(format('/*;"*/  "')).toStrictEqual('/*;"*/ "\n');
         expect(format("/* a'b */  '")).toStrictEqual("/* a'b */ '\n");
-        // expect(format('/* a"b */  "')).toStrictEqual('/* a"b */\n";\n');
+        expect(format('/* a"b */  "')).toStrictEqual('/* a"b */ "\n');
     });
 
     test('shared and query keywords', () => {
