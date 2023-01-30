@@ -322,6 +322,13 @@ describe('Motoko formatter', () => {
         expect(format('{\n// }\n}\nA\n')).toStrictEqual('{\n  // }\n};\nA;\n');
     });
 
+    test('conditional parentheses', () => {
+        expect(format('if a b')).toStrictEqual('if a b\n');
+        expect(format('if (a) b')).toStrictEqual('if (a) b\n');
+        expect(format('if a (b)')).toStrictEqual('if a (b)\n');
+        expect(format('if (a) (b)')).toStrictEqual('if (a) (b)\n');
+    });
+
     // test('generate diff files from compiler tests', () => {
     //     for (const extension of ['mo', 'did']) {
     //         let preOutput = '';
