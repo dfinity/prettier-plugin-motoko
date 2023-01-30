@@ -35,7 +35,7 @@ mo-fmt -c **/*
 
 ## VS Code support
 
-- Works out of the box with the [Motoko extension](https://marketplace.visualstudio.com/items?itemName=dfinity-foundation.vscode-motoko) (coming soon!).
+- Works out of the box with the [Motoko extension](https://marketplace.visualstudio.com/items?itemName=dfinity-foundation.vscode-motoko).
 - Compatible with the the [Prettier extension](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode).
 
 ## Customization
