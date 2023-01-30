@@ -124,6 +124,9 @@ const spaceConfig: SpaceConfig = {
         ['Delim', '_', 'line'],
         // ['Delim', 'Line', 'nil'],
 
+        // if-then expressions
+        [{ left: tokenEquals('if'), main: '_' }, 'Paren', 'space'],
+
         // unary operators
         [tokenEquals('#'), 'Ident', 'keep'],
         [tokenEquals('+'), '_', 'keep'],
