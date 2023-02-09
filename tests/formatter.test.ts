@@ -322,6 +322,13 @@ describe('Motoko formatter', () => {
         expect(format('{\n// }\n}\nA\n')).toStrictEqual('{\n  // }\n};\nA;\n');
     });
 
+    test('conditional parentheses', () => {
+        expect(format('if a b')).toStrictEqual('if a b\n');
+        expect(format('if (a) b')).toStrictEqual('if (a) b\n');
+        expect(format('if a (b)')).toStrictEqual('if a (b)\n');
+        expect(format('if (a) (b)')).toStrictEqual('if (a) (b)\n');
+    });
+
     test('async*', () => {
         expect(format('async* T')).toStrictEqual('async* T\n');
         expect(format('async * T')).toStrictEqual('async* T\n');
