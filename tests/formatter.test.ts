@@ -329,6 +329,16 @@ describe('Motoko formatter', () => {
         expect(format('if (a) (b)')).toStrictEqual('if (a) (b)\n');
     });
 
+    test('async*', () => {
+        expect(format('async* T')).toStrictEqual('async* T\n');
+        expect(format('async * T')).toStrictEqual('async* T\n');
+    });
+
+    test('await*', () => {
+        expect(format('await* t')).toStrictEqual('await* t\n');
+        expect(format('await * t')).toStrictEqual('await* t\n');
+    });
+
     // test('generate diff files from compiler tests', () => {
     //     for (const extension of ['mo', 'did']) {
     //         let preOutput = '';

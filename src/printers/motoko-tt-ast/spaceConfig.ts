@@ -157,6 +157,10 @@ const spaceConfig: SpaceConfig = {
         // space after dot
         [tokenEndsWith('.'), 'Ident', 'keep'],
 
+        // `async*` / `await*`
+        [tokenEquals('async'), tokenEquals('*'), 'nil'],
+        [tokenEquals('await'), tokenEquals('*'), 'nil'],
+
         // groups
         ['Group', 'Paren', 'nil'],
         ['Group', 'Square', 'nil'],
