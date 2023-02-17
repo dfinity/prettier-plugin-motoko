@@ -151,7 +151,7 @@ function printTokenTree(
             return getTokenTreeText(tree);
         }
 
-        console.log(JSON.stringify(originalTrees.map((t) => t.data), null, 2)); /////
+        // console.log(JSON.stringify(originalTrees.map((t) => t.data), null, 2)); /////
 
         const leftMap = new Map<TokenTree, TokenTree>();
         const rightMap = new Map<TokenTree, TokenTree>();
