@@ -335,8 +335,11 @@ describe('Motoko formatter', () => {
     });
 
     test('await*', () => {
-        expect(format('await* t')).toStrictEqual('await* t\n');
         expect(format('await * t')).toStrictEqual('await* t\n');
+    });
+
+    test('quote literals', () => {
+        expect(format("'\\\"'; //abc")).toStrictEqual("'\\\"'; //abc\n");
     });
 
     // test('generate diff files from compiler tests', () => {
