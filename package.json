@@ -6,11 +6,11 @@
     "browser": "lib/environments/web.js",
     "types": "lib/index.d.ts",
     "scripts": {
-        "build:typescript": "rimraf ./lib && tsc -p .",
+        "build:ts": "rimraf ./lib && tsc -p .",
         "build:wasm": "run-s build:wasm:bundler build:wasm:nodejs",
         "build:wasm:bundler": "wasm-pack build wasm --target bundler --out-dir pkg/bundler",
         "build:wasm:nodejs": "wasm-pack build wasm --target nodejs --out-dir pkg/nodejs",
-        "build": "run-s build:wasm build:typescript",
+        "build": "run-s build:wasm build:ts",
         "test": "npm run build:wasm:nodejs && jest",
         "test:quick": "jest",
         "package": "rimraf ./pkg && run-s build test && pkg -t node14-linux,node14-win,node14-macos bin/mo-fmt.js -o pkg/mo-fmt",
