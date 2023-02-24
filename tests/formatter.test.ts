@@ -274,7 +274,7 @@ describe('Motoko formatter', () => {
             `${'x'.repeat(80)}[0];\n`,
         );
         expect(format(`${'x'.repeat(80)}[\n0]`)).toStrictEqual(
-            `${'x'.repeat(80)}[\n  0,\n];\n`,
+            `${'x'.repeat(80)}[\n  0\n];\n`,
         );
         expect(format(`${'x'.repeat(80)}[0,]`)).toStrictEqual(
             `${'x'.repeat(80)}[0];\n`,
@@ -340,6 +340,12 @@ describe('Motoko formatter', () => {
 
     test('quote literals', () => {
         expect(format("'\\\"'; //abc")).toStrictEqual("'\\\"'; //abc\n");
+    });
+
+    test('trailing comma in square brackets', () => {
+        expect(format("[\na,b]")).toStrictEqual("[\n  a,\n  b,\n];\n");
+        expect(format("[\na,]")).toStrictEqual("[\n  a,\n];\n");
+        expect(format("x : [\nT\n]")).toStrictEqual("x : [\n  T\n];\n");
     });
 
     // test('generate diff files from compiler tests', () => {

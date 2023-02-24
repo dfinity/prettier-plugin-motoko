@@ -322,7 +322,7 @@ function printTokenTree(
                 // add everything except trailing delimiter
                 if (!isDelim || i !== trees.length - 1) {
                     resultArray.push(
-                        isDelim 
+                        isDelim
                             ? printToken(getGroupDelimToken(groupType))
                             : printTokenTree(a, path, options, print, args),
                     );
@@ -342,7 +342,12 @@ function printTokenTree(
                         (groupType === 'Unenclosed' || groupType === 'Curly'
                             ? options.semi
                             : options.trailingComma !== 'none') &&
-                        !isPossiblyRecordExtension()
+                        !isPossiblyRecordExtension() &&
+                        !(
+                            groupType === 'Square' &&
+                            results.length === 1 &&
+                            !isSeparator
+                        ) // possibly array type
                     ) {
                         results.push(
                             ifBreak(printToken(getGroupDelimToken(groupType))),
