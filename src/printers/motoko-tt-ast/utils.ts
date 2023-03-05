@@ -1,7 +1,9 @@
 import { TokenTree, Token } from './../../parsers/motoko-tt-parse/parse';
 import { Doc } from 'prettier';
 
-/// Get the unmodified source text from a TokenTree
+/**
+ * Get the unmodified source text from a TokenTree.
+*/
 export function getTokenTreeText(tree: TokenTree): string {
     if (tree.token_tree_type === 'Group') {
         const [trees, _, pair] = tree.data;
@@ -22,7 +24,9 @@ export function getTokenTreeText(tree: TokenTree): string {
     throw new Error(`Unexpected token tree: ${JSON.stringify(tree)}`);
 }
 
-/// Get the unmodified source text from a Token
+/**
+ * Get the unmodified source text from a Token.
+ */
 export function getTokenText(token: Token): string {
     if (Array.isArray(token.data)) {
         return token.data[0];
@@ -31,14 +35,18 @@ export function getTokenText(token: Token): string {
     }
 }
 
-/// Unwrap a single Token from a TokenTree
+/**
+ * Unwrap a single Token from a TokenTree
+ */
 export function getToken(tree: TokenTree | undefined): Token | undefined {
     if (tree && tree.token_tree_type === 'Token') {
         return tree.data[0];
     }
 }
 
-/// Remove all line breaks from a Doc
+/**
+ * Remove all line breaks from a Doc.
+ */
 export function withoutLineBreaks(doc: Doc): Doc {
     if (Array.isArray(doc)) {
         return doc.map((d) => withoutLineBreaks(d));

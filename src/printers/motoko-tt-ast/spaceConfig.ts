@@ -128,7 +128,8 @@ const spaceConfig: SpaceConfig = {
         [{ left: tokenEquals('if'), main: '_' }, 'Paren', 'space'],
 
         // unary operators
-        [tokenEquals('#'), 'Ident', 'keep'],
+        ['_', tokenEquals('#'), 'keep-indent-space'],
+        [tokenEquals('#'), '_', 'keep-indent'],
         [tokenEquals('+'), '_', 'keep'],
         [tokenEquals('-'), '_', 'keep'],
         [tokenEquals('^'), '_', 'keep'],

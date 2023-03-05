@@ -342,6 +342,10 @@ describe('Motoko formatter', () => {
         expect(format("'\\\"'; //abc")).toStrictEqual("'\\\"'; //abc\n");
     });
 
+    test('multi-line concatenated strings', () => {
+        expect(format('"A"\n# "B"')).toStrictEqual('"A"\n  # "B";\n');
+    });
+
     // test('generate diff files from compiler tests', () => {
     //     for (const extension of ['mo', 'did']) {
     //         let preOutput = '';

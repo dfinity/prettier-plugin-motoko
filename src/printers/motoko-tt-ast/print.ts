@@ -23,6 +23,8 @@ export type Space =
           | 'softwrap'
           | 'keep'
           | 'keep-space'
+          | 'keep-indent'
+          | 'keep-indent-space'
       )
     | Space[];
 
@@ -76,9 +78,11 @@ export function parseSpace(
                 return softline;
             case 'keep':
             case 'keep-space':
+            case 'keep-indent':
+            case 'keep-indent-space':
                 let right = rightMap.get(a);
                 if (right === b) {
-                    return input === 'keep-space' ? space : [];
+                    return input.endsWith('-space') ? space : [];
                 }
                 let result: Doc = space;
                 do {
@@ -93,7 +97,9 @@ export function parseSpace(
                     }
                     right = rightMap.get(right);
                 } while (right !== b);
-                return result;
+                return input.startsWith('keep-indent')
+                    ? result // TODO
+                    : result;
             default:
                 throw new Error(`Unimplemented space type: ${input}`);
         }
@@ -322,7 +328,7 @@ function printTokenTree(
                 // add everything except trailing delimiter
                 if (!isDelim || i !== trees.length - 1) {
                     resultArray.push(
-                        isDelim 
+                        isDelim
                             ? printToken(getGroupDelimToken(groupType))
                             : printTokenTree(a, path, options, print, args),
                     );
