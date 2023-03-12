@@ -342,7 +342,8 @@ function printTokenTree(
                         (groupType !== 'Paren' || results.length > 1) &&
                         (groupType === 'Unenclosed' || groupType === 'Curly'
                             ? options.semi
-                            : options.trailingComma !== 'none') &&
+                            : options.trailingComma &&
+                              options.trailingComma !== 'none') &&
                         !isPossiblyRecordExtension() &&
                         !(
                             groupType === 'Square' &&
