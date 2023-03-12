@@ -172,7 +172,7 @@ describe('Motoko formatter', () => {
         expect(format('().0')).toStrictEqual('().0\n');
         // expect(format('(\n).0')).toStrictEqual('().0\n');
         expect(format('(\n\n\n).0')).toStrictEqual('().0\n');
-        expect(format('(\na\n).0')).toStrictEqual('(\n  a,\n).0;\n');
+        expect(format('(\na\n).0')).toStrictEqual('(\n  a\n).0;\n');
     });
 
     // test('cursor position', () => {
@@ -286,7 +286,7 @@ describe('Motoko formatter', () => {
 
     test('anonymous function line break', () => {
         expect(format('(func() {\na\n})')).toStrictEqual(
-            '(\n  func() {\n    a;\n  },\n);\n',
+            '(\n  func() {\n    a;\n  }\n);\n',
         );
     });
 
@@ -346,6 +346,10 @@ describe('Motoko formatter', () => {
         expect(format("[\na,b]")).toStrictEqual("[\n  a,\n  b,\n];\n");
         expect(format("[\na,]")).toStrictEqual("[\n  a,\n];\n");
         expect(format("x : [\nT\n]")).toStrictEqual("x : [\n  T\n];\n");
+    });
+
+    test('comma-parentheses', () => {
+        expect(format('if(\nx) { y }')).toStrictEqual('if (\n  x\n) { y };\n');
     });
 
     // test('generate diff files from compiler tests', () => {
