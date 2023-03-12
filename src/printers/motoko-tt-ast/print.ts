@@ -339,6 +339,7 @@ function printTokenTree(
                         (!isSeparator || isDelim) &&
                         !hasNestedGroup &&
                         !shouldKeepSameLine() &&
+                        (groupType !== 'Paren' || results.length > 1) &&
                         (groupType === 'Unenclosed' || groupType === 'Curly'
                             ? options.semi
                             : options.trailingComma !== 'none') &&
