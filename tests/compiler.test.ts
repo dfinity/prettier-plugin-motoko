@@ -2,7 +2,7 @@ import prettier from 'prettier';
 import * as motokoPlugin from '../src/environments/node';
 import glob from 'fast-glob';
 import { join, basename } from 'path';
-import { readFileSync, writeFileSync } from 'fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
 
 const prettierOptions: prettier.Options = {
     plugins: [motokoPlugin],
@@ -12,9 +12,6 @@ const prettierOptions: prettier.Options = {
 const format = (input: string, options?: prettier.Options): string => {
     return prettier.format(input, { ...prettierOptions, ...options });
 };
-
-const expectFormatted = (input: string) =>
-    expect(format(input)).toStrictEqual(input);
 
 describe('Motoko compiler suite', () => {
     test('generate diff files from compiler tests', () => {
@@ -35,12 +32,16 @@ describe('Motoko compiler suite', () => {
                     file,
                 )} <<<\n\n${formatted}\n\n`;
             }
+            const generatedDir = join(__dirname, 'generated');
+            if (!existsSync(generatedDir)) {
+                mkdirSync(generatedDir);
+            }
             writeFileSync(
-                join(__dirname, `generated/_CompilerTests_Before.${extension}_`),
+                join(generatedDir, `_CompilerTests_Before.${extension}_`),
                 preOutput,
             );
             writeFileSync(
-                join(__dirname, `generated/_CompilerTests_Formatted.${extension}_`),
+                join(generatedDir, `_CompilerTests_Formatted.${extension}_`),
                 postOutput,
             );
         }
