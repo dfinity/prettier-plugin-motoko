@@ -258,6 +258,7 @@ function printTokenTree(
         const results: Doc[] = [];
         let resultGroup: Doc[] = [];
         let ignoringNextStatement = false;
+        let allowTrailingSeparator = false;
         const endGroup = () => {
             if (resultGroup.length) {
                 results.push(fill(resultGroup));
@@ -292,15 +293,20 @@ function printTokenTree(
                 }
             }
 
+            // allow trailing delimiter for everything except comments
+            if (comment === undefined) {
+                // allow trailing comma/semicolon if something exists in the group other than a comment
+                allowTrailingSeparator = true;
+            }
             // check for prettier-ignore comments
-            if (comment) {
-                if (comment === 'prettier-ignore') {
-                    ignoringNextStatement = true;
-                }
+            else if (comment === 'prettier-ignore') {
+                ignoringNextStatement = true;
             }
 
             if (isSeparator) {
                 endGroup();
+                // reset to default
+                allowTrailingSeparator = false;
             }
 
             if (ignoringNextStatement) {
@@ -336,6 +342,9 @@ function printTokenTree(
 
                     // trailing delimiter
                     if (
+                        (allowTrailingSeparator ||
+                            !results.length ||
+                            isDelim) &&
                         (!isSeparator || isDelim) &&
                         !hasNestedGroup &&
                         !shouldKeepSameLine() &&

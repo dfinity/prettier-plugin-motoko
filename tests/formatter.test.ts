@@ -50,7 +50,8 @@ describe('Motoko formatter', () => {
         expect(format('let/*{{*/x = 0;//x\n (x)')).toStrictEqual(
             'let /*{{*/ x = 0; //x\n(x);\n',
         );
-        expect(format('\n/**/\n\n\n/**/')).toStrictEqual('/**/\n\n/**/;\n');
+        expect(format('/**//**/')).toStrictEqual('/**/ /**/\n');
+        expect(format('\n/**/\n\n\n/**/')).toStrictEqual('/**/\n\n/**/\n');
         expectFormatted('/*=*/\n');
         expectFormatted('/**=*/\n');
         expectFormatted('/**=**/\n');
@@ -353,6 +354,7 @@ describe('Motoko formatter', () => {
     });
 
     test('trailing semicolon after block comment', () => {
+        expect(format("x;\n/**/")).toStrictEqual("x;\n/**/\n");
         expect(format("x;\n/*\n*/")).toStrictEqual("x;\n/*\n*/\n");
     });
 });
