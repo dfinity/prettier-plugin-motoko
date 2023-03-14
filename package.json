@@ -1,6 +1,6 @@
 {
     "name": "prettier-plugin-motoko",
-    "version": "0.3.6",
+    "version": "0.4.0",
     "description": "A code formatter for the Motoko smart contract language.",
     "main": "lib/environments/node.js",
     "browser": "lib/environments/web.js",
@@ -16,7 +16,6 @@
         "package": "rimraf ./pkg && run-s build test && pkg -t node14-linux,node14-win,node14-macos bin/mo-fmt.js -o pkg/mo-fmt",
         "prepublishOnly": "run-s build test:quick"
     },
-    "dependencies": {},
     "devDependencies": {
         "@types/jest": "^28.1.7",
         "@types/prettier": "^2.7.0",
@@ -46,5 +45,8 @@
     "bugs": {
         "url": "https://github.com/dfinity/prettier-plugin-motoko/issues"
     },
-    "homepage": "https://github.com/dfinity/prettier-plugin-motoko#readme"
+    "homepage": "https://github.com/dfinity/prettier-plugin-motoko#readme",
+    "dependencies": {
+        "out-of-character": "^1.2.1"
+    }
 }
