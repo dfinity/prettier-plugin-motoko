@@ -360,8 +360,14 @@ function printTokenTree(
                             !isSeparator
                         ) // possibly array type
                     ) {
+                        const delimDoc = printToken(
+                            getGroupDelimToken(groupType),
+                        );
                         results.push(
-                            ifBreak(printToken(getGroupDelimToken(groupType))),
+                            // special case for semicolon at end of single-line Motoko file
+                            groupType === 'Unenclosed' && isSeparator
+                                ? delimDoc
+                                : ifBreak(delimDoc),
                         );
                     }
                 }
