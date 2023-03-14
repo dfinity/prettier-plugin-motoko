@@ -344,9 +344,9 @@ describe('Motoko formatter', () => {
     });
 
     test('trailing comma in square brackets', () => {
-        expect(format("[\na,b]")).toStrictEqual("[\n  a,\n  b,\n];\n");
-        expect(format("[\na,]")).toStrictEqual("[\n  a,\n];\n");
-        expect(format("x : [\nT\n]")).toStrictEqual("x : [\n  T\n];\n");
+        expect(format('[\na,b]')).toStrictEqual('[\n  a,\n  b,\n];\n');
+        expect(format('[\na,]')).toStrictEqual('[\n  a,\n];\n');
+        expect(format('x : [\nT\n]')).toStrictEqual('x : [\n  T\n];\n');
     });
 
     test('comma-parentheses', () => {
@@ -354,7 +354,11 @@ describe('Motoko formatter', () => {
     });
 
     test('trailing semicolon after block comment', () => {
-        expect(format("x;\n/**/")).toStrictEqual("x;\n/**/\n");
-        expect(format("x;\n/*\n*/")).toStrictEqual("x;\n/*\n*/\n");
+        expect(format('x;\n/**/')).toStrictEqual('x;\n/**/\n');
+        expect(format('x;\n/*\n*/')).toStrictEqual('x;\n/*\n*/\n');
+    });
+
+    test('invisible unicode characters', () => {
+        expect(format('let x\u200b = 123;')).toStrictEqual('let x = 123;\n');
     });
 });
