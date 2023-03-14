@@ -50,7 +50,8 @@ describe('Motoko formatter', () => {
         expect(format('let/*{{*/x = 0;//x\n (x)')).toStrictEqual(
             'let /*{{*/ x = 0; //x\n(x);\n',
         );
-        expect(format('\n/**/\n\n\n/**/')).toStrictEqual('/**/\n\n/**/;\n');
+        expect(format('/**//**/')).toStrictEqual('/**/ /**/\n');
+        expect(format('\n/**/\n\n\n/**/')).toStrictEqual('/**/\n\n/**/\n');
         expectFormatted('/*=*/\n');
         expectFormatted('/**=*/\n');
         expectFormatted('/**=**/\n');
@@ -172,7 +173,7 @@ describe('Motoko formatter', () => {
         expect(format('().0')).toStrictEqual('().0\n');
         // expect(format('(\n).0')).toStrictEqual('().0\n');
         expect(format('(\n\n\n).0')).toStrictEqual('().0\n');
-        expect(format('(\na\n).0')).toStrictEqual('(\n  a,\n).0;\n');
+        expect(format('(\na\n).0')).toStrictEqual('(\n  a\n).0;\n');
     });
 
     // test('cursor position', () => {
@@ -286,7 +287,7 @@ describe('Motoko formatter', () => {
 
     test('anonymous function line break', () => {
         expect(format('(func() {\na\n})')).toStrictEqual(
-            '(\n  func() {\n    a;\n  },\n);\n',
+            '(\n  func() {\n    a;\n  }\n);\n',
         );
     });
 
@@ -348,32 +349,12 @@ describe('Motoko formatter', () => {
         expect(format("x : [\nT\n]")).toStrictEqual("x : [\n  T\n];\n");
     });
 
-    // test('generate diff files from compiler tests', () => {
-    //     for (const extension of ['mo', 'did']) {
-    //         let preOutput = '';
-    //         let postOutput = '';
-    //         for (const file of glob.sync(
-    //             join(__dirname, `../../motoko/test/**/*.${extension}`),
-    //         )) {
-    //             const code = readFileSync(file, 'utf-8');
-    //             const formatted = prettier.format(code, {
-    //                 filepath: file,
-    //                 plugins: [motokoPlugin],
-    //                 // semi: false,///
-    //             });
-    //             preOutput += `// >>> ${basename(file)} <<<\n\n${code}\n\n`;
-    //             postOutput += `// >>> ${basename(
-    //                 file,
-    //             )} <<<\n\n${formatted}\n\n`;
-    //         }
-    //         writeFileSync(
-    //             join(__dirname, `generated/_CompilerTests_Before.${extension}_`),
-    //             preOutput,
-    //         );
-    //         writeFileSync(
-    //             join(__dirname, `generated/_CompilerTests_Formatted.${extension}_`),
-    //             postOutput,
-    //         );
-    //     }
-    // });
+    test('comma-parentheses', () => {
+        expect(format('if(\nx) { y }')).toStrictEqual('if (\n  x\n) { y };\n');
+    });
+
+    test('trailing semicolon after block comment', () => {
+        expect(format("x;\n/**/")).toStrictEqual("x;\n/**/\n");
+        expect(format("x;\n/*\n*/")).toStrictEqual("x;\n/*\n*/\n");
+    });
 });
