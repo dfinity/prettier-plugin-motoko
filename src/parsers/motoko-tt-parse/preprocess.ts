@@ -1,5 +1,5 @@
 import { ParserOptions } from 'prettier';
-import { replace } from 'out-of-character';
+import outOfCharacter from 'out-of-character';
 
 const LINE_COMMENT = '//';
 
@@ -8,7 +8,7 @@ export default function preprocess(
     options: ParserOptions<any>,
 ): string {
     code = code.replace(/\t/g, ' '.repeat(options.tabWidth)); // convert tabs to spaces
-    code = replace(code); // remove invisible unicode characters
+    code = outOfCharacter.replace(code); // remove invisible unicode characters
 
     if (options.semi) {
         // Infer semicolons
