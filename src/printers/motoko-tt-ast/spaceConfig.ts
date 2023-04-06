@@ -133,6 +133,9 @@ const spaceConfig: SpaceConfig = {
         [tokenEquals('-'), '_', 'keep'],
         [tokenEquals('^'), '_', 'keep'],
 
+        // 'with' keyword
+        [tokenEquals('with'), '_', 'keep-space'],
+
         // soft-wrapping operators
         ['_', 'Dot', 'nil'],
         // ['_', 'Dot', 'softwrap'],

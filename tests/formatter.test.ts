@@ -365,4 +365,9 @@ describe('Motoko formatter', () => {
     test('invisible unicode characters', () => {
         expect(format('let x\u200b = 123;')).toStrictEqual('let x = 123;\n');
     });
+
+    test('`with` keyword', () => {
+        expect(format('{a and b with c = d}')).toStrictEqual('{ a and b with c = d }\n');
+        expect(format('{a and b with\nc = d}')).toStrictEqual('{\n  a and b with\n  c = d\n};\n');
+    });
 });
