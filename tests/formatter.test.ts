@@ -369,5 +369,7 @@ describe('Motoko formatter', () => {
     test('`with` keyword', () => {
         expect(format('{a and b with c = d}')).toStrictEqual('{ a and b with c = d }\n');
         expect(format('{a and b with\nc = d}')).toStrictEqual('{\n  a and b with\n  c = d\n};\n');
+        expect(format('{a and b with \nc = d}')).toStrictEqual('{\n  a and b with\n  c = d\n};\n');
+        expect(format('{a and b with\nc = d; e = f;}')).toStrictEqual('{\n  a and b with\n  c = d;\n  e = f;\n};\n');
     });
 });

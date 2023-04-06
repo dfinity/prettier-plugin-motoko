@@ -8,6 +8,7 @@ export default function preprocess(
     options: ParserOptions<any>,
 ): string {
     code = code.replace(/\t/g, ' '.repeat(options.tabWidth)); // convert tabs to spaces
+    code = code.replace(/[ \t]+(?=\r?\n)/g, ''); // remove trailing spaces
     code = outOfCharacter.replace(code); // remove invisible unicode characters
 
     if (options.semi) {
