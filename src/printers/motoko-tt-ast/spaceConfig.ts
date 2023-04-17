@@ -128,10 +128,14 @@ const spaceConfig: SpaceConfig = {
         [{ left: tokenEquals('if'), main: '_' }, 'Paren', 'space'],
 
         // unary operators
-        [tokenEquals('#'), 'Ident', 'keep'],
         [tokenEquals('+'), '_', 'keep'],
         [tokenEquals('-'), '_', 'keep'],
         [tokenEquals('^'), '_', 'keep'],
+        // [tokenEquals('#'), 'Ident', 'keep'],
+
+        // tags and concatenation
+        [tokenEquals('#'), '_', 'keep'],
+        ['_', tokenEquals('#'), 'keep'],
 
         // 'with' keyword
         [tokenEquals('with'), '_', 'keep-space'],

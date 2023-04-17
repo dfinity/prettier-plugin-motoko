@@ -95,8 +95,12 @@ describe('Motoko formatter', () => {
         expect(format('# "A"')).toStrictEqual('# "A"\n');
         expect(format('# 5')).toStrictEqual('# 5\n');
         expect(format('#a')).toStrictEqual('#a\n');
-        expect(format('"A"# b')).toStrictEqual('"A" # b\n');
-        expect(format('"A"# #b')).toStrictEqual('"A" # #b\n');
+        expect(format('"A" # b')).toStrictEqual('"A" # b\n');
+        expect(format('"A" # #b')).toStrictEqual('"A" # #b\n');
+        // expect(format('"A"# b')).toStrictEqual('"A" # b\n');
+        // expect(format('"A"#"B"')).toStrictEqual('"A" # "B"\n');
+        // expect(format('"A"# #b')).toStrictEqual('"A" # #b\n');
+        expect(format('"A" #\n"B"')).toStrictEqual('"A" #\n"B";\n');
     });
 
     test('do ? / optional', () => {
