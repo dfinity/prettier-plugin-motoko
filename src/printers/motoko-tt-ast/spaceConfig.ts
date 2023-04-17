@@ -134,8 +134,9 @@ const spaceConfig: SpaceConfig = {
         // [tokenEquals('#'), 'Ident', 'keep'],
 
         // tags and concatenation
-        [tokenEquals('#'), '_', 'keep'],
-        ['_', tokenEquals('#'), 'keep'],
+        ['_', tokenEquals('#'), 'keep-space'],
+        [tokenEquals('#'), 'Ident', 'keep'],
+        [tokenEquals('#'), '_', 'keep-space'],
 
         // 'with' keyword
         [tokenEquals('with'), '_', 'keep-space'],
