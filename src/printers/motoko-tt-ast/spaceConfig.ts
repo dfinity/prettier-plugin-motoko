@@ -150,7 +150,6 @@ const spaceConfig: SpaceConfig = {
         [{ left: tokenEquals('do'), main: tokenEquals('?') }, '_', 'space'],
         // [tokenEquals('?'), 'Curly', 'keep'],
         [tokenEquals('?'), '_', 'nil'],
-        // [tokenEquals('#'), 'Ident', 'nil'], ///
         ['_', tokenEquals('!'), 'nil'],
 
         // space between identifier and group
