@@ -298,10 +298,8 @@ function printTokenTree(
                 // allow trailing comma/semicolon if something exists in the group other than a comment
                 allowTrailingSeparator = true;
             }
-            // check for prettier-ignore comments
-            else if (comment === 'prettier-ignore') {
-                ignoringNextStatement = true;
-            }
+
+            const isIgnoreComment = comment === 'prettier-ignore';
 
             if (isSeparator) {
                 endGroup();
@@ -333,7 +331,7 @@ function printTokenTree(
                             : printTokenTree(a, path, options, print, args),
                     );
                 }
-                if (i < trees.length - 1) {
+                if (i < trees.length - 1 && !isIgnoreComment) {
                     resultArray.push(
                         printBetween(trees, i, i + 1, leftMap, rightMap),
                     );
@@ -370,6 +368,10 @@ function printTokenTree(
                                 : ifBreak(delimDoc),
                         );
                     }
+                }
+
+                if (isIgnoreComment) {
+                    ignoringNextStatement = true;
                 }
             }
         }
