@@ -303,6 +303,10 @@ describe('Motoko formatter', () => {
         expect(format('a<(b,\n//c\n)>()')).toStrictEqual('a<(b, /* c */)>()\n');
     });
 
+    test('prettier-ignore line comment as first line in block', () => {
+        expect(format('{\n// prettier-ignore\n  123}')).toStrictEqual('{\n  // prettier-ignore\n  123\n};\n');
+    });
+
     test('unclosed quotes in comments', () => {
         expect(format("// a'b\n '")).toStrictEqual("// a'b\n';\n");
         expect(format('// a"b\n "')).toStrictEqual('// a"b\n";\n');
