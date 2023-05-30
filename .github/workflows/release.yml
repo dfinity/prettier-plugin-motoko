@@ -35,10 +35,10 @@ jobs:
           cache: 'npm'
       - run: npm --prefix packages/mo-fmt ci
       - run: npm --prefix packages/mo-fmt run package
-      - name: Get Version
+      - name: Get version
         id: version
         run: echo ::set-output\ name=TAG_NAME::v$(node -e "console.log(require('./packages/mo-fmt/package.json').version)")
-      - name: Create Release
+      - name: Create release
         id: create_release
         uses: actions/create-release@v1
         env:
@@ -49,7 +49,7 @@ jobs:
           body: Portable `mo-fmt` binaries for Linux, macOS, and Windows.
           draft: false
           prerelease: false
-      - name: Upload Release (Linux)
+      - name: Upload release (Linux)
         id: upload-release-linux
         uses: actions/upload-release-asset@v1
         env:
@@ -59,7 +59,7 @@ jobs:
           asset_path: packages/mo-fmt/pkg/mo-fmt-linux.tar.gz
           asset_name: mo-fmt-linux.tar.gz
           asset_content_type: application/octet-stream
-      - name: Upload Release (macOS)
+      - name: Upload release (macOS)
         id: upload-release-macos
         uses: actions/upload-release-asset@v1
         env:
@@ -69,7 +69,7 @@ jobs:
           asset_path: packages/mo-fmt/pkg/mo-fmt-macos.tar.gz
           asset_name: mo-fmt-macos.tar.gz
           asset_content_type: application/octet-stream
-      - name: Upload Release (Windows)
+      - name: Upload release (Windows)
         id: upload-release-windows
         uses: actions/upload-release-asset@v1
         env:
