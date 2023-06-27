@@ -397,5 +397,6 @@ describe('Motoko formatter', () => {
         expectFormatted('"A\n\nB"\n');
         expectFormatted('"A\n\n  B"\n');
         expectFormatted('"\nA\n\n  B\n    "\n');
+        expectFormatted('"\n\n{\n}\n\n"\n');
     });
 });

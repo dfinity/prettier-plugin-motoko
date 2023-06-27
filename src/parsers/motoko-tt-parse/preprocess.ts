@@ -1,8 +1,6 @@
 import { ParserOptions } from 'prettier';
 import outOfCharacter from 'out-of-character';
 
-const LINE_COMMENT = '//';
-
 export default function preprocess(
     code: string,
     options: ParserOptions<any>,
@@ -21,12 +19,6 @@ export default function preprocess(
                 if (!trimmedLine) {
                     return line;
                 }
-                // if (trimmedLine.startsWith(LINE_COMMENT)) {
-                //     const comment = trimmedLine
-                //         .substring(LINE_COMMENT.length)
-                //         .trim();
-                //     return line;
-                // }
 
                 let indent = 0;
                 while (indent < line.length && line.charAt(indent) === ' ') {
@@ -34,7 +26,6 @@ export default function preprocess(
                 }
 
                 const nextTrimmedLine = (reversedLines[i - 1] || '').trim();
-                // const previousTrimmedLine = (lines[i + 1] || '').trim();
 
                 if (
                     trimmedLine === '}' &&
