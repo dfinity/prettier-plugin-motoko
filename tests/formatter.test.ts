@@ -304,7 +304,9 @@ describe('Motoko formatter', () => {
     });
 
     test('prettier-ignore line comment as first line in block', () => {
-        expect(format('{\n// prettier-ignore\n  123}')).toStrictEqual('{\n  // prettier-ignore\n  123\n};\n');
+        expect(format('{\n// prettier-ignore\n  123}')).toStrictEqual(
+            '{\n  // prettier-ignore\n  123\n};\n',
+        );
     });
 
     test('unclosed quotes in comments', () => {
@@ -375,10 +377,18 @@ describe('Motoko formatter', () => {
     });
 
     test('`with` keyword', () => {
-        expect(format('{a and b with c = d}')).toStrictEqual('{ a and b with c = d }\n');
-        expect(format('{a and b with\nc = d}')).toStrictEqual('{\n  a and b with\n  c = d\n};\n');
-        expect(format('{a and b with \nc = d}')).toStrictEqual('{\n  a and b with\n  c = d\n};\n');
-        expect(format('{a and b with\nc = d; e = f;}')).toStrictEqual('{\n  a and b with\n  c = d;\n  e = f;\n};\n');
+        expect(format('{a and b with c = d}')).toStrictEqual(
+            '{ a and b with c = d }\n',
+        );
+        expect(format('{a and b with\nc = d}')).toStrictEqual(
+            '{\n  a and b with\n  c = d\n};\n',
+        );
+        expect(format('{a and b with \nc = d}')).toStrictEqual(
+            '{\n  a and b with\n  c = d\n};\n',
+        );
+        expect(format('{a and b with\nc = d; e = f;}')).toStrictEqual(
+            '{\n  a and b with\n  c = d;\n  e = f;\n};\n',
+        );
     });
 
     test('multi-line text', () => {
