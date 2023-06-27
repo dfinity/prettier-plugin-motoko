@@ -380,4 +380,12 @@ describe('Motoko formatter', () => {
         expect(format('{a and b with \nc = d}')).toStrictEqual('{\n  a and b with\n  c = d\n};\n');
         expect(format('{a and b with\nc = d; e = f;}')).toStrictEqual('{\n  a and b with\n  c = d;\n  e = f;\n};\n');
     });
+
+    test('multi-line text', () => {
+        expectFormatted('"A\nB"\n');
+        expectFormatted('"  A\n  B"\n');
+        expectFormatted('"A\n\nB"\n');
+        expectFormatted('"A\n\n  B"\n');
+        expectFormatted('"\nA\n\n  B\n    "\n');
+    });
 });
