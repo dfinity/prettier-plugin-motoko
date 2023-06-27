@@ -2,7 +2,6 @@ import { SupportOption } from 'prettier';
 
 const options: Record<string, SupportOption> = {
     // replaceComma: {
-        
     // },
 };
 
