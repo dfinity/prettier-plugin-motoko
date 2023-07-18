@@ -7,6 +7,7 @@
         "mo-fmt": "bin/mo-fmt.js"
     },
     "scripts": {
+        "start": "node .",
         "test": "jest",
         "package": "rimraf ./pkg && run-s test package:rollup package:pkg package:zip",
         "package:rollup": "rollup -c",
