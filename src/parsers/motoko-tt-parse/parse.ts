@@ -93,8 +93,8 @@ export default function parse(
     options?: ParserOptions<any>,
 ): TokenTree {
     if (arguments.length === 2) {
-        parsers = {};
         options = parsers as ParserOptions<any>;
+        parsers = {};
     }
 
     text = preprocess(text, options);
