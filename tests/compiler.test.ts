@@ -4,8 +4,6 @@ import glob from 'fast-glob';
 import { join, basename } from 'path';
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
 
-jest.useFakeTimers();
-
 describe('Motoko compiler suite', () => {
     test('generate diff files from compiler tests', async () => {
         for (const extension of ['mo', 'did']) {
