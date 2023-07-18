@@ -9,12 +9,8 @@ const prettierOptions: prettier.Options = {
     filepath: 'Main.mo',
 };
 
-const format = (input: string, options?: prettier.Options): string => {
-    return prettier.format(input, { ...prettierOptions, ...options });
-};
-
 describe('Motoko compiler suite', () => {
-    test('generate diff files from compiler tests', () => {
+    test('generate diff files from compiler tests', async () => {
         for (const extension of ['mo', 'did']) {
             let preOutput = '';
             let postOutput = '';
@@ -22,7 +18,7 @@ describe('Motoko compiler suite', () => {
                 join(__dirname, `../../motoko/test/**/*.${extension}`),
             )) {
                 const code = readFileSync(file, 'utf-8');
-                const formatted = prettier.format(code, {
+                const formatted = await prettier.format(code, {
                     filepath: file,
                     plugins: [motokoPlugin],
                     // semi: false,///
