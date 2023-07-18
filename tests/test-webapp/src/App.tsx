@@ -7,6 +7,7 @@ import * as motokoPlugin from 'prettier-plugin-motoko/src/environments/web';
 
 const source = `
 let a={b};
+1+2
 `;
 
 function App() {
