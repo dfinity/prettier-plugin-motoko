@@ -1,6 +1,6 @@
 {
     "name": "mo-fmt",
-    "version": "0.6.1",
+    "version": "0.7.0",
     "description": "An easy-to-use Motoko formatter command.",
     "main": "src/cli.js",
     "bin": {
@@ -20,8 +20,8 @@
     "dependencies": {
         "commander": "^9.4.0",
         "fast-glob": "^3.2.11",
-        "prettier": "^2.7",
-        "prettier-plugin-motoko": "^0.6.1"
+        "prettier": "^3.0",
+        "prettier-plugin-motoko": "^0.7.0"
     },
     "devDependencies": {
         "@rollup/plugin-commonjs": "^22.0.2",
