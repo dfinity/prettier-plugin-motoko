@@ -1,18 +1,22 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import reactLogo from './assets/react.svg';
 import './App.css';
 
-import prettier from 'prettier';
+import { format } from 'prettier';
 import * as motokoPlugin from 'prettier-plugin-motoko/src/environments/web';
 
 const source = `
-let a = {b}
+let a={b};
 `;
 
 function App() {
-    const formatted = prettier.format(source, {
-        plugins: [motokoPlugin],
-        filepath: '*.mo',
+    const [formatted, setFormatted] = useState<string>();
+
+    useEffect(() => {
+        format(source, {
+            plugins: [motokoPlugin],
+            filepath: '*.mo',
+        }).then(setFormatted);
     });
 
     return (
