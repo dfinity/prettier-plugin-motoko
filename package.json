@@ -42,7 +42,7 @@
         "type": "git",
         "url": "git+https://github.com/dfinity/prettier-plugin-motoko.git"
     },
-    "author": "Ryan Vandersmith (https://github.com/rvanasa)",
+    "author": "DFINITY Foundation (https://github.com/dfinity)",
     "license": "Apache-2.0",
     "bugs": {
         "url": "https://github.com/dfinity/prettier-plugin-motoko/issues"
