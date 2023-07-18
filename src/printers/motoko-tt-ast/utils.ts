@@ -50,7 +50,6 @@ export function withoutLineBreaks(doc: Doc): Doc {
             case 'indent':
             case 'line-suffix':
                 return withoutLineBreaks(doc.contents);
-            case 'concat':
             case 'fill':
                 return withoutLineBreaks(doc.parts);
             case 'line':
