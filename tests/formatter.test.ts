@@ -9,14 +9,17 @@ const prettierOptions: prettier.Options = {
     filepath: 'Main.mo',
 };
 
-const format = async (input: string, options?: prettier.Options): Promise<string> => {
+const format = async (
+    input: string,
+    options?: prettier.Options,
+): Promise<string> => {
     return prettier.format(input, { ...prettierOptions, ...options });
 };
 
-const expectFormatted = async(input: string) =>
+const expectFormatted = async (input: string) =>
     expect(await format(input)).toStrictEqual(input);
 
-describe('Motoko formatter',  () => {
+describe('Motoko formatter', () => {
     test('empty', async () => {
         expect(await format('')).toStrictEqual('');
         expect(await format('\n\n\n')).toStrictEqual('');
@@ -40,9 +43,11 @@ describe('Motoko formatter',  () => {
         await expectFormatted('let x = 0;\n');
     });
 
-    test('line comments',async () => {
+    test('line comments', async () => {
         expect(await format('{//\n}//')).toStrictEqual('{\n  //\n} //\n');
-        expect(await format('{\n//\n};\n//')).toStrictEqual('{\n  //\n};\n//\n');
+        expect(await format('{\n//\n};\n//')).toStrictEqual(
+            '{\n  //\n};\n//\n',
+        );
         expect(await format('//a\n//b')).toStrictEqual('//a\n//b\n');
         expect(await format('//a\n\n\n//b')).toStrictEqual('//a\n\n//b\n');
     });
@@ -55,7 +60,9 @@ describe('Motoko formatter',  () => {
             'let /*{{*/ x = 0; //x\n(x);\n',
         );
         expect(await format('/**//**/')).toStrictEqual('/**/ /**/\n');
-        expect(await format('\n/**/\n\n\n/**/')).toStrictEqual('/**/\n\n/**/\n');
+        expect(await format('\n/**/\n\n\n/**/')).toStrictEqual(
+            '/**/\n\n/**/\n',
+        );
         expectFormatted('/*=*/\n');
         expectFormatted('/**=*/\n');
         expectFormatted('/**=**/\n');
@@ -70,12 +77,14 @@ describe('Motoko formatter',  () => {
         expect(await format('{a;\nb}')).toStrictEqual('{\n  a;\n  b;\n};\n');
     });
 
-    test('extra newlines',async  () => {
+    test('extra newlines', async () => {
         expect(await format('a;\n\n\n\n\nb')).toStrictEqual('a;\n\nb;\n');
     });
 
     test('group spacing', async () => {
-        expect(await format('{};{a};();(a)')).toStrictEqual('{}; { a }; (); (a)\n');
+        expect(await format('{};{a};();(a)')).toStrictEqual(
+            '{}; { a }; (); (a)\n',
+        );
     });
 
     test('unary operators', async () => {
@@ -86,7 +95,7 @@ describe('Motoko formatter',  () => {
         expect(await format('^ ^ a')).toStrictEqual('^ ^ a\n');
     });
 
-    test('unary / binary operators',async  () => {
+    test('unary / binary operators', async () => {
         expect(await format('1 +   5')).toStrictEqual('1 + 5\n');
         expect(await format('1./+5')).toStrictEqual('1. / +5\n');
     });
@@ -130,7 +139,7 @@ describe('Motoko formatter',  () => {
         );
     });
 
-    test('type bindings',async () => {
+    test('type bindings', async () => {
         expect(await format('func foo<A<:Any>(x:A) {}')).toStrictEqual(
             'func foo<A <: Any>(x : A) {}\n',
         );
@@ -148,7 +157,7 @@ describe('Motoko formatter',  () => {
 
     test('nested group line breaks', async () => {
         expect(
-           await format(
+            await format(
                 `(\n(${Array(5)
                     .fill(['\n' + 'x'.repeat(20)])
                     .join(', ')}));\n`,
@@ -160,7 +169,7 @@ describe('Motoko formatter',  () => {
         );
     });
 
-    test('type binding line breaks',async  () => {
+    test('type binding line breaks', async () => {
         const parens = `<(${Array(5)
             .fill(['x'.repeat(20)])
             .join(', ')})>;\n`;
@@ -177,7 +186,7 @@ describe('Motoko formatter',  () => {
     //     expect(await format(`${ident}.${ident}.${ident}`)).toStrictEqual(`${ident}\n  .${ident}\n  .${ident}\n`);
     // });
 
-    test('dot after group',async  () => {
+    test('dot after group', async () => {
         expect(await format('().0')).toStrictEqual('().0\n');
         // expect(await format('(\n).0')).toStrictEqual('().0\n');
         expect(await format('(\n\n\n).0')).toStrictEqual('().0\n');
@@ -194,27 +203,31 @@ describe('Motoko formatter',  () => {
     //     });
     // });
 
-    test('replace delimiters',async  () => {
+    test('replace delimiters', async () => {
         expect(await format('(a;b;c)')).toStrictEqual('(a, b, c)\n');
         expect(await format('{a,b,c}')).toStrictEqual('{ a; b; c }\n');
     });
 
     test('add trailing delimiters', async () => {
-        expect(await format('(a\n,b,c)')).toStrictEqual('(\n  a,\n  b,\n  c,\n);\n');
-        expect(await format('(a\n,b,c,)')).toStrictEqual('(\n  a,\n  b,\n  c,\n);\n');
-        expect(await format('(a\n,b,c,)', { trailingComma: 'none' })).toStrictEqual(
-            '(\n  a,\n  b,\n  c\n);\n',
+        expect(await format('(a\n,b,c)')).toStrictEqual(
+            '(\n  a,\n  b,\n  c,\n);\n',
         );
+        expect(await format('(a\n,b,c,)')).toStrictEqual(
+            '(\n  a,\n  b,\n  c,\n);\n',
+        );
+        expect(
+            await format('(a\n,b,c,)', { trailingComma: 'none' }),
+        ).toStrictEqual('(\n  a,\n  b,\n  c\n);\n');
         expect(await format('(a\n,b,c,)', { semi: false })).toStrictEqual(
             '(\n  a,\n  b,\n  c,\n)\n',
         );
     });
 
-    test('remove trailing delimiters',async  () => {
+    test('remove trailing delimiters', async () => {
         expect(await format('(a,b,c,)')).toStrictEqual('(a, b, c)\n');
     });
 
-    test('no delimiter for record extension',async  () => {
+    test('no delimiter for record extension', async () => {
         expect(await format('{\na}')).toStrictEqual('{\n  a;\n};\n');
         expect(await format('{\na : b}')).toStrictEqual('{\n  a : b;\n};\n');
         expect(await format('{\na = b}')).toStrictEqual('{\n  a = b;\n};\n');
@@ -222,19 +235,21 @@ describe('Motoko formatter',  () => {
         expect(await format('{\na with b = c}')).toStrictEqual(
             '{\n  a with b = c\n};\n',
         );
-        expect(await format('{\na and b;}')).toStrictEqual('{\n  a and b;\n};\n');
+        expect(await format('{\na and b;}')).toStrictEqual(
+            '{\n  a and b;\n};\n',
+        );
         // expect(await format('{\na : A and B}')).toStrictEqual('{\n  a : A and B;\n};\n');
         // expect(await format('{\na = b and c}')).toStrictEqual('{\n  a = b and c;\n};\n');
     });
 
     test('bracket spacing', async () => {
         expect(await format('{abc}')).toStrictEqual('{ abc }\n');
-        expect(await format('{ abc }', { bracketSpacing: false })).toStrictEqual(
-            '{abc}\n',
-        );
+        expect(
+            await format('{ abc }', { bracketSpacing: false }),
+        ).toStrictEqual('{abc}\n');
     });
 
-    test('prettier-ignore',async  () => {
+    test('prettier-ignore', async () => {
         expect(await format('//prettier-ignore\n1*1;\n2*2')).toStrictEqual(
             '//prettier-ignore\n1*1;\n2 * 2;\n',
         );
@@ -263,7 +278,7 @@ describe('Motoko formatter',  () => {
         expect(await format('x.0.e0 x')).toStrictEqual('x.0.e0 x\n');
     });
 
-    test('exponential notation',async  () => {
+    test('exponential notation', async () => {
         expect(await format('1e1')).toStrictEqual('1e1\n');
         expect(await format('1e-1')).toStrictEqual('1e-1\n');
         expect(await format('1.e1')).toStrictEqual('1.e1\n');
@@ -300,16 +315,18 @@ describe('Motoko formatter',  () => {
     });
 
     test('line comment in single line', async () => {
-        expect(await format('a<(b,\n//c\n)>()')).toStrictEqual('a<(b, /* c */)>()\n');
+        expect(await format('a<(b,\n//c\n)>()')).toStrictEqual(
+            'a<(b, /* c */)>()\n',
+        );
     });
 
-    test('prettier-ignore line comment as first line in block',async  () => {
+    test('prettier-ignore line comment as first line in block', async () => {
         expect(await format('{\n// prettier-ignore\n  123}')).toStrictEqual(
             '{\n  // prettier-ignore\n  123\n};\n',
         );
     });
 
-    test('unclosed quotes in comments',async  () => {
+    test('unclosed quotes in comments', async () => {
         expect(await format("// a'b\n '")).toStrictEqual("// a'b\n';\n");
         expect(await format('// a"b\n "')).toStrictEqual('// a"b\n";\n');
         expect(await format("//'\n '")).toStrictEqual("//'\n';\n");
@@ -323,10 +340,12 @@ describe('Motoko formatter',  () => {
 
     test('shared and query keywords', async () => {
         expect(await format('shared({})')).toStrictEqual('shared ({})\n');
-        expect(await format('shared query({})')).toStrictEqual('shared query ({})\n');
+        expect(await format('shared query({})')).toStrictEqual(
+            'shared query ({})\n',
+        );
     });
 
-    test('tuple indices',async  () => {
+    test('tuple indices', async () => {
         expect(await format('x.0.y')).toStrictEqual('x.0.y\n');
         expect(await format('0. y')).toStrictEqual('0. y\n');
         expect(await format('0.\ny')).toStrictEqual('0.\ny;\n');
@@ -337,14 +356,14 @@ describe('Motoko formatter',  () => {
     //     expect(await format('{\n// }\n}\nA\n')).toStrictEqual('{\n  // }\n};\nA;\n');
     // });
 
-    test('conditional parentheses',async  () => {
+    test('conditional parentheses', async () => {
         expect(await format('if a b')).toStrictEqual('if a b\n');
         expect(await format('if (a) b')).toStrictEqual('if (a) b\n');
         expect(await format('if a (b)')).toStrictEqual('if a (b)\n');
         expect(await format('if (a) (b)')).toStrictEqual('if (a) (b)\n');
     });
 
-    test('async*',async  () => {
+    test('async*', async () => {
         expect(await format('async* T')).toStrictEqual('async* T\n');
         expect(await format('async * T')).toStrictEqual('async* T\n');
     });
@@ -363,8 +382,10 @@ describe('Motoko formatter',  () => {
         expect(await format('x : [\nT\n]')).toStrictEqual('x : [\n  T\n];\n');
     });
 
-    test('comma-parentheses',async  () => {
-        expect(await format('if(\nx) { y }')).toStrictEqual('if (\n  x\n) { y };\n');
+    test('comma-parentheses', async () => {
+        expect(await format('if(\nx) { y }')).toStrictEqual(
+            'if (\n  x\n) { y };\n',
+        );
     });
 
     test('trailing semicolon after block comment', async () => {
@@ -373,10 +394,12 @@ describe('Motoko formatter',  () => {
     });
 
     test('invisible unicode characters', async () => {
-        expect(await format('let x\u200b = 123;')).toStrictEqual('let x = 123;\n');
+        expect(await format('let x\u200b = 123;')).toStrictEqual(
+            'let x = 123;\n',
+        );
     });
 
-    test('`with` keyword',async  () => {
+    test('`with` keyword', async () => {
         expect(await format('{a and b with c = d}')).toStrictEqual(
             '{ a and b with c = d }\n',
         );
@@ -392,11 +415,11 @@ describe('Motoko formatter',  () => {
     });
 
     test('multi-line text', async () => {
-       await expectFormatted('"A\nB"\n');
-       await    expectFormatted('"  A\n  B"\n');
-       await    expectFormatted('"A\n\nB"\n');
-       await   expectFormatted('"A\n\n  B"\n');
-        await   expectFormatted('"\nA\n\n  B\n    "\n');
-        await   expectFormatted('"\n\n{\n}\n\n"\n');
+        await expectFormatted('"A\nB"\n');
+        await expectFormatted('"  A\n  B"\n');
+        await expectFormatted('"A\n\nB"\n');
+        await expectFormatted('"A\n\n  B"\n');
+        await expectFormatted('"\nA\n\n  B\n    "\n');
+        await expectFormatted('"\n\n{\n}\n\n"\n');
     });
 });
