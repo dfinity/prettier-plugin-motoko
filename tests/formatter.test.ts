@@ -414,6 +414,10 @@ describe('Motoko formatter', () => {
         );
     });
 
+    test('@ symbol', async () => {
+        expect(await format('@abc')).toStrictEqual('@abc\n');
+    });
+
     test('multi-line text', async () => {
         await expectFormatted('"A\nB"\n');
         await expectFormatted('"  A\n  B"\n');

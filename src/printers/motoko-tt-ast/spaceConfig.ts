@@ -188,6 +188,9 @@ const spaceConfig: SpaceConfig = {
             'keep',
         ],
 
+        // misc
+        [tokenEquals('@'), '_', 'keep'],
+
         // default
         ['_', '_', 'space'],
     ],
