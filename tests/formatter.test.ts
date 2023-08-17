@@ -1,8 +1,5 @@
 import prettier from 'prettier';
 import * as motokoPlugin from '../src/environments/node';
-import glob from 'fast-glob';
-import { join, basename } from 'path';
-import { readFileSync, writeFileSync } from 'fs';
 
 const prettierOptions: prettier.Options = {
     plugins: [motokoPlugin],
@@ -351,10 +348,41 @@ describe('Motoko formatter', () => {
         expect(await format('0.\ny')).toStrictEqual('0.\ny;\n');
     });
 
-    // test('automatic semicolons', () => {
-    //     expect(await format('{\n}\nA\n')).toStrictEqual('{};\nA;\n');
-    //     expect(await format('{\n// }\n}\nA\n')).toStrictEqual('{\n  // }\n};\nA;\n');
-    // });
+    test('automatic semicolons', async () => {
+        expect(await format('{\n}\nA\n')).toStrictEqual('{};\nA;\n');
+        expect(await format('if () {\n}\nelse {}')).toStrictEqual('if () {} else {};\n');
+        expect(await format('{\n}\n.A')).toStrictEqual('{}.A;\n');
+    });
+
+    test('automatic semicolons with line comment', async () => {
+        expect(await format('{\n// }\n}\nA;\n')).toStrictEqual(
+            '{\n  // }\n};\nA;\n',
+        );
+        expect(await format('{\n//\n}\nA\n')).toStrictEqual('{\n  //\n};\nA;\n');
+        expect(await format('{\n}\n//\nA\n')).toStrictEqual('{};\n//\nA;\n');
+    });
+
+    test('automatic semicolons with block comment', async () => {
+        await expectFormatted('/*\n\n{\n// }\n}\nA\n\n*/\n');
+        expect(await format('{\n}\n/**/\nA\n')).toStrictEqual('{};\n/**/\nA;\n');
+        expect(await format('{\n/**/\n}\nA\n')).toStrictEqual('{\n  /**/\n};\nA;\n');
+        expect(await format('{\n}\n\n{\n}')).toStrictEqual('{};\n\n{};\n');
+        expect(await format('if () {\n}\n /*c*/ else {}')).toStrictEqual('if () {}\n/*c*/ else {};\n');
+        expect(await format('try {\n}\n /*c*/ catch {}')).toStrictEqual('try {}\n/*c*/ catch {};\n');
+        expect(await format('try {\n}\n /*c*/ variable {}')).toStrictEqual('try {};\n/*c*/ variable {};\n');
+        expect(await format('{\n}\n /*c*/ .A')).toStrictEqual('{}\n/*c*/ .A;\n');
+    });
+
+    test('automatic semicolons with multi-line text', async () => {
+        await expectFormatted('"\n\n{\n// }\n}\nA\n\n";\n');
+        await expectFormatted('"\\"" # "\n\n{\n// }\n}\nA\n\n";\n');
+        await expectFormatted('"{\n}"\n');
+        await expectFormatted('"\n{\n}"\n');
+        await expectFormatted('"{\n}\n"\n');
+        await expectFormatted('"\n{\n}\n"\n');
+        await expectFormatted('"\n\n{\n}\n"\n');
+        await expectFormatted('"\n{\n}\n\n"\n');
+    });
 
     test('conditional parentheses', async () => {
         expect(await format('if a b')).toStrictEqual('if a b\n');
@@ -424,6 +452,6 @@ describe('Motoko formatter', () => {
         await expectFormatted('"A\n\nB"\n');
         await expectFormatted('"A\n\n  B"\n');
         await expectFormatted('"\nA\n\n  B\n    "\n');
-        await expectFormatted('"\n\n{\n}\n\n"\n');
+        await expectFormatted('"\n\n{\n};\n\n"\n');
     });
 });
