@@ -1,4 +1,4 @@
-use motoko::lexer::create_token_tree;
+use motoko::lexer::{create_token_tree, find_comment_spans};
 use serde::Serialize;
 use serde_wasm_bindgen::to_value;
 use wasm_bindgen::prelude::*;
@@ -8,7 +8,9 @@ extern "C" {
     // fn alert(s: &str);
 }
 
-fn js_return<T: Serialize + ?Sized>(value: &T) -> Result<JsValue, JsError> {
+type JsResult = Result<JsValue, JsError>;
+
+fn js_return<T: Serialize + ?Sized>(value: &T) -> JsResult {
     to_value(value).map_err(|e| JsError::new(&format!("Serialization error ({})", e)))
 }
 
@@ -19,13 +21,21 @@ pub fn start() {
 }
 
 #[wasm_bindgen]
-pub fn parse_token_tree(input: &str) -> Result<JsValue, JsError> {
-    let tt = create_token_tree(input).map_err(|_| JsError::new("Unable to parse input string"))?;
-
-    js_return(&tt)
+pub fn find_comments(input: &str) -> JsResult {
+    js_return(
+        &find_comment_spans(input)
+            .into_iter()
+            .map(|r| (r.start, r.end))
+            .collect::<Vec<_>>(),
+    )
 }
 
 #[wasm_bindgen]
-pub fn is_keyword(ident: &str) -> Result<JsValue, JsError> {
+pub fn parse_token_tree(input: &str) -> JsResult {
+    js_return(&create_token_tree(input).map_err(|_| JsError::new("Unable to parse input string"))?)
+}
+
+#[wasm_bindgen]
+pub fn is_keyword(ident: &str) -> JsResult {
     js_return(&motoko::lexer::is_keyword(ident))
 }
