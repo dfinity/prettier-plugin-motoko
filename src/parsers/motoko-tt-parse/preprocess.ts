@@ -79,7 +79,7 @@ export default function preprocess(
                 const nextLineMaskedCommentsTrimmed = (
                     reversedLinesMaskedComments[i - 1] || ''
                 ).trim();
-                const nextLineIndex = reversedLineIndices[i];
+                const nextLineIndex = reversedLineIndices[i - 1];
 
                 if (
                     trimmedLine === '}' &&
