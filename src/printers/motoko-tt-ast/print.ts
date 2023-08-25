@@ -333,7 +333,14 @@ function printTokenTree(
                 }
                 if (i < trees.length - 1 && !isIgnoreComment) {
                     resultArray.push(
-                        printBetween(trees, i, i + 1, leftMap, rightMap),
+                        printBetween(
+                            groupType,
+                            trees,
+                            i,
+                            i + 1,
+                            leftMap,
+                            rightMap,
+                        ),
                     );
                 } else if (results.length || resultGroup.length) {
                     endGroup();
@@ -428,6 +435,7 @@ function printToken(token: Token): Doc {
 }
 
 function printBetween(
+    group: GroupType,
     trees: TokenTree[],
     aIndex: number,
     bIndex: number,
@@ -436,8 +444,8 @@ function printBetween(
 ): Doc {
     const rule = spaceConfig.rules.find(([aPattern, bPattern]) => {
         return (
-            doesTokenTreeMatchPattern(aPattern, trees, aIndex) &&
-            doesTokenTreeMatchPattern(bPattern, trees, bIndex)
+            doesTokenTreeMatchPattern(aPattern, trees, aIndex, group) &&
+            doesTokenTreeMatchPattern(bPattern, trees, bIndex, group)
         );
     });
     return rule

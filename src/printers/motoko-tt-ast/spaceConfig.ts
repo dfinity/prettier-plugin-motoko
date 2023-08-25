@@ -12,7 +12,7 @@ type Pattern =
     | TokenTree['token_tree_type']
     | GroupType
     | ((tt: TokenTree) => boolean)
-    | { main: Pattern; left?: Pattern; right?: Pattern }
+    | { main: Pattern; left?: Pattern; right?: Pattern; groups?: GroupType[] }
     | '_';
 
 interface SpaceConfig {
@@ -20,12 +20,10 @@ interface SpaceConfig {
 }
 
 export function doesTokenTreeMatchPattern(
-    // tt: TokenTree,
     pattern: Pattern,
     trees: TokenTree[],
     index: number,
-    // leftMap: Map<TokenTree, TokenTree>,
-    // rightMap: Map<TokenTree, TokenTree>,
+    group: GroupType,
 ): boolean {
     const tt = trees[index];
     if (!tt) {
@@ -43,20 +41,23 @@ export function doesTokenTreeMatchPattern(
     if (typeof pattern === 'object' && pattern.main) {
         if (
             pattern.main &&
-            !doesTokenTreeMatchPattern(pattern.main, trees, index)
+            !doesTokenTreeMatchPattern(pattern.main, trees, index, group)
         ) {
             return false;
         }
         if (
             pattern.left &&
-            !doesTokenTreeMatchPattern(pattern.left, trees, index - 1)
+            !doesTokenTreeMatchPattern(pattern.left, trees, index - 1, group)
         ) {
             return false;
         }
         if (
             pattern.right &&
-            !doesTokenTreeMatchPattern(pattern.right, trees, index + 1)
+            !doesTokenTreeMatchPattern(pattern.right, trees, index + 1, group)
         ) {
+            return false;
+        }
+        if (pattern.groups && !pattern.groups.some((g) => g === group)) {
             return false;
         }
         return true;
@@ -141,9 +142,17 @@ const spaceConfig: SpaceConfig = {
         // 'with' keyword
         [tokenEquals('with'), '_', 'keep-space'],
 
-        // indentation tokens
-        [tokenEquals('and'), '_', 'keep-space'],
-        [tokenEquals('or'), '_', 'keep-space'],
+        // logical and pipe operators
+        [
+            { main: tokenEquals('and'), groups: ['Paren', 'Square'] },
+            '_',
+            'keep-space',
+        ],
+        [
+            { main: tokenEquals('or'), groups: ['Paren', 'Square'] },
+            '_',
+            'keep-space',
+        ],
         ['_', tokenEquals('|>'), 'keep-space'],
 
         // soft-wrapping operators

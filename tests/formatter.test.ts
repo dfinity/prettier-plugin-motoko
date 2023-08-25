@@ -472,9 +472,9 @@ describe('Motoko formatter', () => {
     });
 
     test('logical operators', async () => {
-        // expect(await format('A and\n B')).toStrictEqual(
-        //     'A and\n  B;\n',
-        // );
+        expect(await format('A and\n B')).toStrictEqual(
+            'A and B;\n',
+        );
         expect(await format('(A and\n B)')).toStrictEqual(
             '(\n  A and\n  B\n);\n',
         );
