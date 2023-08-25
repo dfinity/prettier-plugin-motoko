@@ -350,7 +350,9 @@ describe('Motoko formatter', () => {
 
     test('automatic semicolons', async () => {
         expect(await format('{\n}\nA\n')).toStrictEqual('{};\nA;\n');
-        expect(await format('if () {\n}\nelse {}')).toStrictEqual('if () {} else {};\n');
+        expect(await format('if () {\n}\nelse {}')).toStrictEqual(
+            'if () {} else {};\n',
+        );
         expect(await format('{\n}\n.A')).toStrictEqual('{}.A;\n');
     });
 
@@ -358,19 +360,33 @@ describe('Motoko formatter', () => {
         expect(await format('{\n// }\n}\nA;\n')).toStrictEqual(
             '{\n  // }\n};\nA;\n',
         );
-        expect(await format('{\n//\n}\nA\n')).toStrictEqual('{\n  //\n};\nA;\n');
+        expect(await format('{\n//\n}\nA\n')).toStrictEqual(
+            '{\n  //\n};\nA;\n',
+        );
         expect(await format('{\n}\n//\nA\n')).toStrictEqual('{};\n//\nA;\n');
     });
 
     test('automatic semicolons with block comment', async () => {
         await expectFormatted('/*\n\n{\n// }\n}\nA\n\n*/\n');
-        expect(await format('{\n}\n/**/\nA\n')).toStrictEqual('{};\n/**/\nA;\n');
-        expect(await format('{\n/**/\n}\nA\n')).toStrictEqual('{\n  /**/\n};\nA;\n');
+        expect(await format('{\n}\n/**/\nA\n')).toStrictEqual(
+            '{};\n/**/\nA;\n',
+        );
+        expect(await format('{\n/**/\n}\nA\n')).toStrictEqual(
+            '{\n  /**/\n};\nA;\n',
+        );
         expect(await format('{\n}\n\n{\n}')).toStrictEqual('{};\n\n{};\n');
-        expect(await format('if () {\n}\n /*c*/ else {}')).toStrictEqual('if () {}\n/*c*/ else {};\n');
-        expect(await format('try {\n}\n /*c*/ catch {}')).toStrictEqual('try {}\n/*c*/ catch {};\n');
-        expect(await format('try {\n}\n /*c*/ variable {}')).toStrictEqual('try {};\n/*c*/ variable {};\n');
-        expect(await format('{\n}\n /*c*/ .A')).toStrictEqual('{}\n/*c*/ .A;\n');
+        expect(await format('if () {\n}\n /*c*/ else {}')).toStrictEqual(
+            'if () {}\n/*c*/ else {};\n',
+        );
+        expect(await format('try {\n}\n /*c*/ catch {}')).toStrictEqual(
+            'try {}\n/*c*/ catch {};\n',
+        );
+        expect(await format('try {\n}\n /*c*/ variable {}')).toStrictEqual(
+            'try {};\n/*c*/ variable {};\n',
+        );
+        expect(await format('{\n}\n /*c*/ .A')).toStrictEqual(
+            '{}\n/*c*/ .A;\n',
+        );
     });
 
     test('automatic semicolons with multi-line text', async () => {
@@ -453,5 +469,31 @@ describe('Motoko formatter', () => {
         await expectFormatted('"A\n\n  B"\n');
         await expectFormatted('"\nA\n\n  B\n    "\n');
         await expectFormatted('"\n\n{\n};\n\n"\n');
+    });
+
+    test('logical operators', async () => {
+        // expect(await format('A and\n B')).toStrictEqual(
+        //     'A and\n  B;\n',
+        // );
+        expect(await format('(A and\n B)')).toStrictEqual(
+            '(\n  A and\n  B\n);\n',
+        );
+        expect(await format('(A and\n B)')).toStrictEqual(
+            '(\n  A and\n  B\n);\n',
+        );
+        expect(await format('(A or\n B)')).toStrictEqual(
+            '(\n  A or\n  B\n);\n',
+        );
+        expect(await format('(A or\n B)')).toStrictEqual(
+            '(\n  A or\n  B\n);\n',
+        );
+        // expect(
+        //     await format(`(${'A'.repeat(20)} and ${'B'.repeat(20)})`),
+        // ).toStrictEqual(`(\n  ${'A'.repeat(20)} and\n  ${'B'.repeat(20)}\n);\n`);
+    });
+
+    test('pipe operator', async () => {
+        expect(await format('A\n|> B')).toStrictEqual('A\n|> B;\n');
+        expect(await format('(A\n|> B)')).toStrictEqual('(\n  A\n  |> B\n);\n');
     });
 });

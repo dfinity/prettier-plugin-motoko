@@ -141,6 +141,11 @@ const spaceConfig: SpaceConfig = {
         // 'with' keyword
         [tokenEquals('with'), '_', 'keep-space'],
 
+        // indentation tokens
+        [tokenEquals('and'), '_', 'keep-space'],
+        [tokenEquals('or'), '_', 'keep-space'],
+        ['_', tokenEquals('|>'), 'keep-space'],
+
         // soft-wrapping operators
         ['_', 'Dot', 'nil'],
         // ['_', 'Dot', 'softwrap'],
