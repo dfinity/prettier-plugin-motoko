@@ -17,13 +17,13 @@ npm install --save-dev prettier prettier-plugin-motoko
 Format your Motoko files using the [Prettier CLI](https://prettier.io/docs/en/cli.html):
 
 ```sh
-npx prettier --write **/*.mo
+npx prettier --write --plugin=prettier-plugin-motoko **/*.mo
 ```
 
 Check if your Motoko files are correctly formatted:
 
 ```sh
-npx prettier --check **/*.mo
+npx prettier --check --plugin=prettier-plugin-motoko **/*.mo
 ```
 
 Alternatively, check out [`mo-fmt`](https://www.npmjs.com/package/mo-fmt) for a standalone Motoko formatter CLI:
@@ -46,7 +46,7 @@ If you are using [Prettier 3](https://prettier.io/blog/2023/07/05/3.0.0.html), a
 
 ```json
 {
-    "plugins": ["motoko"],
+    "plugins": ["prettier-plugin-motoko"],
 }
 ```
 
