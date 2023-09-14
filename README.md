@@ -54,7 +54,7 @@ If you are using [Prettier 3](https://prettier.io/blog/2023/07/05/3.0.0.html), a
 
 ```json
 {
-    "plugins": ["motoko"],
+    "plugins": ["prettier-plugin-motoko"],
     "bracketSpacing": true,
     "printWidth": 80,
     "semi": true,
