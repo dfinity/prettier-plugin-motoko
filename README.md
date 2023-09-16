@@ -42,7 +42,7 @@ mo-fmt -c **/*
 
 Configure the formatter by creating a `.prettierrc` file in your project directory ([full documentation](https://prettier.io/docs/en/configuration.html)).
 
-If you are using [Prettier 3](https://prettier.io/blog/2023/07/05/3.0.0.html), add the following line to your config file:
+Add the following line to your config file:
 
 ```json
 {
