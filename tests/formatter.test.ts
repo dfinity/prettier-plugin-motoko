@@ -472,9 +472,7 @@ describe('Motoko formatter', () => {
     });
 
     test('logical operators', async () => {
-        expect(await format('A and\n B')).toStrictEqual(
-            'A and B;\n',
-        );
+        expect(await format('A and\n B')).toStrictEqual('A and B;\n');
         expect(await format('(A and\n B)')).toStrictEqual(
             '(\n  A and\n  B\n);\n',
         );
@@ -495,5 +493,10 @@ describe('Motoko formatter', () => {
     test('pipe operator', async () => {
         expect(await format('A\n|> B')).toStrictEqual('A\n|> B;\n');
         expect(await format('(A\n|> B)')).toStrictEqual('(\n  A\n  |> B\n);\n');
+    });
+
+    test('function in type bindings', async () => {
+        await expectFormatted('f<() -> (), Nat>();\n');
+        await expectFormatted('f<() -> (), () -> ())>();\n');
     });
 });
