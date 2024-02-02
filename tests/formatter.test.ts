@@ -499,4 +499,8 @@ describe('Motoko formatter', () => {
         await expectFormatted('f<() -> (), Nat>();\n');
         await expectFormatted('f<() -> (), () -> ())>();\n');
     });
+
+    test('case with array value', async () => {
+        await expectFormatted('case (x) [x];\n');
+    });
 });
