@@ -29,8 +29,9 @@ if (!program.args.length) {
 
 (async () => {
     const configPath = await prettier.resolveConfigFile();
+    let config = null;
     if (configPath) {
-        await prettier.resolveConfig(configPath);
+        config = await prettier.resolveConfig(configPath);
     }
 
     let fileCount = 0;
@@ -55,10 +56,10 @@ if (!program.args.length) {
 
                 fileCount += 1;
                 const source = readFileSync(file, 'utf-8');
-                const shouldFormat = !await prettier.check(source, {
+                const shouldFormat = !(await prettier.check(source, {
                     plugins: [motokoPlugin],
                     filepath: '*.mo',
-                });
+                }));
                 if (check) {
                     if (shouldFormat) {
                         console.log('!', file);
@@ -69,6 +70,7 @@ if (!program.args.length) {
                     const formatted = await prettier.format(source, {
                         plugins: [motokoPlugin],
                         filepath: '*.mo',
+                        ...(config || {}),
                     });
                     if (source.trim() && !formatted) {
                         success = false;
