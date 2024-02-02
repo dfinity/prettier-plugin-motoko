@@ -59,6 +59,7 @@ if (!program.args.length) {
                 const shouldFormat = !(await prettier.check(source, {
                     plugins: [motokoPlugin],
                     filepath: '*.mo',
+                    ...(config || {}),
                 }));
                 if (check) {
                     if (shouldFormat) {
