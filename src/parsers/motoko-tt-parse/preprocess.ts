@@ -2,7 +2,7 @@ import { ParserOptions } from 'prettier';
 import outOfCharacter from 'out-of-character';
 import wasm from '../../wasm';
 
-const skipAutomaticSemiForNextLinePrefixes = ['.', ')', '}', ']'];
+const skipAutomaticSemiForNextLinePrefixes = ['.', '|>', ')', '}', ']'];
 
 function getLineIndices(code: string): number[] {
     const indices = [];
