@@ -67,6 +67,7 @@ export default function preprocess(
             .map((line, i) => {
                 const trimmedLine = line.trim();
                 if (!trimmedLine) {
+                    nextIndent = -1;
                     return line;
                 }
 
@@ -84,7 +85,7 @@ export default function preprocess(
                 if (
                     trimmedLine === '}' &&
                     // Skip when at end of nested group with indentation
-                    (indent <= nextIndent || nextIndent == 0) &&
+                    (indent <= nextIndent || nextIndent == -1 /* Empty line */) &&
                     // Skip when part of a path expression
                     !nextLineMaskedCommentsTrimmed.startsWith('.') &&
                     // Skip first block for if/else, try/catch
