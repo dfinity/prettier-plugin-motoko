@@ -436,6 +436,27 @@ describe('Motoko formatter', () => {
         await expectFormatted('x : [{\n  abc;\n}] = 1;\n');
         await expectFormatted('type T = [{\n  abc;\n}];\n');
         await expectFormatted('let x = [\n  {\n    abc;\n  },\n];\n');
+        expect(
+            await format(
+                `
+public type T = {
+  x : [
+    {
+      a : A;
+      fn : shared query A -> async T;
+    }
+  ];
+}`,
+            ),
+        ).toEqual(
+            `
+public type T = {
+  x : [{
+    a : A;
+    fn : shared query A -> async T;
+  }];
+};`.trim() + '\n',
+        );
     });
 
     test('comma-parentheses', async () => {
