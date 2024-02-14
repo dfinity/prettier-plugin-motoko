@@ -424,6 +424,8 @@ describe('Motoko formatter', () => {
         expect(await format('[\na,b]')).toStrictEqual('[\n  a,\n  b,\n];\n');
         expect(await format('[\na,]')).toStrictEqual('[\n  a,\n];\n');
         expect(await format('x : [\nT\n]')).toStrictEqual('x : [\n  T\n];\n');
+        await expectFormatted('type T = [\n  {\n    abc;\n  }\n];\n');
+        await expectFormatted('let x = [\n  {\n    abc;\n  },\n];\n');
     });
 
     test('comma-parentheses', async () => {
