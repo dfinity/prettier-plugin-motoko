@@ -62,17 +62,11 @@ export default function preprocess(
             .split('\n')
             .reverse();
         const reversedLineIndices = getLineIndices(code).reverse();
-        let nextIndent = 0;
         code = reversedLines
             .map((line, i) => {
                 const trimmedLine = line.trim();
                 if (!trimmedLine) {
                     return line;
-                }
-
-                let indent = 0;
-                while (indent < line.length && line.charAt(indent) === ' ') {
-                    indent++;
                 }
 
                 // Following line, comments replaced with whitespace, trimmed
@@ -99,7 +93,6 @@ export default function preprocess(
                     line += ';';
                 }
 
-                nextIndent = indent;
                 return line;
             })
             .reverse()
