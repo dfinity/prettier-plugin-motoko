@@ -354,6 +354,11 @@ describe('Motoko formatter', () => {
             'if () {} else {};\n',
         );
         expect(await format('{\n}\n.A')).toStrictEqual('{}.A;\n');
+        expect(
+            await format('[\n  {\n  abc;\n  }\n  { 123 }\n];\n', {
+                trailingComma: 'none',
+            }),
+        ).toStrictEqual('[\n  {\n    abc;\n  },\n  { 123 }\n];\n');
     });
 
     test('automatic semicolons with line comment', async () => {
@@ -424,6 +429,34 @@ describe('Motoko formatter', () => {
         expect(await format('[\na,b]')).toStrictEqual('[\n  a,\n  b,\n];\n');
         expect(await format('[\na,]')).toStrictEqual('[\n  a,\n];\n');
         expect(await format('x : [\nT\n]')).toStrictEqual('x : [\n  T\n];\n');
+        expect(await format('x : [\n  { abc; }\n];\n')).toEqual(
+            'x : [{ abc }];\n',
+        );
+        await expectFormatted('x : [{\n  abc;\n}] = 1;\n');
+        await expectFormatted('x : [{\n  abc;\n}] = 1;\n');
+        await expectFormatted('type T = [{\n  abc;\n}];\n');
+        await expectFormatted('let x = [\n  {\n    abc;\n  },\n];\n');
+        expect(
+            await format(
+                `
+public type T = {
+  x : [
+    {
+      a : A;
+      fn : shared query A -> async T;
+    }
+  ];
+}`,
+            ),
+        ).toEqual(
+            `
+public type T = {
+  x : [{
+    a : A;
+    fn : shared query A -> async T;
+  }];
+};`.trim() + '\n',
+        );
     });
 
     test('comma-parentheses', async () => {

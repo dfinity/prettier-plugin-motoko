@@ -2,6 +2,8 @@ import { ParserOptions } from 'prettier';
 import outOfCharacter from 'out-of-character';
 import wasm from '../../wasm';
 
+const skipAutomaticSemiForNextLinePrefixes = ['.', '|>', ')', '}', ']'];
+
 function getLineIndices(code: string): number[] {
     const indices = [];
     for (let i = 0; i < code.length; i++) {
@@ -67,6 +69,7 @@ export default function preprocess(
             .map((line, i) => {
                 const trimmedLine = line.trim();
                 if (!trimmedLine) {
+                    nextIndent = -1;
                     return line;
                 }
 
@@ -83,8 +86,14 @@ export default function preprocess(
 
                 if (
                     trimmedLine === '}' &&
-                    // Skip when part of a path expression
-                    !nextLineMaskedCommentsTrimmed.startsWith('.') &&
+                    // Skip if prefix found on next line
+                    (!nextLineMaskedCommentsTrimmed ||
+                        skipAutomaticSemiForNextLinePrefixes.every(
+                            (prefix) =>
+                                !nextLineMaskedCommentsTrimmed.startsWith(
+                                    prefix,
+                                ),
+                        )) &&
                     // Skip first block for if/else, try/catch
                     !/^(else|catch)([^a-zA-Z0-9_]|$)/.test(
                         nextLineMaskedCommentsTrimmed,
