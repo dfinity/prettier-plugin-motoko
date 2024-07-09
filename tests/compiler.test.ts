@@ -16,7 +16,6 @@ describe('Motoko compiler suite', () => {
                 const formatted = await prettier.format(code, {
                     filepath: file,
                     plugins: [motokoPlugin],
-                    // semi: false,///
                 });
                 preOutput += `// >>> ${basename(file)} <<<\n\n${code}\n\n`;
                 postOutput += `// >>> ${basename(
