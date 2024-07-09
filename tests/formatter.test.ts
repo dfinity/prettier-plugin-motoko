@@ -386,6 +386,9 @@ describe('Motoko formatter', () => {
         expect(await format('try {\n}\n /*c*/ catch {}')).toStrictEqual(
             'try {}\n/*c*/ catch {};\n',
         );
+        expect(await format('try {\n}\n /*c*/ finally {}')).toStrictEqual(
+            'try {}\n/*c*/ finally {};\n',
+        );
         expect(await format('try {\n}\n /*c*/ variable {}')).toStrictEqual(
             'try {};\n/*c*/ variable {};\n',
         );
