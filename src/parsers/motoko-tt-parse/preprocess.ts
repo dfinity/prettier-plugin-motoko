@@ -95,7 +95,7 @@ export default function preprocess(
                                 ),
                         )) &&
                     // Skip first block for if/else, try/catch
-                    !/^(else|catch)([^a-zA-Z0-9_]|$)/.test(
+                    !/^(else|catch|finally)([^a-zA-Z0-9_]|$)/.test(
                         nextLineMaskedCommentsTrimmed,
                     ) &&
                     // Skip comments and string literals
