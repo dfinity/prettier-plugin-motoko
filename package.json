@@ -1,6 +1,6 @@
 {
     "name": "prettier-plugin-motoko",
-    "version": "0.9.1",
+    "version": "0.9.2",
     "description": "A code formatter for the Motoko smart contract language.",
     "main": "lib/environments/node.js",
     "browser": "lib/environments/web.js",
@@ -8,8 +8,8 @@
     "scripts": {
         "build:ts": "rimraf ./lib && tsc -p .",
         "build:wasm": "run-s build:wasm:bundler build:wasm:nodejs",
-        "build:wasm:bundler": "wasm-pack build wasm --target bundler --out-dir pkg/bundler",
-        "build:wasm:nodejs": "wasm-pack build wasm --target nodejs --out-dir pkg/nodejs",
+        "build:wasm:bundler": "wasm-pack build wasm --target bundler --out-dir pkg/bundler && rm wasm/pkg/bundler/.gitignore",
+        "build:wasm:nodejs": "wasm-pack build wasm --target nodejs --out-dir pkg/nodejs && rm wasm/pkg/nodejs/.gitignore",
         "build": "run-s build:wasm build:ts",
         "test": "npm run build:wasm:nodejs && npm run test:quick",
         "test:quick": "node --experimental-vm-modules node_modules/jest/bin/jest",
