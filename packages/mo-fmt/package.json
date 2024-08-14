@@ -22,7 +22,7 @@
         "commander": "^9.4.0",
         "fast-glob": "^3.2.11",
         "prettier": "2",
-        "prettier-plugin-motoko": "^0.9.2"
+        "prettier-plugin-motoko": "^0.9.3"
     },
     "devDependencies": {
         "@rollup/plugin-commonjs": "^22.0.2",
