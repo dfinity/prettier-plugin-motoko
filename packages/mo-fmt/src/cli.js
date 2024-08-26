@@ -8,7 +8,7 @@ const glob = require('fast-glob');
 
 // console.log(prettier.getSupportInfo().options);
 
-const { check, ignore } = program
+const { check, ignore, version } = program
     .argument('[paths...]', 'file paths to format (examples: File.mo, **/*.mo)')
     .option(
         '-c, --check',
@@ -19,8 +19,14 @@ const { check, ignore } = program
         'file paths to ignore, comma-separated',
         '**/node_modules/**/*',
     )
+    .option('-V, --version', 'show installed version')
     .parse()
     .opts();
+
+if (version) {
+    console.log('mo-fmt', require('../package.json').version);
+    process.exit(0);
+}
 
 if (!program.args.length) {
     console.log(program.helpInformation());
