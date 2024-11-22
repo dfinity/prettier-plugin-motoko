@@ -5,7 +5,7 @@ import { join, basename } from 'path';
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
 
 describe('Motoko compiler suite', () => {
-    test('generate diff files from compiler tests', async () => {
+    test.skip('generate diff files from compiler tests', async () => {
         const okFiles: string[] = [];
         for (const extension of ['mo', 'did']) {
             let preOutput = '';

@@ -95,6 +95,11 @@ const tokenStartsWith = (start: string) =>
     token((token) => getTokenText(token).startsWith(start));
 const tokenEndsWith = (end: string) =>
     token((token) => getTokenText(token).endsWith(end));
+const tokenTypes = (types: Token['token_type'][]) =>
+    token((token) => types.includes(token.token_type));
+
+const any = (conditions: ((tt: TokenTree) => boolean)[]) => (tt: TokenTree) =>
+    conditions.some((condition) => condition(tt));
 
 // match both "block comments" and "comment groups" (lexer implementation detail)
 const blockComment = (tt: TokenTree) =>
@@ -129,6 +134,14 @@ const spaceConfig: SpaceConfig = {
         [{ left: tokenEquals('if'), main: '_' }, 'Paren', 'space'],
 
         // unary operators
+        [
+            {
+                left: tokenTypes(['Close', 'Ident', 'Literal']),
+                main: any([tokenEquals('+'), tokenEquals('-')]),
+            },
+            '_',
+            'space',
+        ],
         [tokenEquals('+'), '_', 'keep'],
         [tokenEquals('-'), '_', 'keep'],
         [tokenEquals('^'), '_', 'keep'],
