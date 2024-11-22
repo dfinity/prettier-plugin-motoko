@@ -557,6 +557,8 @@ public type T = {
         expect(await format('x+1.0')).toEqual('x + 1.0\n');
         await expectFormatted('x; +1\n');
         await expectFormatted('x(+1)\n');
+        expect(await format('1 +1')).toEqual('1 + 1\n');
+        expect(await format('x +1')).toEqual('x + 1\n');
     });
 
     test('subtraction vs. negative number', async () => {
@@ -570,5 +572,7 @@ public type T = {
         expect(await format('x-1')).toEqual('x - 1\n');
         expect(await format('x-1.0')).toEqual('x - 1.0\n');
         expect(await format('x+ -1')).toEqual('x + -1\n');
+        expect(await format('1 -1')).toEqual('1 - 1\n');
+        expect(await format('x -1')).toEqual('x - 1\n');
     });
 });
