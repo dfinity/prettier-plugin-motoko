@@ -372,7 +372,7 @@ describe('Motoko formatter', () => {
     });
 
     test('automatic semicolons with block comment', async () => {
-        await expectFormatted('/*\n\n{\n// }\n}\nA\n\n*/\n');
+        await expectFormatted('/*\n\n{\n// }\n};\nA\n\n*/\n');
         expect(await format('{\n}\n/**/\nA\n')).toStrictEqual(
             '{};\n/**/\nA;\n',
         );
@@ -406,6 +406,19 @@ describe('Motoko formatter', () => {
         await expectFormatted('"\n{\n}\n"\n');
         await expectFormatted('"\n\n{\n}\n"\n');
         await expectFormatted('"\n{\n}\n\n"\n');
+    });
+
+    test('no automatic semicolons before `else`, `catch`, etc.', async () => {
+        // await expectFormatted('if a {}\n// Comment\nelse {};\n');
+        // expect(await format('if a\n{}\n// Comment\nelse {};\n')).toEqual('if a {}\n// Comment\nelse {};\n');
+        expect(await format('if a {\n}\n// Comment\nelse {};')).toEqual('if a {}\n// Comment\nelse {};\n');
+        // expect(await format('if a {\n}\n\n// Comment\nelse {};')).toEqual('if a {}\n\n// Comment\nelse {};\n');
+        // expect(await format('if a {\n}\n// Comment\nelse\n{};')).toEqual('if a {\n}\n// Comment\nelse {};\n');
+
+        // await expectFormatted('if a {\n}\n// Comment\nelse {\n};\n');
+        // await expectFormatted('if a {\n}\n// Comment\nelse\n{\n};\n');
+        // await expectFormatted('try {\n}\n// Comment\ncatch {\n};\n');
+        // await expectFormatted('try {\n}\n// Comment\nfinally {\n};\n');
     });
 
     test('conditional parentheses', async () => {
@@ -538,5 +551,9 @@ public type T = {
 
     test('case with array value', async () => {
         await expectFormatted('case (x) [x];\n');
+    });
+
+    test('unicode character', async () => {
+        await expectFormatted('import Prim "mo:⛔";\n');
     });
 });

@@ -78,11 +78,21 @@ export default function preprocess(
                     indent++;
                 }
 
+                // Find next non-empty line index
+                let nextLineIndex = i - 1;
+                while (
+                    nextLineIndex > 0 &&
+                    !reversedLinesMaskedComments[nextLineIndex].trim()
+                ) {
+                    nextLineIndex--;
+                }
                 // Following line, comments replaced with whitespace, trimmed
                 const nextLineMaskedCommentsTrimmed = (
-                    reversedLinesMaskedComments[i - 1] || ''
+                    reversedLinesMaskedComments[nextLineIndex] || ''
                 ).trim();
-                const nextLineIndex = reversedLineIndices[i - 1];
+                // Original index of the next line
+                const nextLineOriginalIndex =
+                    reversedLineIndices[nextLineIndex];
 
                 if (
                     trimmedLine === '}' &&
@@ -99,10 +109,11 @@ export default function preprocess(
                         nextLineMaskedCommentsTrimmed,
                     ) &&
                     // Skip comments and string literals
-                    (nextLineIndex === undefined ||
+                    (nextLineOriginalIndex === undefined ||
                         !ignoreSpans.some(
                             ([start, end]) =>
-                                start <= nextLineIndex && nextLineIndex < end,
+                                start <= nextLineOriginalIndex &&
+                                nextLineOriginalIndex < end,
                         ))
                 ) {
                     line += ';';
