@@ -78,7 +78,7 @@ export default function preprocess(
                     indent++;
                 }
 
-                // Find next non-empty line index
+                // Find next non-empty line index (excluding comments)
                 let nextLineIndex = i - 1;
                 while (
                     nextLineIndex > 0 &&
