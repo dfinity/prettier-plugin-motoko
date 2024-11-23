@@ -558,7 +558,39 @@ public type T = {
         await expectFormatted('case (x) [x];\n');
     });
 
-    test('unicode character', async () => {
-        await expectFormatted('import Prim "mo:⛔";\n');
+    test('multiplication and division spacing', async () => {
+        expect(await format('1*1')).toEqual('1 * 1\n');
+        expect(await format('x*1')).toEqual('x * 1\n');
+        expect(await format('1/1')).toEqual('1 / 1\n');
+        expect(await format('x/1')).toEqual('x / 1\n');
+    });
+
+    test('addition vs. positive number', async () => {
+        await expectFormatted('1 + 1\n');
+        await expectFormatted('x + 1\n');
+        await expectFormatted('x - +1\n');
+        expect(await format('1+1')).toEqual('1 + 1\n');
+        expect(await format('1+1.0')).toEqual('1 + 1.0\n');
+        expect(await format('x+1')).toEqual('x + 1\n');
+        expect(await format('x+1.0')).toEqual('x + 1.0\n');
+        await expectFormatted('x; +1\n');
+        await expectFormatted('x(+1)\n');
+        expect(await format('1 +1')).toEqual('1 + 1\n');
+        expect(await format('x +1')).toEqual('x + 1\n');
+    });
+
+    test('subtraction vs. negative number', async () => {
+        await expectFormatted('1 - 1\n');
+        await expectFormatted('x - 1\n');
+        await expectFormatted('x + -1\n');
+        await expectFormatted('x; -1\n');
+        await expectFormatted('x(-1)\n');
+        expect(await format('1-1')).toEqual('1 - 1\n');
+        expect(await format('1.0-1.0')).toEqual('1.0 - 1.0\n');
+        expect(await format('x-1')).toEqual('x - 1\n');
+        expect(await format('x-1.0')).toEqual('x - 1.0\n');
+        expect(await format('x+ -1')).toEqual('x + -1\n');
+        expect(await format('1 -1')).toEqual('1 - 1\n');
+        expect(await format('x -1')).toEqual('x - 1\n');
     });
 });
