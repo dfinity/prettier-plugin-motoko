@@ -372,7 +372,7 @@ describe('Motoko formatter', () => {
     });
 
     test('automatic semicolons with block comment', async () => {
-        await expectFormatted('/*\n\n{\n// }\n}\nA\n\n*/\n');
+        await expectFormatted('/*\n\n{\n// }\n};\nA\n\n*/\n');
         expect(await format('{\n}\n/**/\nA\n')).toStrictEqual(
             '{};\n/**/\nA;\n',
         );
@@ -406,6 +406,24 @@ describe('Motoko formatter', () => {
         await expectFormatted('"\n{\n}\n"\n');
         await expectFormatted('"\n\n{\n}\n"\n');
         await expectFormatted('"\n{\n}\n\n"\n');
+    });
+
+    test('no automatic semicolons before `else`, `catch`, etc.', async () => {
+        await expectFormatted('if a {}\n// Comment\nelse {};\n');
+        expect(await format('if a\n{}\n// Comment\nelse {};\n')).toEqual(
+            'if a {}\n// Comment\nelse {};\n',
+        );
+        expect(await format('if a {\n}\n// Comment\nelse {};')).toEqual(
+            'if a {}\n// Comment\nelse {};\n',
+        );
+        expect(await format('if a {\n}\n\n// Comment\nelse {};')).toEqual(
+            'if a {}\n\n// Comment\nelse {};\n',
+        );
+        expect(await format('if a {\n}\n// Comment\n  else\n{};')).toEqual(
+            'if a {}\n// Comment\nelse {};\n',
+        );
+        await expectFormatted('try {}\n// Comment\ncatch e {};\n');
+        await expectFormatted('try {}\n// Comment\nfinally {};\n');
     });
 
     test('conditional parentheses', async () => {
@@ -538,5 +556,41 @@ public type T = {
 
     test('case with array value', async () => {
         await expectFormatted('case (x) [x];\n');
+    });
+
+    test('multiplication and division spacing', async () => {
+        expect(await format('1*1')).toEqual('1 * 1\n');
+        expect(await format('x*1')).toEqual('x * 1\n');
+        expect(await format('1/1')).toEqual('1 / 1\n');
+        expect(await format('x/1')).toEqual('x / 1\n');
+    });
+
+    test('addition vs. positive number', async () => {
+        await expectFormatted('1 + 1\n');
+        await expectFormatted('x + 1\n');
+        await expectFormatted('x - +1\n');
+        expect(await format('1+1')).toEqual('1 + 1\n');
+        expect(await format('1+1.0')).toEqual('1 + 1.0\n');
+        expect(await format('x+1')).toEqual('x + 1\n');
+        expect(await format('x+1.0')).toEqual('x + 1.0\n');
+        await expectFormatted('x; +1\n');
+        await expectFormatted('x(+1)\n');
+        expect(await format('1 +1')).toEqual('1 + 1\n');
+        expect(await format('x +1')).toEqual('x + 1\n');
+    });
+
+    test('subtraction vs. negative number', async () => {
+        await expectFormatted('1 - 1\n');
+        await expectFormatted('x - 1\n');
+        await expectFormatted('x + -1\n');
+        await expectFormatted('x; -1\n');
+        await expectFormatted('x(-1)\n');
+        expect(await format('1-1')).toEqual('1 - 1\n');
+        expect(await format('1.0-1.0')).toEqual('1.0 - 1.0\n');
+        expect(await format('x-1')).toEqual('x - 1\n');
+        expect(await format('x-1.0')).toEqual('x - 1.0\n');
+        expect(await format('x+ -1')).toEqual('x + -1\n');
+        expect(await format('1 -1')).toEqual('1 - 1\n');
+        expect(await format('x -1')).toEqual('x - 1\n');
     });
 });
