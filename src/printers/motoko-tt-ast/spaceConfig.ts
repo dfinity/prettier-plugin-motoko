@@ -98,8 +98,16 @@ const tokenEndsWith = (end: string) =>
 const tokenTypes = (types: Token['token_type'][]) =>
     token((token) => types.includes(token.token_type));
 
-const any = (conditions: ((tt: TokenTree) => boolean)[]) => (tt: TokenTree) =>
-    conditions.some((condition) => condition(tt));
+const and =
+    (...conditions: ((tt: TokenTree) => boolean)[]) =>
+    (tt: TokenTree) =>
+        conditions.every((condition) => condition(tt));
+const or =
+    (...conditions: ((tt: TokenTree) => boolean)[]) =>
+    (tt: TokenTree) =>
+        conditions.some((condition) => condition(tt));
+const not = (condition: (tt: TokenTree) => boolean) => (tt: TokenTree) =>
+    !condition(tt);
 
 // match both "block comments" and "comment groups" (lexer implementation detail)
 const blockComment = (tt: TokenTree) =>
@@ -136,8 +144,11 @@ const spaceConfig: SpaceConfig = {
         // unary operators
         [
             {
-                left: tokenTypes(['Close', 'Ident', 'Literal']),
-                main: any([tokenEquals('+'), tokenEquals('-')]),
+                left: and(
+                    tokenTypes(['Close', 'Ident', 'Literal']),
+                    not(keyword),
+                ),
+                main: or(tokenEquals('+'), tokenEquals('-')),
             },
             '_',
             'space',
