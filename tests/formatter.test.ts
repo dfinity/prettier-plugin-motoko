@@ -593,4 +593,9 @@ public type T = {
         expect(await format('1 -1')).toEqual('1 - 1\n');
         expect(await format('x -1')).toEqual('x - 1\n');
     });
+
+    test('optional variants', async () => {
+        await expectFormatted('?#abc\n');
+        expect(await format('? #abc')).toEqual('?#abc\n');
+    });
 });

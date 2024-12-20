@@ -147,6 +147,12 @@ const spaceConfig: SpaceConfig = {
         [tokenEquals('^'), '_', 'keep'],
         // [tokenEquals('#'), 'Ident', 'keep'],
 
+        // prefix/postfix operators
+        [{ left: tokenEquals('do'), main: tokenEquals('?') }, '_', 'space'],
+        // [tokenEquals('?'), 'Curly', 'keep'],
+        [tokenEquals('?'), '_', 'nil'],
+        ['_', tokenEquals('!'), 'nil'],
+
         // tags and concatenation
         ['_', tokenEquals('#'), 'keep-space'],
         [tokenEquals('#'), 'Ident', 'keep'],
@@ -173,12 +179,6 @@ const spaceConfig: SpaceConfig = {
         // ['_', 'Dot', 'softwrap'],
         ['Dot', '_', 'nil'],
         ['Assign', '_', 'space'],
-
-        // prefix/postfix operators
-        [{ left: tokenEquals('do'), main: tokenEquals('?') }, '_', 'space'],
-        // [tokenEquals('?'), 'Curly', 'keep'],
-        [tokenEquals('?'), '_', 'nil'],
-        ['_', tokenEquals('!'), 'nil'],
 
         // space between identifier and group
         [tokenEquals('func'), 'Paren', 'nil'],
