@@ -525,6 +525,12 @@ public type T = {
         expect(await format('@abc')).toStrictEqual('@abc\n');
     });
 
+    test('scientific notation literals', async () => {
+        await expectFormatted('let f = 1e2;\n');
+        await expectFormatted('let f = -1e-2;\n');
+        await expectFormatted('let f = 1.7976931348623157e+308;\n');
+    });
+
     test('multi-line text', async () => {
         await expectFormatted('"A\nB"\n');
         await expectFormatted('"  A\n  B"\n');
