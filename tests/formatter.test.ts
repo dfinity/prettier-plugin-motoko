@@ -491,6 +491,15 @@ public type T = {
         expect(await format('x;\n/*\n*/')).toStrictEqual('x;\n/*\n*/\n');
     });
 
+    test('emoji in import statement', async () => {
+        expect(await format('import  Prim  "mo:⛔";')).toStrictEqual(
+            'import Prim "mo:⛔";\n',
+        );
+        expect(await format('import  Prim  "mo:⛔";'.repeat(100))).toStrictEqual(
+            'import Prim "mo:⛔";\n'.repeat(100),
+        );
+    });
+
     test('invisible unicode characters', async () => {
         expect(await format('let x\u200b = 123;')).toStrictEqual(
             'let x = 123;\n',
