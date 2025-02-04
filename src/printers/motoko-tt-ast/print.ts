@@ -127,11 +127,16 @@ function shouldSkipTokenTree(tree: TokenTree): boolean {
     return !!token && removeTokenTypes.includes(token.token_type);
 }
 
-function getGroupDelimToken(groupType: GroupType): Token {
+function getGroupDelimToken(
+    groupType: GroupType,
+    hasWithKeyword: boolean,
+): Token {
     return {
         token_type: 'Delim',
         data:
-            groupType === 'Unenclosed' || groupType === 'Curly'
+            groupType === 'Unenclosed' ||
+            groupType === 'Curly' ||
+            hasWithKeyword
                 ? [';', 'Semi']
                 : [',', 'Comma'],
     };
@@ -267,6 +272,7 @@ function printTokenTree(
             }
         };
 
+        let hasWithKeyword = false;
         for (let i = 0; i < trees.length; i++) {
             let a = trees[i]!;
 
@@ -285,6 +291,11 @@ function printTokenTree(
                     comment = getTokenText(token).slice(2).trim();
                 } else if (token.token_type === 'BlockComment') {
                     comment = getTokenText(token).slice(2, -2).trim();
+                } else if (
+                    token.token_type === 'Ident' &&
+                    token.data == 'with'
+                ) {
+                    hasWithKeyword = true;
                 }
             } else if (a.token_tree_type === 'Group') {
                 const [, groupType] = a.data;
@@ -327,7 +338,9 @@ function printTokenTree(
                 if (!isDelim || i !== trees.length - 1) {
                     resultArray.push(
                         isDelim
-                            ? printToken(getGroupDelimToken(groupType))
+                            ? printToken(
+                                  getGroupDelimToken(groupType, hasWithKeyword),
+                              )
                             : printTokenTree(a, path, options, print, args),
                     );
                 }
@@ -366,7 +379,7 @@ function printTokenTree(
                         ) // possibly array type
                     ) {
                         const delimDoc = printToken(
-                            getGroupDelimToken(groupType),
+                            getGroupDelimToken(groupType, hasWithKeyword),
                         );
                         results.push(
                             // special case for semicolon at end of single-line Motoko file
@@ -388,10 +401,10 @@ function printTokenTree(
             results.length === 0
                 ? []
                 : groupType === 'Curly' && options.bracketSpacing
-                ? line
-                : groupType === 'Angle'
-                ? []
-                : softline;
+                  ? line
+                  : groupType === 'Angle'
+                    ? []
+                    : softline;
 
         const resultDoc = group(
             pair
