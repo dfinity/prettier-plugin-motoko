@@ -617,6 +617,8 @@ public type T = {
     });
 
     test('parenthesized `with` expression', async () => {
+        await expectFormatted('(with a = 1) actor {}\n');
+        await expectFormatted('(with a = 1; b = 2) actor {}\n');
         await expectFormatted('(m with a = 1) actor {}\n');
         await expectFormatted('(m with a = 1; b = 2) actor {}\n');
         await expectFormatted('(m with a = 1) actor {};\n');
