@@ -617,9 +617,9 @@ public type T = {
     });
 
     test('parenthesized `with` expression', async () => {
-        await expectFormatted('(x with a = 1);\n');
-        await expectFormatted('(x with a = 1; b = 2);\n');
-        expect(await format('(x with a = 1; b = 2;);')).toEqual('(x with a = 1; b = 2);\n');
-        expect(await format('(x with a = 1, b = 2,);')).toEqual('(x with a = 1; b = 2);\n');
+        await expectFormatted('(m with a = 1) actor {};\n');
+        await expectFormatted('(m with a = 1; b = 2) actor {};\n');
+        expect(await format('(m with a = 1; b = 2;) actor {};')).toEqual('(m with a = 1; b = 2) actor {};\n');
+        expect(await format('(m with a = 1, b = 2,) actor {};')).toEqual('(m with a = 1; b = 2) actor {};\n');
     });
 });
