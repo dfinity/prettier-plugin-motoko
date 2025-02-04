@@ -615,4 +615,11 @@ public type T = {
         await expectFormatted('?#abc\n');
         expect(await format('? #abc')).toEqual('?#abc\n');
     });
+
+    test('parenthesized `with` expression', async () => {
+        await expectFormatted('(x with a = 1);\n');
+        await expectFormatted('(x with a = 1; b = 2);\n');
+        expect(await format('(x with a = 1; b = 2;);')).toEqual('(x with a = 1; b = 2);\n');
+        expect(await format('(x with a = 1, b = 2,);')).toEqual('(x with a = 1; b = 2);\n');
+    });
 });
