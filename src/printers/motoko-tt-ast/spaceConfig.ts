@@ -172,6 +172,20 @@ const spaceConfig: SpaceConfig = {
         // 'with' keyword
         [tokenEquals('with'), '_', 'keep-space'],
 
+        // '(with)' expression prefixes
+        [
+            (tt: TokenTree) =>
+                tt.token_tree_type === 'Group' &&
+                tt.data[1] === 'Paren' &&
+                tt.data[0].some(
+                    (token) =>
+                        token.token_tree_type === 'Token' &&
+                        token.data[0].data === 'with',
+                ),
+            '_',
+            'keep-space',
+        ],
+
         // logical and pipe operators
         [
             { main: tokenEquals('and'), groups: ['Paren', 'Square'] },

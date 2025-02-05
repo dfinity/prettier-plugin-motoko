@@ -495,9 +495,9 @@ public type T = {
         expect(await format('import  Prim  "mo:⛔";')).toStrictEqual(
             'import Prim "mo:⛔";\n',
         );
-        expect(await format('import  Prim  "mo:⛔";'.repeat(100))).toStrictEqual(
-            'import Prim "mo:⛔";\n'.repeat(100),
-        );
+        expect(
+            await format('import  Prim  "mo:⛔";'.repeat(100)),
+        ).toStrictEqual('import Prim "mo:⛔";\n'.repeat(100));
     });
 
     test('invisible unicode characters', async () => {
@@ -616,14 +616,32 @@ public type T = {
         expect(await format('? #abc')).toEqual('?#abc\n');
     });
 
-    test('parenthesized `with` expression', async () => {
+    test('parenthesized `with` expression prefixes', async () => {
         await expectFormatted('(with a = 1) actor {}\n');
         await expectFormatted('(with a = 1; b = 2) actor {}\n');
         await expectFormatted('(m with a = 1) actor {}\n');
         await expectFormatted('(m with a = 1; b = 2) actor {}\n');
         await expectFormatted('(m with a = 1) actor {};\n');
         await expectFormatted('(m with a = 1; b = 2) actor {};\n');
-        expect(await format('(m with a = 1; b = 2;) actor {};')).toEqual('(m with a = 1; b = 2) actor {};\n');
-        expect(await format('(m with a = 1, b = 2,) actor {};')).toEqual('(m with a = 1; b = 2) actor {};\n');
+        expect(await format('(m with a = 1; b = 2;) actor {};')).toEqual(
+            '(m with a = 1; b = 2) actor {};\n',
+        );
+        expect(await format('(m with a = 1, b = 2,) actor {};')).toEqual(
+            '(m with a = 1; b = 2) actor {};\n',
+        );
+
+        await expectFormatted('(with a = 1)\nactor {};\n');
+        await expectFormatted('(with a = 1; b = 2)\nactor {};\n');
+        await expectFormatted('(m with a = 1)\nactor {};\n');
+        await expectFormatted('(m with a = 1; b = 2)\nactor {};\n');
+        await expectFormatted('(m with a = 1) actor {};\n');
+        await expectFormatted('(m with a = 1; b = 2)\nactor {};\n');
+
+        await expectFormatted(
+            '(\n  m with\n  a = 1;\n  b = 2;\n) actor {};\n',
+        );
+        await expectFormatted(
+            '(\n  m with\n  a = 1;\n  b = 2;\n)\nactor {};\n',
+        );
     });
 });
