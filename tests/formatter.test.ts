@@ -495,9 +495,9 @@ public type T = {
         expect(await format('import  Prim  "mo:⛔";')).toStrictEqual(
             'import Prim "mo:⛔";\n',
         );
-        expect(
-            await format('import  Prim  "mo:⛔";'.repeat(100)),
-        ).toStrictEqual('import Prim "mo:⛔";\n'.repeat(100));
+        expect(await format('import  Prim  "mo:⛔";'.repeat(100))).toStrictEqual(
+            'import Prim "mo:⛔";\n'.repeat(100),
+        );
     });
 
     test('invisible unicode characters', async () => {
@@ -638,7 +638,7 @@ public type T = {
         await expectFormatted('(m with a = 1; b = 2)\nactor {};\n');
 
         await expectFormatted(
-            '(\n  m with\n  a = 1;\n  b = 2;\n) actor {};\n',
+            '(\n  m with\n  a = 1;\n  b = 2;\n)\nactor {};\n',
         );
         await expectFormatted(
             '(\n  m with\n  a = 1;\n  b = 2;\n)\nactor {};\n',
