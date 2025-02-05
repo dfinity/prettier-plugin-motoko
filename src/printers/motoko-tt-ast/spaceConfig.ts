@@ -98,6 +98,13 @@ const tokenEndsWith = (end: string) =>
 const tokenTypes = (types: Token['token_type'][]) =>
     token((token) => types.includes(token.token_type));
 
+const groupContains =
+    (groupType: GroupType, predicate: (tt: TokenTree) => boolean) =>
+    (tt: TokenTree) =>
+        tt.token_tree_type === 'Group' &&
+        tt.data[1] === groupType &&
+        tt.data[0].some(predicate);
+
 const and =
     (...conditions: ((tt: TokenTree) => boolean)[]) =>
     (tt: TokenTree) =>
@@ -173,18 +180,7 @@ const spaceConfig: SpaceConfig = {
         [tokenEquals('with'), '_', 'keep-space'],
 
         // '(with)' expression prefixes
-        [
-            (tt: TokenTree) =>
-                tt.token_tree_type === 'Group' &&
-                tt.data[1] === 'Paren' &&
-                tt.data[0].some(
-                    (token) =>
-                        token.token_tree_type === 'Token' &&
-                        token.data[0].data === 'with',
-                ),
-            '_',
-            'keep-space',
-        ],
+        [groupContains('Paren', tokenEquals('with')), '_', 'keep-space'],
 
         // logical and pipe operators
         [
