@@ -91,7 +91,7 @@ export function parseSpace(
                             result = printToken(token);
                         }
                     }
-                    right = rightMap.get(right);
+                    right &&= rightMap.get(right);
                 } while (right !== b);
                 return result;
             default:
@@ -106,9 +106,9 @@ export function parseSpace(
 const removeTokenTypes = ['Space', 'Line'];
 
 export default function print(
-    path: AstPath<any>,
-    options: ParserOptions<any>,
-    print: (path: AstPath<any>) => Doc,
+    path: AstPath<TokenTree>,
+    options: ParserOptions<TokenTree>,
+    print: (path: AstPath<TokenTree>) => Doc,
     args?: unknown,
 ): Doc {
     const tree = path.getValue();
@@ -144,9 +144,9 @@ function getGroupDelimToken(
 
 function printTokenTree(
     tree: TokenTree,
-    path: AstPath<any>,
-    options: ParserOptions<any>,
-    print: (path: AstPath<any>) => Doc,
+    path: AstPath<TokenTree>,
+    options: ParserOptions<TokenTree>,
+    print: (path: AstPath<TokenTree>) => Doc,
     args?: unknown,
 ): Doc {
     if (tree.token_tree_type === 'Group') {
@@ -166,7 +166,7 @@ function printTokenTree(
         ): boolean => {
             if ('_shouldBreak' in tt) {
                 // use incremental cache to reduce time complexity
-                return tt._shouldBreak;
+                return !!tt._shouldBreak;
             }
             if (tt.token_tree_type === 'Group') {
                 const [trees] = tt.data;
@@ -190,7 +190,7 @@ function printTokenTree(
                         token.token_type === 'LineComment';
                 }
             }
-            return tt._shouldBreak;
+            return !!tt._shouldBreak;
         };
         let shouldBreakTree = shouldBreak(tree);
 
@@ -327,7 +327,7 @@ function printTokenTree(
                     ignoreDoc.unshift(getTokenTreeText(tt));
                 } while (
                     leftMap.has(tt) &&
-                    shouldSkipTokenTree((tt = leftMap.get(tt)))
+                    shouldSkipTokenTree((tt = leftMap.get(tt)!))
                 );
                 resultGroup.push(ignoreDoc);
             } else {

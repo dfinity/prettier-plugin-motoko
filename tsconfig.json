@@ -9,6 +9,9 @@
         "sourceMap": true,
         "declaration": true,
         "declarationMap": true,
+        "allowJs": false,
+        "strict": true,
+        "forceConsistentCasingInFileNames": true,
         "outDir": "lib",
         "declarationDir": "lib",
         "baseUrl": ".",
@@ -16,5 +19,5 @@
             "*": ["node_modules/*", "src/types/*"]
         }
     },
-    "include": ["src/**/*"]
+    "include": ["src"]
 }

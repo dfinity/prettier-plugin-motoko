@@ -1,7 +1,15 @@
+import defaultOptions from './defaultOptions';
 import languages from './languages';
+import options from './options';
 import parsers from './parsers';
 import printers from './printers';
-import options from './options';
-import defaultOptions from './defaultOptions';
 
-export { languages, parsers, printers, options, defaultOptions };
+export { defaultOptions, languages, options, parsers, printers };
+
+export default {
+    languages,
+    parsers,
+    printers,
+    options,
+    defaultOptions,
+};
