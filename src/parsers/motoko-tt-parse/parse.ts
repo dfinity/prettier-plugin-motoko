@@ -80,24 +80,24 @@ export type Source = {
 
 export default function parse(
     text: string,
-    options: ParserOptions<any>,
+    options: ParserOptions<TokenTree>,
 ): TokenTree;
 export default function parse(
     text: string,
     parsers: object,
-    options: ParserOptions<any>,
+    options: ParserOptions<TokenTree>,
 ): TokenTree;
 export default function parse(
     text: string,
-    parsers: object | ParserOptions<any>,
-    options?: ParserOptions<any>,
+    parsers: object | ParserOptions<TokenTree>,
+    options?: ParserOptions<TokenTree>,
 ): TokenTree {
     if (arguments.length === 2) {
-        options = parsers as ParserOptions<any>;
+        options = parsers as ParserOptions<TokenTree>;
         parsers = {};
     }
 
-    text = preprocess(text, options);
+    text = preprocess(text, options!);
 
     const tt = wasm.parse_token_tree(text.trim());
     // console.log(tt);

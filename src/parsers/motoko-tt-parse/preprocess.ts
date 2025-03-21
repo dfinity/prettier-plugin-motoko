@@ -1,6 +1,7 @@
 import { ParserOptions } from 'prettier';
 import outOfCharacter from 'out-of-character';
 import wasm from '../../wasm';
+import { TokenTree } from './parse';
 
 const skipAutomaticSemiForNextLinePrefixes = ['.', '|>', ')', '}', ']'];
 
@@ -47,7 +48,7 @@ function maskSpans(code: string, spans: [number, number][]) {
 
 export default function preprocess(
     code: string,
-    options: ParserOptions<any>,
+    options: ParserOptions<TokenTree>,
 ): string {
     code = code.replace(/\t/g, ' '.repeat(options.tabWidth)); // convert tabs to spaces
     code = code.replace(/[ \t]+(?=\r?\n)/g, ''); // remove trailing spaces

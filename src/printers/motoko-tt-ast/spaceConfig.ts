@@ -120,7 +120,7 @@ const not = (condition: (tt: TokenTree) => boolean) => (tt: TokenTree) =>
 const blockComment = (tt: TokenTree) =>
     tt.token_tree_type === 'Group'
         ? tt.data[1] === 'Comment'
-        : getToken(tt).token_type === 'BlockComment';
+        : getToken(tt)?.token_type === 'BlockComment';
 
 const spaceConfig: SpaceConfig = {
     // whitespace rules, prioritized from top to bottom
