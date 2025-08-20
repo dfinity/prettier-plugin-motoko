@@ -205,6 +205,7 @@ const spaceConfig: SpaceConfig = {
         [tokenEquals('func'), 'Paren', 'nil'],
         [tokenEquals('func'), 'Angle', 'nil'],
         [{ left: tokenEquals('case'), main: 'Group' }, '_', 'space'],
+        [{ left: tokenEquals('case'), main: 'Ident' }, 'Group', 'space'],
         [keyword, 'Group', 'space'],
         ['Ident', 'Paren', 'nil'],
         ['Ident', 'Square', 'nil'],

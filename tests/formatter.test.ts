@@ -650,5 +650,7 @@ public type T = {
         await expectFormatted('_[i]\n');
         expect(await format('_ (i)')).toEqual('_(i)\n');
         expect(await format('_ [i]')).toEqual('_[i]\n');
+        expect(await format('case _ (i)')).toEqual('case _ (i)\n');
+        expect(await format('case _ [i]')).toEqual('case _ [i]\n');
     });
 });
