@@ -495,9 +495,9 @@ public type T = {
         expect(await format('import  Prim  "mo:⛔";')).toStrictEqual(
             'import Prim "mo:⛔";\n',
         );
-        expect(await format('import  Prim  "mo:⛔";'.repeat(100))).toStrictEqual(
-            'import Prim "mo:⛔";\n'.repeat(100),
-        );
+        expect(
+            await format('import  Prim  "mo:⛔";'.repeat(100)),
+        ).toStrictEqual('import Prim "mo:⛔";\n'.repeat(100));
     });
 
     test('invisible unicode characters', async () => {
@@ -643,5 +643,12 @@ public type T = {
         await expectFormatted(
             '(\n  m with\n  a = 1;\n  b = 2;\n)\nactor {};\n',
         );
+    });
+
+    test('wildcard identifier', async () => {
+        await expectFormatted('_(i)\n');
+        await expectFormatted('_[i]\n');
+        expect(await format('_ (i)')).toEqual('_(i)\n');
+        expect(await format('_ [i]')).toEqual('_[i]\n');
     });
 });
