@@ -122,6 +122,8 @@ const blockComment = (tt: TokenTree) =>
         ? tt.data[1] === 'Comment'
         : getToken(tt)?.token_type === 'BlockComment';
 
+const caseOrCatchToken = or(tokenEquals('case'), tokenEquals('catch'));
+
 const spaceConfig: SpaceConfig = {
     // whitespace rules, prioritized from top to bottom
     rules: [
@@ -204,8 +206,8 @@ const spaceConfig: SpaceConfig = {
         // space between identifier and group
         [tokenEquals('func'), 'Paren', 'nil'],
         [tokenEquals('func'), 'Angle', 'nil'],
-        [{ left: tokenEquals('case'), main: 'Group' }, '_', 'space'],
-        [{ left: tokenEquals('case'), main: 'Ident' }, 'Group', 'space'],
+        [{ left: caseOrCatchToken, main: 'Group' }, '_', 'space'],
+        [{ left: caseOrCatchToken, main: 'Ident' }, 'Group', 'space'],
         [keyword, 'Group', 'space'],
         ['Ident', 'Paren', 'nil'],
         ['Ident', 'Square', 'nil'],
