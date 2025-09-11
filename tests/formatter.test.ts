@@ -655,4 +655,14 @@ public type T = {
         expect(await format('catch _ (i)')).toEqual('catch _ (i)\n');
         expect(await format('catch _ [i]')).toEqual('catch _ [i]\n');
     });
+
+    test('double newline after import section', async () => {
+        expectFormatted(await format('import A "A";\n\nactor {};\n'));
+        expectFormatted(await format('import A "A";\nimport B "B";\n\nactor {};\n'));
+        expectFormatted(await format('import A "A";\n// import B "B";\n\nactor {};\n'));
+        expectFormatted(await format('import A "A";\n// import B "B";\nimport { C } "C";\n\nactor {};\n'));
+        expect(await format('import A "A"; actor {}')).toEqual('import A "A";\n\nactor {};\n');
+        expect(await format('import A "A";\n// import B "B";\nimport C "C";\nactor {};')).toEqual('import A "A";\n// import B "B";\nimport C "C";\n\nactor {};\n');
+        expect(await format('import A "A";\nimport {B} "B";\n// import C "C";\nactor A {\nabc\n};')).toEqual('import A "A";\nimport { B } "B";\n// import C "C";\n\nactor A {\n  abc;\n};\n');
+    });
 });
