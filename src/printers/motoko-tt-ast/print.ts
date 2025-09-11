@@ -273,6 +273,7 @@ function printTokenTree(
         };
 
         let hasWithKeyword = false;
+        let importSection: boolean | undefined;
         for (let i = 0; i < trees.length; i++) {
             let a = trees[i]!;
 
@@ -296,6 +297,16 @@ function printTokenTree(
                     token.data == 'with'
                 ) {
                     hasWithKeyword = true;
+                } else if (
+                    token.token_type === 'Ident' &&
+                    token.data === 'import'
+                ) {
+                    if (importSection === undefined) {
+                        importSection = true;
+                    }
+                } else if (resultGroup.length === 0 && importSection) {
+                    importSection = false;
+                    resultGroup.push(hardline); /// ???
                 }
             } else if (a.token_tree_type === 'Group') {
                 const [, groupType] = a.data;
