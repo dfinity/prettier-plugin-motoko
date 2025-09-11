@@ -304,9 +304,15 @@ function printTokenTree(
                     if (importSection === undefined) {
                         importSection = true;
                     }
-                } else if (resultGroup.length === 0 && importSection) {
+                } else if (
+                    importSection &&
+                    (resultGroup.length === 0 ||
+                        token.token_type === 'MultiLine')
+                ) {
                     importSection = false;
-                    resultGroup.push(hardline); /// ???
+                    if (token.token_type !== 'MultiLine') {
+                        resultGroup.push(hardline);
+                    }
                 }
             } else if (a.token_tree_type === 'Group') {
                 const [, groupType] = a.data;
