@@ -203,7 +203,17 @@ function printTokenTree(
             if (right) {
                 rightMap.set(tt, right);
             }
-            return !shouldSkipTokenTree(tt);
+            return (
+                !shouldSkipTokenTree(tt) &&
+                !(
+                    // Remove empty lines at start/end of code block
+                    (
+                        options.motokoRemoveLinesAroundCodeBlocks &&
+                        getToken(tt)?.token_type === 'MultiLine' &&
+                        (i === 0 || i === originalTrees.length - 1)
+                    )
+                )
+            );
         });
 
         // nested groups such as `((a, b, ...))`
@@ -234,7 +244,6 @@ function printTokenTree(
             let hasWith = false;
             let hasAnd = false;
             let hasAssign = false;
-            let hasColon = false;
             let hasDelim = false;
             trees.forEach((tree) => {
                 let token = getToken(tree);
@@ -251,8 +260,6 @@ function printTokenTree(
                     token.data === '='
                 ) {
                     hasAssign = true;
-                } else if (token.token_type === 'Colon') {
-                    hasColon = true;
                 } else if (token.token_type === 'Delim') {
                     hasDelim = true;
                 }
@@ -361,7 +368,7 @@ function printTokenTree(
                             : printTokenTree(a, path, options, print, args),
                     );
                 }
-                if (i < trees.length - 1 && !isIgnoreComment) {
+                if (!isIgnoreComment && i !== trees.length - 1) {
                     resultArray.push(
                         printBetween(
                             groupType,

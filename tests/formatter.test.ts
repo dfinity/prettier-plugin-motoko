@@ -658,11 +658,54 @@ public type T = {
 
     test('double newline after import section', async () => {
         expectFormatted(await format('import A "A";\n\nactor {};\n'));
-        expectFormatted(await format('import A "A";\nimport B "B";\n\nactor {};\n'));
-        expectFormatted(await format('import A "A";\n// import B "B";\n\nactor {};\n'));
-        expectFormatted(await format('import A "A";\n// import B "B";\nimport { C } "C";\n\nactor {};\n'));
-        expect(await format('import A "A"; actor {}')).toEqual('import A "A";\n\nactor {};\n');
-        expect(await format('import A "A";\n// import B "B";\nimport C "C";\nactor {};')).toEqual('import A "A";\n// import B "B";\nimport C "C";\n\nactor {};\n');
-        expect(await format('import A "A";\nimport {B} "B";\n// import C "C";\nactor A {\nabc\n};')).toEqual('import A "A";\nimport { B } "B";\n// import C "C";\n\nactor A {\n  abc;\n};\n');
+        expectFormatted(
+            await format('import A "A";\nimport B "B";\n\nactor {};\n'),
+        );
+        expectFormatted(
+            await format('import A "A";\n// import B "B";\n\nactor {};\n'),
+        );
+        expectFormatted(
+            await format(
+                'import A "A";\n// import B "B";\nimport { C } "C";\n\nactor {};\n',
+            ),
+        );
+        expect(await format('import A "A"; actor {}')).toEqual(
+            'import A "A";\n\nactor {};\n',
+        );
+        expect(
+            await format(
+                'import A "A";\n// import B "B";\nimport C "C";\nactor {};',
+            ),
+        ).toEqual(
+            'import A "A";\n// import B "B";\nimport C "C";\n\nactor {};\n',
+        );
+        expect(
+            await format(
+                'import A "A";\nimport {B} "B";\n// import C "C";\nactor A {\nabc\n};',
+            ),
+        ).toEqual(
+            'import A "A";\nimport { B } "B";\n// import C "C";\n\nactor A {\n  abc;\n};\n',
+        );
+    });
+
+    test('lines before/after group', async () => {
+        await expectFormatted('[\n\n  1,\n  2,\n\n];\n');
+        await expectFormatted('{\n\n  abc;\n\n};\n');
+
+        const options: prettier.Options = {
+            motokoRemoveLinesAroundCodeBlocks: true,
+        };
+        expect(await format('[\n\n1,\n2,\n\n]\n', options)).toEqual(
+            '[\n  1,\n  2,\n];\n',
+        );
+        expect(await format('{\n\nabc\n\n}\n', options)).toEqual(
+            '{\n  abc;\n};\n',
+        );
+        expect(await format('{\n\n1;\n2;\n\n3;\n\n}\n', options)).toEqual(
+            '{\n  1;\n  2;\n\n  3;\n};\n',
+        );
+        expect(await format('actor {\n\nfunc f() {\n\nlet a = 0;\n\n}\n\n}\n', options)).toEqual(
+            'actor {\n  func f() {\n    let a = 0;\n  };\n};\n',
+        );
     });
 });
