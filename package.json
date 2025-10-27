@@ -17,7 +17,7 @@
         "prepublishOnly": "run-s build test:quick"
     },
     "dependencies": {
-        "out-of-character": "^1.2.1"
+        "out-of-character": "^2.1.0"
     },
     "devDependencies": {
         "@types/jest": "^28.1.7",
