@@ -6,7 +6,7 @@
     "browser": "lib/environments/web.js",
     "types": "lib/index.d.ts",
     "scripts": {
-        "build:ts": "rimraf ./lib && tsc -p .",
+        "build:ts": "rimraf ./lib && tsc -p . && cp src/utils/removeZeroWidthCharacters.json ./lib/utils/",
         "build:wasm": "run-s build:wasm:bundler build:wasm:nodejs",
         "build:wasm:bundler": "wasm-pack build wasm --target bundler --out-dir pkg/bundler && rm wasm/pkg/bundler/.gitignore",
         "build:wasm:nodejs": "wasm-pack build wasm --target nodejs --out-dir pkg/nodejs && rm wasm/pkg/nodejs/.gitignore",

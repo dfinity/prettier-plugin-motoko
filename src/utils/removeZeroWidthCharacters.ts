@@ -22,7 +22,23 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-import { data, CharConfig } from './zeroWidth';
+interface CharConfig {
+    actualUnicodeChar: string;
+    aka: string;
+    code: string;
+    htmlcode?: string;
+    htmlentity?: string;
+    csscode?: string;
+    unicode?: string;
+    codeEscaped: string;
+    escapeChar: string;
+    name: string;
+    type: string;
+    url: string;
+    replaceWith?: string;
+}
+
+const data = require('./removeZeroWidthCharacters.json') as CharConfig[];
 
 const byCode = data.reduce(
     (h, obj) => {
