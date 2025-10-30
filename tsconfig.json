@@ -9,7 +9,7 @@
         "sourceMap": true,
         "declaration": true,
         "declarationMap": true,
-        "allowJs": false,
+        "allowJs": true,
         "strict": true,
         "forceConsistentCasingInFileNames": true,
         "outDir": "lib",
