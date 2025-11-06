@@ -26,6 +26,10 @@ interface CharConfig {
     actualUnicodeChar: string;
     aka: string;
     code: string;
+    htmlcode?: string;
+    htmlentity?: string;
+    csscode?: string;
+    unicode?: string;
     codeEscaped: string;
     escapeChar: string;
     name: string;
